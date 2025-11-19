@@ -23,7 +23,7 @@ void lt_test_ire_provision_admin_key(lt_handle_t *h)
     uint8_t *pub_keys[] = {sh0pub, sh1pub};
     uint8_t *priv_keys[] = {sh0priv, sh1priv};
     uint8_t read_key[TR01_SHIPUB_LEN] = {0};
-    uint8_t zeros[TR01_SHIPUB_LEN] = {0};
+    // uint8_t zeros[TR01_SHIPUB_LEN] = {0};
     char print_buff[PRINT_BUFF_SIZE];
 
     LT_LOG_INFO("Initializing handle");
