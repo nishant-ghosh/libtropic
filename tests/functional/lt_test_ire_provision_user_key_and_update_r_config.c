@@ -368,7 +368,8 @@ int lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h)
     char print_buff[PRINT_BUFF_SIZE];
     
     struct lt_config_t r_config, r_config_read;
-
+    lt_ret_t ret;
+    
     LT_LOG_INFO("Initializing handle");
     ret = lt_init(h);
      if (LT_OK != ret) {
