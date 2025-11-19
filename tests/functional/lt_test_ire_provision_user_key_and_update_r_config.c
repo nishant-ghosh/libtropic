@@ -25,7 +25,7 @@
  *
  * @param r_config R-config to modify
  */
-static void create_r_config(struct lt_config_t *r_config)
+void create_r_config(struct lt_config_t *r_config)
 {
     //-------CFG_START_UP------------------------------------
     // Keep at reset value
@@ -356,7 +356,7 @@ static void create_r_config(struct lt_config_t *r_config)
     //     LT_SESSION_SH0_HAS_ACCESS | LT_SESSION_SH1_HAS_ACCESS | LT_SESSION_SH2_HAS_ACCESS | LT_SESSION_SH3_HAS_ACCESS);
 }
 
-static int lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h)
+int lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h)
 {
     LT_LOG_INFO("----------------------------------------------");
     LT_LOG_INFO("lt_test_ire_provision_user_key_and_update_r_config()");
