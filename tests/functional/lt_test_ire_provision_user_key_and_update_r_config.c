@@ -362,6 +362,8 @@ int lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h)
     LT_LOG_INFO("lt_test_ire_provision_user_key_and_update_r_config()");
     LT_LOG_INFO("----------------------------------------------");
 
+    ret - LT_FAIL;
+
     uint8_t *pub_keys[] = {sh1pub, sh2pub, sh3pub};
     // uint8_t *priv_keys[] = {sh1priv, sh2priv, sh3priv};
     uint8_t read_key[TR01_SHIPUB_LEN] = {0};
