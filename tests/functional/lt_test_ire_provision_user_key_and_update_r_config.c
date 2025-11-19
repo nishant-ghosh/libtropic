@@ -369,7 +369,7 @@ int lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h)
     
     struct lt_config_t r_config, r_config_read;
     lt_ret_t ret;
-    
+
     LT_LOG_INFO("Initializing handle");
     ret = lt_init(h);
      if (LT_OK != ret) {
@@ -439,25 +439,25 @@ int lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h)
     LT_LOG_INFO("Creating R config object from the read r-config...");
     create_r_config(&r_config);
 
-    // // Configure R-config
-    // LT_LOG_INFO("Writing the whole R config with the example config...");
-    // ret = lt_write_whole_R_config(h, &r_config);
-    // if (LT_OK != ret) {
-    //     LT_LOG_ERROR("Failed to write R config, ret=%s", lt_ret_verbose(ret));
-    //     return -1;
-    // }
-    // LT_LOG_INFO("\tOK");
+    // Configure R-config
+    LT_LOG_INFO("Writing the whole R config with the example config...");
+    ret = lt_write_whole_R_config(h, &r_config);
+    if (LT_OK != ret) {
+        LT_LOG_ERROR("Failed to write R config, ret=%s", lt_ret_verbose(ret));
+        return -1;
+    }
+    LT_LOG_INFO("\tOK");
 
-    // LT_LOG_INFO("Reading the whole R config again:");
-    // ret = lt_read_whole_R_config(h, &r_config);
-    // if (LT_OK != ret) {
-    //     LT_LOG_ERROR("Failed to read R config, ret=%s", lt_ret_verbose(ret));
-    //     return -1;
-    // }
-    // for (int i = 0; i < LT_CONFIG_OBJ_CNT; i++) {
-    //     LT_LOG_INFO("%s: 0x%08" PRIx32, cfg_desc_table[i].desc, r_config.obj[i]);
-    // }
-    // LT_LOG_LINE();
+    LT_LOG_INFO("Reading the whole R config again:");
+    ret = lt_read_whole_R_config(h, &r_config);
+    if (LT_OK != ret) {
+        LT_LOG_ERROR("Failed to read R config, ret=%s", lt_ret_verbose(ret));
+        return -1;
+    }
+    for (int i = 0; i < LT_CONFIG_OBJ_CNT; i++) {
+        LT_LOG_INFO("%s: 0x%08" PRIx32, cfg_desc_table[i].desc, r_config.obj[i]);
+    }
+    LT_LOG_LINE();
 
     LT_LOG_INFO("Aborting Secure Session");
     LT_TEST_ASSERT(LT_OK, lt_session_abort(h));
