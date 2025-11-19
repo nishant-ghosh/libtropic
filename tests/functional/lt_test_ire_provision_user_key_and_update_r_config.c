@@ -363,7 +363,7 @@ static int lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h)
     LT_LOG_INFO("----------------------------------------------");
 
     uint8_t *pub_keys[] = {sh1pub, sh2pub, sh3pub};
-    uint8_t *priv_keys[] = {sh1priv, sh2priv, sh3priv};
+    // uint8_t *priv_keys[] = {sh1priv, sh2priv, sh3priv};
     uint8_t read_key[TR01_SHIPUB_LEN] = {0};
     char print_buff[PRINT_BUFF_SIZE];
     
@@ -459,4 +459,6 @@ static int lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h)
 
     LT_LOG_INFO("Deinitializing handle");
     LT_TEST_ASSERT(LT_OK, lt_deinit(h));
+
+    return 0;
 }
