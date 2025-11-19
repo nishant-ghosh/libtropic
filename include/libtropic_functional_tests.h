@@ -193,7 +193,7 @@ void lt_test_ire_provision_admin_key(lt_handle_t *h);
  *
  * @param h     Device's handle
  */
-void lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h);
+static int lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h);
 
 /**
  * @brief Test Ping L3 command with random data of random length <= TR01_PING_LEN_MAX.
