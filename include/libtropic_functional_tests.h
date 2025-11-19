@@ -168,7 +168,7 @@ void lt_test_rev_ecdsa_sign(lt_handle_t *h);
 void lt_test_ire_pairing_key_slots(lt_handle_t *h);
 
 /**
- * @brief Test Pairing_Key_Read, Pairing_Key_Write and Pairing_Key_Invalidate on all slots.
+ * @brief Test to provision admin in slot 1
  *
  * Test steps:
  *  1. Start Secure Session with pairing key slot 0 and read it.
@@ -180,6 +180,20 @@ void lt_test_ire_pairing_key_slots(lt_handle_t *h);
  * @param h     Device's handle
  */
 void lt_test_ire_provision_admin_key(lt_handle_t *h);
+
+/**
+ * @brief Test to provision user keys in slots 2,3 and to update R-config
+ *
+ * Test steps:
+ *  1. Start Secure Session with pairing key slot 0 and read it.
+ *  2. Read pairing key slots 1,2,3 and check they are empty.
+ *  3. Write pairing key slot 1
+ *  4. Read all pairing key slots and check for expected value.
+ *  5. Start Secure Session with slot 1
+ *
+ * @param h     Device's handle
+ */
+void lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h);
 
 /**
  * @brief Test Ping L3 command with random data of random length <= TR01_PING_LEN_MAX.
