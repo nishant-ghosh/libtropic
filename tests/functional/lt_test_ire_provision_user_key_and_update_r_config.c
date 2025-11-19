@@ -25,7 +25,7 @@
  *
  * @param r_config R-config to modify
  */
-void create_r_config(struct lt_config_t *r_config)
+static void create_r_config(struct lt_config_t *r_config)
 {
     //-------CFG_START_UP------------------------------------
     // Keep at reset value
@@ -362,7 +362,7 @@ int lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h)
     LT_LOG_INFO("lt_test_ire_provision_user_key_and_update_r_config()");
     LT_LOG_INFO("----------------------------------------------");
 
-    ret - LT_FAIL;
+    ret = LT_FAIL;
 
     uint8_t *pub_keys[] = {sh1pub, sh2pub, sh3pub};
     // uint8_t *priv_keys[] = {sh1priv, sh2priv, sh3priv};
