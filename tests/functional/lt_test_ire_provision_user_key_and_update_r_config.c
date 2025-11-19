@@ -17,6 +17,9 @@
 #include "lt_random.h"
 #include "string.h"
 
+/** @brief Size of the print buffer. */
+#define PRINT_BUFF_SIZE 65
+
 /**
  * @brief Creates an R-config object
  *
@@ -74,7 +77,7 @@ static void create_r_config(struct lt_config_t *r_config)
 
     //------- TR01_CFG_UAP_PAIRING_KEY_INVALIDATE ----------------
     // 1. Disable invalidate privileges for all keys
-    rr_config->obj[TR01_CFG_UAP_PAIRING_KEY_INVALIDATE_IDX] &= ~LT_TO_PAIRING_KEY_SH0(
+    r_config->obj[TR01_CFG_UAP_PAIRING_KEY_INVALIDATE_IDX] &= ~LT_TO_PAIRING_KEY_SH0(
         LT_SESSION_SH0_HAS_ACCESS | LT_SESSION_SH1_HAS_ACCESS | LT_SESSION_SH2_HAS_ACCESS | LT_SESSION_SH3_HAS_ACCESS);
     r_config->obj[TR01_CFG_UAP_PAIRING_KEY_INVALIDATE_IDX] &= ~LT_TO_PAIRING_KEY_SH1(
         LT_SESSION_SH0_HAS_ACCESS | LT_SESSION_SH1_HAS_ACCESS | LT_SESSION_SH2_HAS_ACCESS | LT_SESSION_SH3_HAS_ACCESS);
@@ -230,14 +233,15 @@ static void create_r_config(struct lt_config_t *r_config)
 
     //------- TR01_CFG_UAP_ECC_KEY_READ --------------------------
     // Enable for all pairing keys except SH0PUB
-    r_config->obj[TR01_CFG_UAP_ECC_KEY_READ_IDX] &= ~LT_TO_ECC_KEY_SLOT_0_7(
-        !(LT_SESSION_SH0_HAS_ACCESS) | LT_SESSION_SH1_HAS_ACCESS | LT_SESSION_SH2_HAS_ACCESS | LT_SESSION_SH3_HAS_ACCESS);
-    r_config->obj[TR01_CFG_UAP_ECC_KEY_READ_IDX] &= ~LT_TO_ECC_KEY_SLOT_8_15(
-        !(LT_SESSION_SH0_HAS_ACCESS) | LT_SESSION_SH1_HAS_ACCESS | LT_SESSION_SH2_HAS_ACCESS | LT_SESSION_SH3_HAS_ACCESS);
-    r_config->obj[TR01_CFG_UAP_ECC_KEY_READ_IDX] &= ~LT_TO_ECC_KEY_SLOT_16_23(
-        !(LT_SESSION_SH0_HAS_ACCESS) | LT_SESSION_SH1_HAS_ACCESS | LT_SESSION_SH2_HAS_ACCESS | LT_SESSION_SH3_HAS_ACCESS);
-    r_config->obj[TR01_CFG_UAP_ECC_KEY_READ_IDX] &= ~LT_TO_ECC_KEY_SLOT_24_31(
-        !(LT_SESSION_SH0_HAS_ACCESS) | LT_SESSION_SH1_HAS_ACCESS | LT_SESSION_SH2_HAS_ACCESS | LT_SESSION_SH3_HAS_ACCESS);
+    r_config->obj[TR01_CFG_UAP_ECC_KEY_READ_IDX] |= LT_TO_ECC_KEY_SLOT_0_7(
+         LT_SESSION_SH1_HAS_ACCESS | LT_SESSION_SH2_HAS_ACCESS | LT_SESSION_SH3_HAS_ACCESS);
+    r_config->obj[TR01_CFG_UAP_ECC_KEY_READ_IDX] |= LT_TO_ECC_KEY_SLOT_8_15(
+         LT_SESSION_SH1_HAS_ACCESS | LT_SESSION_SH2_HAS_ACCESS | LT_SESSION_SH3_HAS_ACCESS);
+    r_config->obj[TR01_CFG_UAP_ECC_KEY_READ_IDX] |= LT_TO_ECC_KEY_SLOT_16_23(
+         LT_SESSION_SH1_HAS_ACCESS | LT_SESSION_SH2_HAS_ACCESS | LT_SESSION_SH3_HAS_ACCESS);
+    r_config->obj[TR01_CFG_UAP_ECC_KEY_READ_IDX] |= LT_TO_ECC_KEY_SLOT_24_31(
+         LT_SESSION_SH1_HAS_ACCESS | LT_SESSION_SH2_HAS_ACCESS | LT_SESSION_SH3_HAS_ACCESS);
+
 
     //------- TR01_CFG_UAP_ECC_KEY_ERASE -------------------------
     // 1. Disable all, then enable only specific ones
@@ -352,14 +356,14 @@ static void create_r_config(struct lt_config_t *r_config)
     //     LT_SESSION_SH0_HAS_ACCESS | LT_SESSION_SH1_HAS_ACCESS | LT_SESSION_SH2_HAS_ACCESS | LT_SESSION_SH3_HAS_ACCESS);
 }
 
-void lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h)
+static int lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h)
 {
     LT_LOG_INFO("----------------------------------------------");
     LT_LOG_INFO("lt_test_ire_provision_user_key_and_update_r_config()");
     LT_LOG_INFO("----------------------------------------------");
 
-    uint8_t *pub_keys[] = {sh2pub, sh3pub};
-    uint8_t *priv_keys[] = {sh2priv, sh3priv};
+    uint8_t *pub_keys[] = {sh1pub, sh2pub, sh3pub};
+    uint8_t *priv_keys[] = {sh1priv, sh2priv, sh3priv};
     uint8_t read_key[TR01_SHIPUB_LEN] = {0};
     char print_buff[PRINT_BUFF_SIZE];
     
@@ -369,15 +373,15 @@ void lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h)
     LT_TEST_ASSERT(LT_OK, lt_init(h));
 
     LT_LOG_INFO("Starting Secure Session with key %d", (int)TR01_PAIRING_KEY_SLOT_INDEX_1);
-    LT_TEST_ASSERT(LT_OK, lt_verify_chip_and_start_secure_session(h, sh0priv, sh0pub, TR01_PAIRING_KEY_SLOT_INDEX_0));
+    LT_TEST_ASSERT(LT_OK, lt_verify_chip_and_start_secure_session(h, sh1priv, sh1pub, TR01_PAIRING_KEY_SLOT_INDEX_1));
     LT_LOG_LINE();
     
     /* Dumb in-line flow without any function calls */ 
     // Write user pairing key into slot 2
     LT_LOG_INFO("Writing to pairing key slot %" PRIu8 "...", 2);
-    LT_TEST_ASSERT(LT_OK, lt_print_bytes(pub_keys[0], TR01_SHIPUB_LEN, print_buff, PRINT_BUFF_SIZE));
+    LT_TEST_ASSERT(LT_OK, lt_print_bytes(pub_keys[1], TR01_SHIPUB_LEN, print_buff, PRINT_BUFF_SIZE));
     LT_LOG_INFO("%s", print_buff);
-    LT_TEST_ASSERT(LT_OK, lt_pairing_key_write(h, pub_keys[0], 2));
+    LT_TEST_ASSERT(LT_OK, lt_pairing_key_write(h, pub_keys[1], 2));
     LT_LOG_INFO();
     LT_LOG_LINE();
 
@@ -388,14 +392,14 @@ void lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h)
     LT_LOG_INFO("%s", print_buff);
 
     LT_LOG_INFO("Comparing contents of written and read key...");
-    LT_TEST_ASSERT(0, memcmp(pub_keys[0], read_key, TR01_SHIPUB_LEN));
+    LT_TEST_ASSERT(0, memcmp(pub_keys[1], read_key, TR01_SHIPUB_LEN));
     LT_LOG_INFO();
 
     // Write delete-all pairing key into slot 3
     LT_LOG_INFO("Writing to pairing key slot %" PRIu8 "...", 3);
-    LT_TEST_ASSERT(LT_OK, lt_print_bytes(pub_keys[1], TR01_SHIPUB_LEN, print_buff, PRINT_BUFF_SIZE));
+    LT_TEST_ASSERT(LT_OK, lt_print_bytes(pub_keys[2], TR01_SHIPUB_LEN, print_buff, PRINT_BUFF_SIZE));
     LT_LOG_INFO("%s", print_buff);
-    LT_TEST_ASSERT(LT_OK, lt_pairing_key_write(h, pub_keys[1], 3));
+    LT_TEST_ASSERT(LT_OK, lt_pairing_key_write(h, pub_keys[2], 3));
     LT_LOG_INFO();
     LT_LOG_LINE();
 
@@ -406,7 +410,7 @@ void lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h)
     LT_LOG_INFO("%s", print_buff);
 
     LT_LOG_INFO("Comparing contents of written and read key...");
-    LT_TEST_ASSERT(0, memcmp(pub_keys[3], read_key, TR01_SHIPUB_LEN));
+    LT_TEST_ASSERT(0, memcmp(pub_keys[2], read_key, TR01_SHIPUB_LEN));
     LT_LOG_INFO();
 
     LT_LOG_INFO("Erasing R config in case it is already written...");
@@ -418,17 +422,17 @@ void lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h)
     LT_LOG_INFO("\tOK");
 
     LT_LOG_INFO("Reading the whole R config:");
-    ret = lt_read_whole_R_config(h, &r_config);
+    ret = lt_read_whole_R_config(h, &r_config_read);
     if (LT_OK != ret) {
         LT_LOG_ERROR("Failed to read R config, ret=%s", lt_ret_verbose(ret));
         return -1;
     }
     for (int i = 0; i < LT_CONFIG_OBJ_CNT; i++) {
-        LT_LOG_INFO("%s: 0x%08" PRIx32, cfg_desc_table[i].desc, r_config.obj[i]);
+        LT_LOG_INFO("%s: 0x%08" PRIx32, cfg_desc_table[i].desc, r_config_read.obj[i]);
     }
 
-    // LT_LOG_INFO("Creating R config object from the read r-config...");
-    // create_r_config(&r_config);
+    LT_LOG_INFO("Creating R config object from the read r-config...");
+    create_r_config(&r_config);
 
     // // Configure R-config
     // LT_LOG_INFO("Writing the whole R config with the example config...");
