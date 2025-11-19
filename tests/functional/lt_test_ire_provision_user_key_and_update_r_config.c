@@ -362,8 +362,6 @@ int lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h)
     LT_LOG_INFO("lt_test_ire_provision_user_key_and_update_r_config()");
     LT_LOG_INFO("----------------------------------------------");
 
-    ret = LT_FAIL;
-
     uint8_t *pub_keys[] = {sh1pub, sh2pub, sh3pub};
     // uint8_t *priv_keys[] = {sh1priv, sh2priv, sh3priv};
     uint8_t read_key[TR01_SHIPUB_LEN] = {0};
@@ -372,7 +370,11 @@ int lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h)
     struct lt_config_t r_config, r_config_read;
 
     LT_LOG_INFO("Initializing handle");
-    LT_TEST_ASSERT(LT_OK, lt_init(h));
+    ret = lt_init(h);
+     if (LT_OK != ret) {
+        LT_LOG_ERROR("Failed to initialize handle, ret=%s", lt_ret_verbose(ret));
+        return -1;
+    }
 
     LT_LOG_INFO("Starting Secure Session with key %d", (int)TR01_PAIRING_KEY_SLOT_INDEX_1);
     LT_TEST_ASSERT(LT_OK, lt_verify_chip_and_start_secure_session(h, sh1priv, sh1pub, TR01_PAIRING_KEY_SLOT_INDEX_1));
