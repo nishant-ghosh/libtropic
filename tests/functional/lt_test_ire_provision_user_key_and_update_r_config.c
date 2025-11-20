@@ -86,7 +86,7 @@ static void create_r_config(struct lt_config_t *r_config)
     r_config->obj[TR01_CFG_UAP_PAIRING_KEY_INVALIDATE_IDX] &= ~LT_TO_PAIRING_KEY_SH3(
         LT_SESSION_SH0_HAS_ACCESS | LT_SESSION_SH1_HAS_ACCESS | LT_SESSION_SH2_HAS_ACCESS | LT_SESSION_SH3_HAS_ACCESS);
     // 2. Enable access for admin and delete-all keys
-    r_config->obj[TR01_CFG_UAP_PAIRING_KEY_READ_IDX] |= (LT_TO_PAIRING_KEY_SH0(LT_SESSION_SH1_HAS_ACCESS | LT_SESSION_SH3_HAS_ACCESS) | 
+    r_config->obj[TR01_CFG_UAP_PAIRING_KEY_INVALIDATE_IDX] |= (LT_TO_PAIRING_KEY_SH0(LT_SESSION_SH1_HAS_ACCESS | LT_SESSION_SH3_HAS_ACCESS) | 
                                                         LT_TO_PAIRING_KEY_SH1(LT_SESSION_SH1_HAS_ACCESS | LT_SESSION_SH3_HAS_ACCESS) | 
                                                         LT_TO_PAIRING_KEY_SH2(LT_SESSION_SH1_HAS_ACCESS | LT_SESSION_SH3_HAS_ACCESS) | 
                                                         LT_TO_PAIRING_KEY_SH3(LT_SESSION_SH1_HAS_ACCESS | LT_SESSION_SH3_HAS_ACCESS));
@@ -381,15 +381,17 @@ int lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h)
     LT_TEST_ASSERT(LT_OK, lt_verify_chip_and_start_secure_session(h, sh1priv, sh1pub, TR01_PAIRING_KEY_SLOT_INDEX_1));
     LT_LOG_LINE();
     
-    /* Dumb in-line flow without any function calls */ 
-    // Write user pairing key into slot 2
+    /* Dumb in-line flow without any function calls */
+    // Read pairing key slot
+    ret = lt_pairing_key_read(h, read_key, 2);
+    if (ret == LT_L3_PAIRING_KEY_EMPTY){
+    // Write user pairing key into slot 2 if empty
     LT_LOG_INFO("Writing to pairing key slot %" PRIu8 "...", 2);
     LT_TEST_ASSERT(LT_OK, lt_print_bytes(pub_keys[1], TR01_SHIPUB_LEN, print_buff, PRINT_BUFF_SIZE));
     LT_LOG_INFO("%s", print_buff);
     LT_TEST_ASSERT(LT_OK, lt_pairing_key_write(h, pub_keys[1], 2));
     LT_LOG_INFO();
     LT_LOG_LINE();
-
     // Check pairing key written in slot 2
     LT_LOG_INFO("Reading pairing key slot %" PRIu8 "...", 2);
     LT_TEST_ASSERT(LT_OK, lt_pairing_key_read(h, read_key, 2));
@@ -399,8 +401,18 @@ int lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h)
     LT_LOG_INFO("Comparing contents of written and read key...");
     LT_TEST_ASSERT(0, memcmp(pub_keys[1], read_key, TR01_SHIPUB_LEN));
     LT_LOG_INFO();
+    }
+    else if (ret == LT_OK){
+        LT_LOG_INFO();
+    }
+    else {
+        LT_LOG_ERROR("Failed to read pairing key, ret=%s", lt_ret_verbose(ret));
+        return -1;
+    }
 
-    // Write delete-all pairing key into slot 3
+    ret = lt_pairing_key_read(h, read_key, 3);
+    if (ret == LT_L3_PAIRING_KEY_EMPTY){
+    // Write delete-all pairing key into slot 3, if empty
     LT_LOG_INFO("Writing to pairing key slot %" PRIu8 "...", 3);
     LT_TEST_ASSERT(LT_OK, lt_print_bytes(pub_keys[2], TR01_SHIPUB_LEN, print_buff, PRINT_BUFF_SIZE));
     LT_LOG_INFO("%s", print_buff);
@@ -417,6 +429,14 @@ int lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h)
     LT_LOG_INFO("Comparing contents of written and read key...");
     LT_TEST_ASSERT(0, memcmp(pub_keys[2], read_key, TR01_SHIPUB_LEN));
     LT_LOG_INFO();
+    }
+    else if (ret == LT_OK){
+        LT_LOG_INFO();
+    }
+    else {
+        LT_LOG_ERROR("Failed to read pairing key, ret=%s", lt_ret_verbose(ret));
+        return -1;
+    }
 
     LT_LOG_INFO("Erasing R config in case it is already written...");
     ret = lt_r_config_erase(h);
@@ -427,17 +447,23 @@ int lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h)
     LT_LOG_INFO("\tOK");
 
     LT_LOG_INFO("Reading the whole R config:");
-    ret = lt_read_whole_R_config(h, &r_config_read);
+    ret = lt_read_whole_R_config(h, &r_config;
     if (LT_OK != ret) {
         LT_LOG_ERROR("Failed to read R config, ret=%s", lt_ret_verbose(ret));
         return -1;
     }
     for (int i = 0; i < LT_CONFIG_OBJ_CNT; i++) {
-        LT_LOG_INFO("%s: 0x%08" PRIx32, cfg_desc_table[i].desc, r_config_read.obj[i]);
+        LT_LOG_INFO("%s: 0x%08" PRIx32, cfg_desc_table[i].desc, r_config.obj[i]);
     }
 
     LT_LOG_INFO("Creating R config object from the read r-config...");
     create_r_config(&r_config);
+
+    LT_LOG_INFO("R-config created:");
+    for (int i = 0; i < LT_CONFIG_OBJ_CNT; i++) {
+        LT_LOG_INFO("%s: 0x%08" PRIx32, cfg_desc_table[i].desc, r_config.obj[i]);
+    }
+    LT_LOG_LINE();
 
     // Configure R-config
     LT_LOG_INFO("Writing the whole R config with the example config...");
@@ -449,13 +475,13 @@ int lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h)
     LT_LOG_INFO("\tOK");
 
     LT_LOG_INFO("Reading the whole R config again:");
-    ret = lt_read_whole_R_config(h, &r_config);
+    ret = lt_read_whole_R_config(h, &r_config_read);
     if (LT_OK != ret) {
         LT_LOG_ERROR("Failed to read R config, ret=%s", lt_ret_verbose(ret));
         return -1;
     }
     for (int i = 0; i < LT_CONFIG_OBJ_CNT; i++) {
-        LT_LOG_INFO("%s: 0x%08" PRIx32, cfg_desc_table[i].desc, r_config.obj[i]);
+        LT_LOG_INFO("%s: 0x%08" PRIx32, cfg_desc_table[i].desc, r_config_read.obj[i]);
     }
     LT_LOG_LINE();
 
