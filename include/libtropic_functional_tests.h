@@ -196,6 +196,17 @@ void lt_test_ire_provision_admin_key(lt_handle_t *h);
 int lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h);
 
 /**
+ * @brief Test to provision user keys in slots 2,3 and to update R-config
+ *
+ * Test steps:
+ *  1. Init handle
+ *  2. send get_info in infinite loop
+ *
+ * @param h     Device's handle
+ */
+int lt_test_rev_alarm_mode(lt_handle_t *h);
+
+/**
  * @brief Test Ping L3 command with random data of random length <= TR01_PING_LEN_MAX.
  *
  * Test steps:
