@@ -447,7 +447,7 @@ int lt_test_ire_provision_user_key_and_update_r_config(lt_handle_t *h)
     LT_LOG_INFO("\tOK");
 
     LT_LOG_INFO("Reading the whole R config:");
-    ret = lt_read_whole_R_config(h, &r_config;
+    ret = lt_read_whole_R_config(h, &r_config);
     if (LT_OK != ret) {
         LT_LOG_ERROR("Failed to read R config, ret=%s", lt_ret_verbose(ret));
         return -1;
