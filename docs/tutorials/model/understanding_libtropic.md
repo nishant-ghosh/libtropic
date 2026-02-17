@@ -3,14 +3,13 @@
 This chapter is a short TL;DR that helps you get oriented quickly so you can continue with the next tutorials.
 It intentionally links to deeper reference pages instead of duplicating them.
 
-If you want the authoritative chip-level details (command semantics, memory layout, security model), refer to the [**TROPIC01 documentation**](https://github.com/tropicsquare/tropic01#documentation) in the [TROPIC01 repository](https://github.com/tropicsquare/tropic01).
+If you are interested in details about the TROPIC01 chip itself, refer to the [TROPIC01 repository](https://github.com/tropicsquare/tropic01), where we provide datasheets and a documentation of the low-level user API.
 
-- In particular, look for the **Datasheet** and **User API** documents.
-
-??? question "Which version of the documents should I use?"
+??? question "Which version of the TROPIC01 Datasheet / User API should I use?"
     There are several versions of the documents. The right version depends on the TROPIC01 Application Firmware version.
     This is not relevant for the model (use the latest), but it matters for the real chip. You will learn
-    how to read the Application Firmware version in the tutorial for each platform.
+    how to read the Application Firmware version in the tutorial for each platform, based on which you can select
+    the right document version.
 
 ---
 
@@ -108,7 +107,7 @@ Most interesting TROPIC01 features are accessed via **L3 Layer**, so you will fr
 !!! note "Terminology note"
     Secure Channel Session is a protocol used for secure communication on L3 Layer. It is sometimes shortened to Secure Channel or Secure Session.
     
-    More information in the TROPIC01 Datasheet in the [**TROPIC01 documentation**](https://github.com/tropicsquare/tropic01#documentation).
+    More information in the TROPIC01 Datasheet.
 
 1. Use L2 requests to read info or reboot to the right mode.
 2. Start a Secure Session with a selected **pairing key slot**.
