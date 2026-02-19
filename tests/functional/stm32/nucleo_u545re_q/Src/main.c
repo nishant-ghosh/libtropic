@@ -4,16 +4,20 @@
  * @copyright Copyright (c) 2020-2026 Tropic Square s.r.o.
  *
  * @license For the license see LICENSE.md in the root directory of this source tree.
- *
- * This file was generated using Stm32CubeMX and modified by Tropic Square to run Libtropic functional
- * tests. The original notice:
- *
+ */
+
+// This file was generated using Stm32CubeMX and modified by Tropic Square to run Libtropic
+// functional tests.
+
+/**
  * Copyright (c) 2026 STMicroelectronics.
  * All rights reserved.
  *
- * This software is licensed under terms that can be found in the LICENSE file in the root directory of
- * this software component. If no LICENSE file comes with this software, it is provided AS-IS.
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
  */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
