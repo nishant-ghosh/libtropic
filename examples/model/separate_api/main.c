@@ -3,7 +3,7 @@
  * @brief Simple example of using Libtropic's Separate API with the model.
  * @copyright Copyright (c) 2020-2026 Tropic Square s.r.o.
  *
- * @license For the license see file LICENSE.txt file in the root directory of this source tree.
+ * @license For the license see LICENSE.md in the root directory of this source tree.
  */
 
 #include <arpa/inet.h>
