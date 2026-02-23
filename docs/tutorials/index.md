@@ -13,8 +13,6 @@ If you have already experimented with our TROPIC01 Model and you are ready to tr
 
 Pick a set of tutorials based on your host platform:
 
-- :fontawesome-brands-linux: Linux
-    - [:fontawesome-solid-microchip: Linux SPI](linux/spi/index.md)
-    - [:fontawesome-brands-usb: TROPIC01 USB Devkit](linux/usb_devkit/index.md)
+- [:fontawesome-brands-linux: Linux](linux/index.md)
 - [:simple-espressif: ESP32](esp32/index.md)
 - [:simple-stmicroelectronics: STM32](stm32/index.md)
