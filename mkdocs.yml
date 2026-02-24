@@ -62,6 +62,7 @@ nav:
         - 3. Mac-And-Destroy: tutorials/model/macandd.md
         - 4. Separate API: tutorials/model/separate_api.md
       - Linux:
+        - tutorials/linux/index.md
         - Linux SPI:
           - tutorials/linux/spi/index.md
           - 1. Chip Identification: tutorials/linux/spi/identify_chip.md
