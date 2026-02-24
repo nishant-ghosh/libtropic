@@ -88,11 +88,19 @@ trap 'cleanup' EXIT
 # ---- Flash the device ----
 if [ -z "$STLINK_SERIAL_NUMBER" ]; then
     echo "OpenOCD will autodiscover STLink programming interface."
-    openocd -f board/st_nucleo_l4.cfg -c "program $BINARY_PATH verify reset exit"
+    openocd -f board/st_nucleo_l4.cfg \
+        -c "gdb_port disabled" \
+        -c "telnet_port disabled" \
+        -c "tcl_port disabled" \
+        -c "program $BINARY_PATH verify reset exit"
 else
-    OPENOCD_SERIAL_NUMBER_ARG=
     echo "OpenOCD will use STLink serial number $STLINK_SERIAL_NUMBER for programming."
-    openocd -f board/st_nucleo_l4.cfg -c "adapter serial $STLINK_SERIAL_NUMBER" -c "program $BINARY_PATH verify reset exit"
+    openocd -f board/st_nucleo_l4.cfg \
+        -c "gdb_port disabled" \
+        -c "telnet_port disabled" \
+        -c "tcl_port disabled" \
+        -c "adapter serial $STLINK_SERIAL_NUMBER" \
+        -c "program $BINARY_PATH verify reset exit"
 fi
 
 # ---- Wait for serial reader to finish ----
