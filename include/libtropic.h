@@ -794,6 +794,8 @@ lt_ret_t lt_print_fw_header(lt_handle_t *h, const lt_bank_id_t bank_id,
 
 /**
  * @brief Performs mutable firmware update on ABAB and ACAB silicon revisions.
+ * @important After this functions returns successfully, the handle (`lt_handle_t`) has to be
+ * initialized again (i.e. calling `lt_deinit()` and `lt_init()`).
  *
  * @param h                 Handle for communication with TROPIC01
  * @param update_data       Pointer to the data to be written
