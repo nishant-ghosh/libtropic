@@ -3,6 +3,9 @@ This example explains the firmware update process for both ABAB and ACAB silicon
 - How to read the current firmware versions.
 - How to update the firmware using `lt_do_mutable_fw_update()`.
 
+    !!! info "Updating FW with `lt_do_mutable_fw_update()` in Your Application"
+        If you are using `lt_do_mutable_fw_update()` in your application to update TROPIC01's FW, make sure to reinitialize the handle (`lt_handle_t`) after the function returns successfully, i.e. call `lt_deinit()` and `lt_init()`.
+
 !!! info "TROPIC01 Firmware"
     For more information about the firmware itself, refer to the [TROPIC01 Firmware](/reference/tropic01_fw.md) section.
 
