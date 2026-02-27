@@ -22,8 +22,8 @@ If you already have hardware, you might want to start with the platform tutorial
 For correct operation, these four versions must be compatible:
 
 1. **Libtropic SDK**: Version of this library.
-2. **Bootloader FW**: Firmware running on TROPIC01 RISC-V after power-up (cannot be updated).
-3. **Application FW**: Firmware running on TROPIC01 RISC-V (can be updated).
+2. **Bootloader FW**: Firmware running on TROPIC01 RISC-V CPU after power-up (cannot be updated).
+3. **Application FW**: Firmware running on TROPIC01 RISC-V CPU (can be updated).
 4. **SPECT FW**: Firmware running on the TROPIC01 SPECT co-processor (can be updated).
 
 For details, see particular part number in [TROPIC01](https://github.com/tropicsquare/tropic01).
