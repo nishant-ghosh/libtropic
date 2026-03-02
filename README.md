@@ -8,14 +8,7 @@ The repository provides the library and integration examples for practical evalu
 
 ## Getting started
 
-If you are new to TROPIC01, start with the [model tutorial](https://tropicsquare.github.io/libtropic/latest/tutorials/model/) and use the chip emulator.
-No physical chip is required, and all operations are reversible.
-
-If you already have hardware, you might want to start with the platform tutorials:
-
-- [STM32](https://tropicsquare.github.io/libtropic/latest/tutorials/)
-- [ESP32](https://tropicsquare.github.io/libtropic/latest/tutorials/)
-- [Linux](https://tropicsquare.github.io/libtropic/latest/tutorials/)
+Want to learn **TROPIC01** the easy way? See our [Tutorials](https://tropicsquare.github.io/libtropic/latest/tutorials/) and start today!
 
 ## Firmware compatibility
 
