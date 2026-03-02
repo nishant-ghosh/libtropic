@@ -2,9 +2,9 @@
 
 ![](https://github.com/tropicsquare/libtropic/actions/workflows/integration_tests.yml/badge.svg) ![](https://github.com/tropicsquare/libtropic/actions/workflows/build_docs_master.yml/badge.svg)
 
-**Libtropic** is the official C SDK for TROPIC01, **the open and auditable secure element from Tropic Square**.
+**Libtropic** is the official C SDK for TROPIC01, **the open and auditable secure element by [Tropic Square](https://tropicsquare.com/)**.
 
-The repository provides the library and integration examples for practical evaluation of the chip. For information about particular TROPIC01 part number or for general insights into TROPIC01 design please follow link to [TROPIC01](https://github.com/tropicsquare/tropic01) product page.
+The repository provides the library and integration examples for practical evaluation of the chip. For information about particular TROPIC01 part number or for general insights into TROPIC01 design, please follow the link to [TROPIC01](https://github.com/tropicsquare/tropic01) product page.
 
 ## Getting started
 
