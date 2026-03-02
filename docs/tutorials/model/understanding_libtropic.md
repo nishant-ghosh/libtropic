@@ -154,8 +154,8 @@ Libtropic logging is off by default (unless you build tests, which default to In
 
 Useful options:
 
-- `LT_LOG_LVL` to increase verbosity.
-- `LT_PRINT_SPI_DATA` if you need to see low-level traffic.
+- [`LT_LOG_LVL`](../../reference/integrating_libtropic/how_to_configure/index.md#lt_log_lvl) to increase verbosity.
+- [`LT_PRINT_SPI_DATA`](../../reference/integrating_libtropic/how_to_configure/index.md#lt_print_spi_data) if you need to see low-level traffic.
 
 ### 3) Debuggers and Sanitizers
 If you suspect memory issues or need to step through code:
