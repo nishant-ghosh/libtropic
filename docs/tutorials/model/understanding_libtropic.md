@@ -71,7 +71,7 @@ Practical rules:
 
 Also remember the basic lifecycle:
 
-1. Prepare hardware of your platform and selected CFP.
+1. Initialize your platform's hardware interfaces (GPIO, SPI, clocks, etc.) and selected CFP.
 2. Fill your HAL device struct and CAL crypto context struct.
 3. Point the handle to them (`h.l2.device = ...`, `h.l3.crypto_ctx = ...`).
 4. Call `lt_init(&h)` and check the return code.
