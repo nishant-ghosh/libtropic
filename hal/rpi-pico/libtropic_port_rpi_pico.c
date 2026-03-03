@@ -45,8 +45,7 @@ lt_ret_t lt_port_spi_csn_low(lt_l2_state_t *s2)
 {
     lt_dev_rpi_pico_t *device = (lt_dev_rpi_pico_t *)(s2->device);
     gpio_put(device->cs_pin, 0);
-    while (gpio_get(device->cs_pin))
-        ;
+    while (gpio_get(device->cs_pin));
     return LT_OK;
 }
 
