@@ -113,7 +113,7 @@ get_directory_property(HAS_PARENT_SCOPE PARENT_DIRECTORY)
 ###########################################################################
 
 project(libtropic_SDK
-        VERSION 3.1.0
+        VERSION 3.2.0
         DESCRIPTION "TROPIC01 software development kit"
         HOMEPAGE_URL "https://tropicsquare.github.io/libtropic/latest/"
         LANGUAGES C)
@@ -134,7 +134,7 @@ set(SDK_SRCS ${SDK_SRCS}
     ${CMAKE_CURRENT_SOURCE_DIR}/src/lt_asn1_der.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/libtropic_default_sh0_keys.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/lt_tr01_attrs.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/lt_secure_memzero.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/libtropic_secure_memzero.c
 )
 
 set(SDK_INCS ${SDK_INCS}
@@ -143,6 +143,7 @@ set(SDK_INCS ${SDK_INCS}
     ${CMAKE_CURRENT_SOURCE_DIR}/include/libtropic_port.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/libtropic_l2.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/libtropic_l3.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/libtropic_secure_memzero.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/lt_crc16.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/lt_port_wrap.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/lt_l1.h

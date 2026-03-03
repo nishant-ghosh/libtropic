@@ -20,6 +20,7 @@
 #include "libtropic_logging.h"
 #include "libtropic_macros.h"
 #include "libtropic_port.h"
+#include "libtropic_secure_memzero.h"
 #include "stm32f4xx_hal.h"
 
 #define LT_STM32_F439ZI_GPIO_OUTPUT_CHECK_ATTEMPTS 10
@@ -36,6 +37,7 @@ lt_ret_t lt_port_random_bytes(lt_l2_state_t *s2, void *buff, size_t count)
         ret = HAL_RNG_GenerateRandomNumber(device->rng_handle, &random_data);
         if (ret != HAL_OK) {
             LT_LOG_ERROR("HAL_RNG_GenerateRandomNumber failed, ret=%d", ret);
+            lt_secure_memzero(&random_data, sizeof(random_data));
             return LT_FAIL;
         }
 
@@ -45,6 +47,7 @@ lt_ret_t lt_port_random_bytes(lt_l2_state_t *s2, void *buff, size_t count)
         buff_ptr += cpy_cnt;
     }
 
+    lt_secure_memzero(&random_data, sizeof(random_data));
     return LT_OK;
 }
 
@@ -54,7 +57,8 @@ lt_ret_t lt_port_spi_csn_low(lt_l2_state_t *s2)
 
     HAL_GPIO_WritePin(device->spi_cs_gpio_bank, device->spi_cs_gpio_pin, GPIO_PIN_RESET);
 
-    for (uint8_t read_attempts = 0; read_attempts < LT_STM32_F439ZI_GPIO_OUTPUT_CHECK_ATTEMPTS; read_attempts++) {
+    for (uint8_t read_attempts = 0; read_attempts < LT_STM32_F439ZI_GPIO_OUTPUT_CHECK_ATTEMPTS;
+         read_attempts++) {
         if (!HAL_GPIO_ReadPin(device->spi_cs_gpio_bank, device->spi_cs_gpio_pin)) {
             return LT_OK;
         }
@@ -70,7 +74,8 @@ lt_ret_t lt_port_spi_csn_high(lt_l2_state_t *s2)
 
     HAL_GPIO_WritePin(device->spi_cs_gpio_bank, device->spi_cs_gpio_pin, GPIO_PIN_SET);
 
-    for (uint8_t read_attempts = 0; read_attempts < LT_STM32_F439ZI_GPIO_OUTPUT_CHECK_ATTEMPTS; read_attempts++) {
+    for (uint8_t read_attempts = 0; read_attempts < LT_STM32_F439ZI_GPIO_OUTPUT_CHECK_ATTEMPTS;
+         read_attempts++) {
         if (HAL_GPIO_ReadPin(device->spi_cs_gpio_bank, device->spi_cs_gpio_pin)) {
             return LT_OK;
         }
@@ -146,7 +151,8 @@ lt_ret_t lt_port_deinit(lt_l2_state_t *s2)
     return LT_OK;
 }
 
-lt_ret_t lt_port_spi_transfer(lt_l2_state_t *s2, uint8_t offset, uint16_t tx_data_length, uint32_t timeout_ms)
+lt_ret_t lt_port_spi_transfer(lt_l2_state_t *s2, uint8_t offset, uint16_t tx_data_length,
+                              uint32_t timeout_ms)
 {
     lt_dev_stm32_nucleo_f439zi_t *device = (lt_dev_stm32_nucleo_f439zi_t *)(s2->device);
 
@@ -154,8 +160,8 @@ lt_ret_t lt_port_spi_transfer(lt_l2_state_t *s2, uint8_t offset, uint16_t tx_dat
         LT_LOG_ERROR("Invalid data length!");
         return LT_L1_DATA_LEN_ERROR;
     }
-    int ret = HAL_SPI_TransmitReceive(&device->spi_handle, s2->buff + offset, s2->buff + offset, tx_data_length,
-                                      timeout_ms);
+    int ret = HAL_SPI_TransmitReceive(&device->spi_handle, s2->buff + offset, s2->buff + offset,
+                                      tx_data_length, timeout_ms);
     if (ret != HAL_OK) {
         LT_LOG_ERROR("HAL_SPI_TransmitReceive failed, ret=%d", ret);
         return LT_L1_SPI_ERROR;

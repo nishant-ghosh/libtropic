@@ -320,8 +320,8 @@ void lt_test_rev_ecc_key_generate(lt_handle_t *h);
  *  5. Try storing again, also using Ed25519 curve and check for errors.
  *  6. Read the stored public key and check curve and origin.
  *  7. Erase the key slot.
- *  8. Repeat steps 2-6 for the Ed25519 curve with pre-generated keys (without storing invalid private key - that cannot
- * be checked in the case of Ed25519).
+ *  8. Repeat steps 2-6 for the Ed25519 curve with pre-generated keys (without storing invalid private
+ * key - that cannot be checked in the case of Ed25519).
  *
  * @param h     Handle for communication with TROPIC01
  */
@@ -348,11 +348,11 @@ void lt_test_rev_random_value_get(lt_handle_t *h);
  *  1. Start Secure Session with pairing key slot 0.
  *  2. Setup random PIN with randomly generated number of attempts.
  *  3. Do a random number of wrong attempts (less than the maximum number of attempts).
- *  4. Do an attempt with the correct PIN with the first understroyed slot and compare the cryptographic key with the
- * one from the setup phase.
+ *  4. Do an attempt with the correct PIN with the first understroyed slot and compare the
+ * cryptographic key with the one from the setup phase.
  *  5. Restore all destroyed slots.
- *  6. Do an attempt with the correct PIN with all the used slots and compare the cryptographic keys with the one from
- * the setup phase.
+ *  6. Do an attempt with the correct PIN with all the used slots and compare the cryptographic keys
+ * with the one from the setup phase.
  *
  * @param h     Handle for communication with TROPIC01
  */
@@ -372,6 +372,22 @@ void lt_test_rev_mac_and_destroy(lt_handle_t *h);
  * @param h     Handle for communication with TROPIC01
  */
 void lt_test_rev_get_log_req(lt_handle_t *h);
+
+/**
+ * @brief Tests calling lt_init after lt_deinit.
+ *
+ * Test steps:
+ *  1. Initialize the handle.
+ *  2. Start Secure Session with pairing key slot 0.
+ *  3. Generate random data and send a Ping command.
+ *  4. Compare sent and received message.
+ *  5. Abort Secure Session.
+ *  6. Deinitialize the handle.
+ *  7. Repeat steps 1-6 to test reinitialization after deinitialization.
+ *
+ * @param h     Handle for communication with TROPIC01
+ */
+void lt_test_rev_init_after_deinit(lt_handle_t *h);
 
 /** @} */  // end of libtropic_funct_tests group
 

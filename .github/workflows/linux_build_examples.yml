@@ -24,6 +24,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+            sudo apt-get update
             sudo apt-get install cmake build-essential ninja-build
             pip3 install jsonschema
 
@@ -38,6 +39,10 @@ jobs:
           cd build && ninja
 
           cd ../../fw_update
+          cmake ./ -B build -G Ninja
+          cd build && ninja
+
+          cd ../../full_chain_verification
           cmake ./ -B build -G Ninja
           cd build && ninja
 

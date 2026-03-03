@@ -3,10 +3,10 @@
  * @brief Wrapper project for running Libtropic functional test suite on Nucleo L432KC.
  * @copyright Copyright (c) 2020-2026 Tropic Square s.r.o.
  *
- * @license For the license see file LICENSE.txt file in the root directory of this source tree.
+ * @license For the license see LICENSE.md in the root directory of this source tree.
  *
- * This example project is based on the SPI/SPI_FullDuplex_ComPolling example from STM32 example library
- * which was created by the MCD Application Team.
+ * This example project is based on the SPI/SPI_FullDuplex_ComPolling example from STM32 example
+ * library which was created by the MCD Application Team.
  */
 
 /* Includes ------------------------------------------------------------------*/
@@ -23,9 +23,16 @@
 
 #if LT_USE_TREZOR_CRYPTO
 #include "libtropic_trezor_crypto.h"
+#define CRYPTO_CTX_TYPE lt_ctx_trezor_crypto_t
 #elif LT_USE_MBEDTLS_V4
 #include "libtropic_mbedtls_v4.h"
 #include "psa/crypto.h"
+#define CRYPTO_CTX_TYPE lt_ctx_mbedtls_v4_t
+#elif LT_USE_WOLFCRYPT
+#include "libtropic_wolfcrypt.h"
+#include "wolfssl/wolfcrypt/error-crypt.h"
+#include "wolfssl/wolfcrypt/wc_port.h"
+#define CRYPTO_CTX_TYPE lt_ctx_wolfcrypt_t
 #endif
 
 /** @addtogroup STM32L4xx_HAL_Examples
@@ -198,6 +205,12 @@ int main(void)
         LT_LOG_ERROR("PSA Crypto initialization failed, status=%d (psa_status_t)", status);
         return -1;
     }
+#elif LT_USE_WOLFCRYPT
+    int ret = wolfCrypt_Init();
+    if (ret != 0) {
+        LT_LOG_ERROR("WolfCrypt initialization failed, ret=%d (%s)", ret, wc_GetErrorString(ret));
+        return ret;
+    }
 #endif
 
     /* Libtropic handle initialization */
@@ -215,12 +228,7 @@ int main(void)
     lt_handle.l2.device = &device;
 
     /* Crypto abstraction layer (CAL) context (selectable). */
-#if LT_USE_TREZOR_CRYPTO
-    lt_ctx_trezor_crypto_t
-#elif LT_USE_MBEDTLS_V4
-    lt_ctx_mbedtls_v4_t
-#endif
-        crypto_ctx;
+    CRYPTO_CTX_TYPE crypto_ctx;
     lt_handle.l3.crypto_ctx = &crypto_ctx;
 
     /* Test code (correct test function is selected automatically per binary)
@@ -231,6 +239,12 @@ int main(void)
     /* Cryptographic function provider deinitialization. */
 #if LT_USE_MBEDTLS_V4
     mbedtls_psa_crypto_free();
+#elif LT_USE_WOLFCRYPT
+    ret = wolfCrypt_Cleanup();
+    if (ret != 0) {
+        LT_LOG_ERROR("WolfCrypt cleanup failed, ret=%d (%s)", ret, wc_GetErrorString(ret));
+        return ret;
+    }
 #endif
 
     /* Inform the test runner that the test finished */
@@ -312,8 +326,8 @@ void SystemClock_Config(void)
 
     /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2
        clocks dividers */
-    RCC_ClkInitStruct.ClockType
-        = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
+    RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 |
+                                   RCC_CLOCKTYPE_PCLK2);
     RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
     RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
     RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;

@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.0]
+
+### Changed
+- Renamed `lt_secure_memzero.h` to `libtropic_secure_memzero.h` and moved it to `include/`, so it is available in HAL.
+
+### Added
+- Examples: Added full certificate chain verification example for Linux SPI.
+- HAL: HAL for STM32U5xx series
+- Documentation: new tutorial for the TROPIC01 model - **Understanding Libtropic**.
+
+### Fixed
+- Size of `l3_chunk` member of `lt_l2_encrypted_cmd_req_t` and `lt_l2_encrypted_cmd_rsp_t` structs to `TR01_L2_CHUNK_MAX_DATA_SIZE`.
+- `hal/`: don't include `libtropic_port.h` in HAL headers if not used.
+- `lt_init()` is successful even if TROPIC01 has invalid Application FW, so Libtropic can be used in Start-up Mode.
+- STM32: securely wipe secrets when generating random numbers.
+- STM32: change type of `baudrate_prescaler` (inside `lt_dev_stm32_nucleo_f439zi_t` and `lt_dev_stm32_nucleo_l432kc_t`) to `uint32_t`.
+
+### Removed
+
 ## [3.1.0]
 
 ### Changed

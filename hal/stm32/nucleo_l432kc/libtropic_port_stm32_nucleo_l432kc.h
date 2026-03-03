@@ -9,7 +9,6 @@
  * @license For the license see LICENSE.md in the root directory of this source tree.
  */
 
-#include "libtropic_port.h"
 #include "stm32l4xx_hal.h"
 
 /**
@@ -23,11 +22,12 @@ typedef struct lt_dev_stm32_nucleo_l432kc_t {
     SPI_TypeDef *spi_instance;
 
     /**
-     * @brief @public Baudrate prescaler value, used to set SPI speed. Use STM32 macro (e.g. SPI_BAUDRATEPRESCALER_32).
+     * @brief @public Baudrate prescaler value, used to set SPI speed. Use STM32 macro (e.g.
+     * SPI_BAUDRATEPRESCALER_32).
      *
      * @note If set to zero, it will default to SPI_BAUDRATEPRESCALER_32.
      */
-    uint16_t baudrate_prescaler;
+    uint32_t baudrate_prescaler;
 
     /** @brief @public GPIO pin used for chip select. Use STM32 macro (GPIO_PIN_XX). */
     uint16_t spi_cs_gpio_pin;

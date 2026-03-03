@@ -5,9 +5,12 @@
  * @license For the license see LICENSE.md in the root directory of this source tree.
  */
 
+#include <inttypes.h>
+
 #include "aes/aes.h"
 #include "aes/aesgcm.h"
 #include "libtropic_common.h"
+#include "libtropic_logging.h"
 #include "libtropic_trezor_crypto.h"
 #include "lt_aesgcm.h"
 
@@ -23,6 +26,7 @@ static lt_ret_t lt_aesgcm_init(gcm_ctx *ctx, const uint8_t *key, const uint32_t 
 {
     int ret = gcm_init_and_key(key, key_len, ctx);
     if (ret != RETURN_GOOD) {
+        LT_LOG_ERROR("Failed to initialize AES-GCM context, ret=%d", ret);
         return LT_CRYPTO_ERR;
     }
     return LT_OK;
@@ -38,6 +42,7 @@ static lt_ret_t lt_aesgcm_deinit(gcm_ctx *ctx)
 {
     int ret = gcm_end(ctx);
     if (ret != RETURN_GOOD) {
+        LT_LOG_ERROR("Failed to deinitialize AES-GCM context, ret=%d", ret);
         return LT_CRYPTO_ERR;
     }
     return LT_OK;
@@ -58,21 +63,32 @@ lt_ret_t lt_aesgcm_decrypt_init(void *ctx, const uint8_t *key, const uint32_t ke
 }
 
 lt_ret_t lt_aesgcm_encrypt(void *ctx, const uint8_t *iv, const uint32_t iv_len, const uint8_t *add,
-                           const uint32_t add_len, const uint8_t *plaintext, const uint32_t plaintext_len,
-                           uint8_t *ciphertext, const uint32_t ciphertext_len)
+                           const uint32_t add_len, const uint8_t *plaintext,
+                           const uint32_t plaintext_len, uint8_t *ciphertext,
+                           const uint32_t ciphertext_len)
 {
     lt_ctx_trezor_crypto_t *_ctx = (lt_ctx_trezor_crypto_t *)ctx;
 
+    if (ciphertext_len < TR01_L3_TAG_SIZE) {
+        LT_LOG_ERROR("AES-GCM ciphertext buffer smaller than tag length: %" PRIu32 " < %u",
+                     ciphertext_len, TR01_L3_TAG_SIZE);
+        return LT_PARAM_ERR;
+    }
+
     if (plaintext_len != ciphertext_len - TR01_L3_TAG_SIZE) {
+        LT_LOG_ERROR("Invalid AES-GCM plaintext/ciphertext length: %" PRIu32 " != %" PRIu32 " - %u",
+                     plaintext_len, ciphertext_len, TR01_L3_TAG_SIZE);
         return LT_PARAM_ERR;
     }
 
     // Copy plaintext into ciphertext, as Trezor's gcm_encrypt_message() works in-place
     memcpy(ciphertext, plaintext, plaintext_len);
 
-    int ret = gcm_encrypt_message(iv, iv_len, add, add_len, ciphertext, plaintext_len, ciphertext + plaintext_len,
-                                  TR01_L3_TAG_SIZE, &_ctx->aesgcm_encrypt_ctx);
+    int ret = gcm_encrypt_message(iv, iv_len, add, add_len, ciphertext, plaintext_len,
+                                  ciphertext + plaintext_len, TR01_L3_TAG_SIZE,
+                                  &_ctx->aesgcm_encrypt_ctx);
     if (ret != RETURN_GOOD) {
+        LT_LOG_ERROR("AES-GCM encryption failed, ret=%d", ret);
         return LT_CRYPTO_ERR;
     }
 
@@ -80,21 +96,32 @@ lt_ret_t lt_aesgcm_encrypt(void *ctx, const uint8_t *iv, const uint32_t iv_len, 
 }
 
 lt_ret_t lt_aesgcm_decrypt(void *ctx, const uint8_t *iv, const uint32_t iv_len, const uint8_t *add,
-                           const uint32_t add_len, const uint8_t *ciphertext, const uint32_t ciphertext_len,
-                           uint8_t *plaintext, const uint32_t plaintext_len)
+                           const uint32_t add_len, const uint8_t *ciphertext,
+                           const uint32_t ciphertext_len, uint8_t *plaintext,
+                           const uint32_t plaintext_len)
 {
     lt_ctx_trezor_crypto_t *_ctx = (lt_ctx_trezor_crypto_t *)ctx;
 
+    if (ciphertext_len < TR01_L3_TAG_SIZE) {
+        LT_LOG_ERROR("AES-GCM ciphertext buffer smaller than tag length: %" PRIu32 " < %u",
+                     ciphertext_len, TR01_L3_TAG_SIZE);
+        return LT_PARAM_ERR;
+    }
+
     if (plaintext_len != ciphertext_len - TR01_L3_TAG_SIZE) {
+        LT_LOG_ERROR("Invalid AES-GCM plaintext/ciphertext length: %" PRIu32 " != %" PRIu32 " - %u",
+                     plaintext_len, ciphertext_len, TR01_L3_TAG_SIZE);
         return LT_PARAM_ERR;
     }
 
     // Copy ciphertext into plaintext, as Trezor's gcm_decrypt_message() works in-place
     memcpy(plaintext, ciphertext, plaintext_len);
 
-    int ret = gcm_decrypt_message(iv, iv_len, add, add_len, plaintext, plaintext_len, ciphertext + plaintext_len,
-                                  TR01_L3_TAG_SIZE, &_ctx->aesgcm_decrypt_ctx);
+    int ret = gcm_decrypt_message(iv, iv_len, add, add_len, plaintext, plaintext_len,
+                                  ciphertext + plaintext_len, TR01_L3_TAG_SIZE,
+                                  &_ctx->aesgcm_decrypt_ctx);
     if (ret != RETURN_GOOD) {
+        LT_LOG_ERROR("AES-GCM decryption failed, ret=%d", ret);
         return LT_CRYPTO_ERR;
     }
 

@@ -3,7 +3,7 @@
  * @brief Test for checking if TROPIC01 attributes are set correctly based on RISC-V FW version.
  * @copyright Copyright (c) 2020-2026 Tropic Square s.r.o.
  *
- * @license For the license see file LICENSE.txt file in the root directory of this source tree.
+ * @license For the license see LICENSE.md in the root directory of this source tree.
  */
 
 #include <inttypes.h>
@@ -38,8 +38,10 @@ void lt_test_mock_attrs(lt_handle_t *h)
     };
 
     for (size_t i = 0; i < sizeof(riscv_fw_ver_resp) / sizeof(riscv_fw_ver_resp[0]); i++) {
-        LT_LOG_INFO("Testing with mocked RISC-V FW version: %" PRIu8 ".%" PRIu8 ".%" PRIu8 ".%" PRIu8 "",
-                    riscv_fw_ver_resp[i][3], riscv_fw_ver_resp[i][2], riscv_fw_ver_resp[i][1], riscv_fw_ver_resp[i][0]);
+        LT_LOG_INFO("Testing with mocked RISC-V FW version: %" PRIu8 ".%" PRIu8 ".%" PRIu8 ".%" PRIu8
+                    "",
+                    riscv_fw_ver_resp[i][3], riscv_fw_ver_resp[i][2], riscv_fw_ver_resp[i][1],
+                    riscv_fw_ver_resp[i][0]);
 
         lt_mock_hal_reset(&h->l2);
         LT_LOG_INFO("Mocking initialization...");
