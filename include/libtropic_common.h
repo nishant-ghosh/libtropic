@@ -22,7 +22,7 @@ extern "C" {
 
 /** @brief Size of CHIP_STATUS field */
 #define TR01_L1_CHIP_STATUS_SIZE 1u
-/** @brief Maximal number of data bytes in one L1 transfer */
+/** @brief Minimal number of data bytes in one L1 transfer */
 #define TR01_L1_LEN_MIN TR01_L1_CHIP_STATUS_SIZE
 /** @brief Maximal number of data bytes in one L1 transfer */
 #define TR01_L1_LEN_MAX (TR01_L1_CHIP_STATUS_SIZE + TR01_L2_MAX_FRAME_SIZE)
