@@ -14,8 +14,6 @@
 #include "hardware/gpio.h"
 #include "hardware/spi.h"
 #include "libtropic_common.h"
-#include "libtropic_examples.h"
-#include "libtropic_functional_tests.h"
 #include "libtropic_logging.h"
 #include "libtropic_macros.h"
 #include "libtropic_port.h"
