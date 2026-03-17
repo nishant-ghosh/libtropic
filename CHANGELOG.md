@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
-- USB DevKit HAL: call `write()` in a loop, allow `EINTR` error code.
+- USB DevKit HAL: call `write()` in a loop, allow `EINTR` error code for both `write()` and `read()`.
 
 ## [3.2.0]
 
