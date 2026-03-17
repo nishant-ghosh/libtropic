@@ -87,7 +87,7 @@ static bool write_port(int fd, const uint8_t *buffer, size_t size)
  *
  * @param[in]  fd      The file descriptor to read from.
  * @param[out] buffer  Pointer to the buffer where the read data will be stored.
- * @param[in]  size    The maximum number of bytes to read into the buffer.
+ * @param[in]  size    Number of bytes to read into the buffer.
  *
  * @return Returns true on success, false on error.
  */
