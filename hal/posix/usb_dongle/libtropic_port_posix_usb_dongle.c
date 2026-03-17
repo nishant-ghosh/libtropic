@@ -46,7 +46,7 @@
 
 /**
  * @brief Writes data to a serial port (specified by fd).
- * @note Returns after all bytes have been written or if an error occured (EINTR is tolerated).
+ * @note Returns after all bytes have been written or if an error occurred (EINTR is tolerated).
  *
  * @param[in] fd      File descriptor of the port to write to.
  * @param[in] buffer  Pointer to the buffer containing the data to be written.
@@ -82,7 +82,7 @@ static bool write_port(int fd, const uint8_t *buffer, size_t size)
 
 /**
  * @brief Reads data from a serial port (specified by fd).
- * @note Returns after all bytes have been read, after a timeout or if an error occured (EINTR is
+ * @note Returns after all bytes have been read, after a timeout or if an error occurred (EINTR is
  * tolerated).
  *
  * @param[in]  fd      The file descriptor to read from.
