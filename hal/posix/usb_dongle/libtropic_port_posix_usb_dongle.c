@@ -24,7 +24,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <termios.h>
-#include <time.h>
 #include <unistd.h>
 
 #include "libtropic_common.h"
@@ -44,6 +43,9 @@
 #define GETENTROPY_MAX 256
 #endif
 
+// Maximum number of consecutive EINTR retries for read()/write() operations.
+#define LT_PORT_EINTR_RETRY_MAX 10U
+
 /**
  * @brief Writes data to a serial port (specified by fd).
  * @note Returns after all bytes have been written or if an error occurred (EINTR is tolerated).
@@ -57,17 +59,25 @@
 static bool write_port(int fd, const uint8_t *buffer, size_t size)
 {
     size_t written_total = 0;
+    size_t eintr_retries = 0;  // Used for tracking retries upon receiving EINTR.
 
     while (written_total < size) {
         ssize_t written_bytes = write(fd, buffer + written_total, size - written_total);
         if (written_bytes < 0) {
             if (errno == EINTR) {
+                if (++eintr_retries > LT_PORT_EINTR_RETRY_MAX) {
+                    LT_LOG_ERROR("write() returned EINTR too many times (max=%u).",
+                                 LT_PORT_EINTR_RETRY_MAX);
+                    return false;
+                }
                 LT_LOG_INFO("write() interrupted by a signal, will try again.");
                 continue;
             }
             LT_LOG_ERROR("write() failed: errno=%d (%s).", errno, strerror(errno));
             return false;
         }
+
+        eintr_retries = 0;
 
         if (written_bytes == 0) {
             LT_LOG_ERROR("Failed to write to port (write() returned 0).");
@@ -94,17 +104,25 @@ static bool write_port(int fd, const uint8_t *buffer, size_t size)
 static bool read_port(int fd, uint8_t *buffer, size_t size)
 {
     size_t received = 0;
+    size_t eintr_retries = 0;  // Used for tracking retries upon receiving EINTR.
 
     while (received < size) {
         ssize_t read_bytes = read(fd, buffer + received, size - received);
         if (read_bytes < 0) {
             if (errno == EINTR) {
+                if (++eintr_retries > LT_PORT_EINTR_RETRY_MAX) {
+                    LT_LOG_ERROR("read() returned EINTR too many times (max=%u).",
+                                 LT_PORT_EINTR_RETRY_MAX);
+                    return false;
+                }
                 LT_LOG_INFO("read() interrupted by a signal, will try again.");
                 continue;
             }
             LT_LOG_ERROR("read() failed: errno=%d (%s).", errno, strerror(errno));
             return false;
         }
+
+        eintr_retries = 0;
 
         if (read_bytes == 0) {
             LT_LOG_ERROR("Failed to read from port (read() returned 0): timeout or EOF.");
