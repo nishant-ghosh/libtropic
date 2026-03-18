@@ -107,7 +107,7 @@ static bool read_port(int fd, uint8_t *buffer, size_t size)
         }
 
         if (read_bytes == 0) {
-            LT_LOG_ERROR("read() timed out.");
+            LT_LOG_ERROR("Failed to read from port (read() returned 0): timeout or EOF.");
             return false;
         }
 
