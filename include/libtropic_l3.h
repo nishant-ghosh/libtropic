@@ -99,10 +99,11 @@ lt_ret_t lt_in__ping(lt_handle_t *h, uint8_t *msg_in, const uint16_t msg_len);
  *
  * @param h           Handle for communication with TROPIC01
  * @param pairing_pub 32B of pubkey
- * @param slot        Pairing key lot SH0PUB - SH3PUB
+ * @param slot        Pairing key slot index (SH0PUB-SH3PUB)
  * @return            LT_OK if success, otherwise returns other error code.
  */
-lt_ret_t lt_out__pairing_key_write(lt_handle_t *h, const uint8_t *pairing_pub, const uint8_t slot);
+lt_ret_t lt_out__pairing_key_write(lt_handle_t *h, const uint8_t *pairing_pub,
+                                   const lt_pkey_index_t slot);
 /**
  * @brief Decodes Pairing_Key_Write result payload.
  * @note Used for separate L3 communication, for more information read info
@@ -119,10 +120,10 @@ lt_ret_t lt_in__pairing_key_write(lt_handle_t *h);
  * at the top of this file.
  *
  * @param h           Handle for communication with TROPIC01
- * @param slot        Slot to read pairing key from
+ * @param slot        Pairing key slot index (SH0PUB-SH3PUB)
  * @return            LT_OK if success, otherwise returns other error code.
  */
-lt_ret_t lt_out__pairing_key_read(lt_handle_t *h, const uint8_t slot);
+lt_ret_t lt_out__pairing_key_read(lt_handle_t *h, const lt_pkey_index_t slot);
 
 /**
  * @brief Decodes Pairing_Key_Read result payload.
@@ -141,10 +142,10 @@ lt_ret_t lt_in__pairing_key_read(lt_handle_t *h, uint8_t *pubkey);
  * read info at the top of this file.
  *
  * @param h           Handle for communication with TROPIC01
- * @param slot        Slot to invalidate pairing key in
+ * @param slot        Pairing key slot index (SH0PUB-SH3PUB)
  * @return            LT_OK if success, otherwise returns other error code.
  */
-lt_ret_t lt_out__pairing_key_invalidate(lt_handle_t *h, const uint8_t slot);
+lt_ret_t lt_out__pairing_key_invalidate(lt_handle_t *h, const lt_pkey_index_t slot);
 
 /**
  * @brief Decodes Pairing_Key_Invalidate result payload.

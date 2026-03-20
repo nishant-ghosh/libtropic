@@ -344,9 +344,10 @@ lt_ret_t lt_in__ping(lt_handle_t *h, uint8_t *msg_in, const uint16_t msg_len)
     return LT_OK;
 }
 
-lt_ret_t lt_out__pairing_key_write(lt_handle_t *h, const uint8_t *pairing_pub, const uint8_t slot)
+lt_ret_t lt_out__pairing_key_write(lt_handle_t *h, const uint8_t *pairing_pub,
+                                   const lt_pkey_index_t slot)
 {
-    if (!h || !pairing_pub || (slot > 3)) {
+    if (!h || !pairing_pub || (slot > TR01_PAIRING_KEY_SLOT_INDEX_3)) {
         return LT_PARAM_ERR;
     }
     if (h->l3.session_status != LT_SECURE_SESSION_ON) {
@@ -393,9 +394,9 @@ lt_ret_t lt_in__pairing_key_write(lt_handle_t *h)
     return LT_OK;
 }
 
-lt_ret_t lt_out__pairing_key_read(lt_handle_t *h, const uint8_t slot)
+lt_ret_t lt_out__pairing_key_read(lt_handle_t *h, const lt_pkey_index_t slot)
 {
-    if (!h || (slot > 3)) {
+    if (!h || (slot > TR01_PAIRING_KEY_SLOT_INDEX_3)) {
         return LT_PARAM_ERR;
     }
     if (h->l3.session_status != LT_SECURE_SESSION_ON) {
@@ -441,9 +442,9 @@ lt_ret_t lt_in__pairing_key_read(lt_handle_t *h, uint8_t *pubkey)
     return LT_OK;
 }
 
-lt_ret_t lt_out__pairing_key_invalidate(lt_handle_t *h, const uint8_t slot)
+lt_ret_t lt_out__pairing_key_invalidate(lt_handle_t *h, const lt_pkey_index_t slot)
 {
-    if (!h || (slot > 3)) {
+    if (!h || (slot > TR01_PAIRING_KEY_SLOT_INDEX_3)) {
         return LT_PARAM_ERR;
     }
     if (h->l3.session_status != LT_SECURE_SESSION_ON) {
