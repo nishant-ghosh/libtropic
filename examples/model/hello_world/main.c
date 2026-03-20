@@ -26,8 +26,8 @@
 #define PING_MSG_SIZE 44
 
 // Choose pairing keypair for slot 0.
-#define LT_EX_SH0_PRIV sh0priv_prod0
-#define LT_EX_SH0_PUB sh0pub_prod0
+#define LT_EX_SH0_PRIV lt_sh0priv_prod0
+#define LT_EX_SH0_PUB lt_sh0pub_prod0
 
 int main(void)
 {

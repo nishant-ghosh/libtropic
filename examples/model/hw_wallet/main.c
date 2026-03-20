@@ -28,8 +28,8 @@
 
 // Pairing keys the model was configured with, defaults to prod0 keys.
 // Provide your own keys here if you configured the model differently.
-#define DEFAULT_SH0_PRIV sh0priv_prod0
-#define DEFAULT_SH0_PUB sh0pub_prod0
+#define DEFAULT_SH0_PRIV lt_sh0priv_prod0
+#define DEFAULT_SH0_PUB lt_sh0pub_prod0
 
 /** @brief Attestation key for ECC slot 0. */
 uint8_t attestation_key[TR01_CURVE_PRIVKEY_LEN] = {

@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Rename `LT_USB_DONGLE_READ_WRITE_DELAY` to `LT_USB_DEVKIT_READ_WRITE_DELAY`.
   - Rename `LT_USB_DONGLE_SPI_TRANSFER_BUFF_SIZE_MAX` to `LT_USB_DEVKIT_SPI_TRANSFER_BUFF_SIZE_MAX`.
   - Rename `lt_dev_posix_usb_dongle_t` to `lt_dev_posix_usb_devkit_t`.
+- Added `lt_` prefixes to `sh0priv_eng_sample`, `sh0pub_eng_sample`, `sh0priv_prod0`, `sh0pub_prod0` arrays to avoid name collisions.
 
 ### Added
 - ECC + EdDSA example for USB DevKit.
