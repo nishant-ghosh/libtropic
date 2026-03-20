@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Rename `lt_dev_posix_usb_dongle_t` to `lt_dev_posix_usb_devkit_t`.
 - Added `lt_` prefixes to `sh0priv_eng_sample`, `sh0pub_eng_sample`, `sh0priv_prod0`, `sh0pub_prod0` arrays to avoid name collisions.
 - Renamed `TR01_CURVE_GENERATED` to `TR01_KEY_GENERATED` and `TR01_CURVE_STORED` to `TR01_KEY_STORED` in the `lt_ecc_key_origin_t` enum (typo).
+- Rename STM32 Nucleo F439ZI HAL to STM32F4xx HAL, as it is compatible with the entire MCU family:
+  - Renamed `hal/stm32/nucleo_f439zi/libtropic_port_stm32_nucleo_f439zi.*` to `hal/stm32/stm32f4xx/libtropic_port_stm32f4xx.*`.
+  - Renamed `LT_STM32_F439ZI_GPIO_OUTPUT_CHECK_ATTEMPTS` to `LT_STM32F4XX_GPIO_OUTPUT_CHECK_ATTEMPTS`.
+  - Renamed `lt_dev_stm32_nucleo_f439zi_t` to `lt_dev_stm32f4xx_t`.
 
 ### Added
 - ECC + EdDSA example for USB DevKit.

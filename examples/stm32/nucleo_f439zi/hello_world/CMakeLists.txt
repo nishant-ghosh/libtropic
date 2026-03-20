@@ -121,7 +121,7 @@ target_sources(tropic PRIVATE ${LT_CAL_SRCS})
 target_include_directories(tropic PUBLIC ${LT_CAL_INC_DIRS})
 
 # Add Libtropic STM32 HAL
-add_subdirectory("${PATH_LIBTROPIC}hal/stm32/nucleo_f439zi" "nucleo_f439zi_hal")
+add_subdirectory("${PATH_LIBTROPIC}hal/stm32/stm32f4xx" "stm32f4xx_hal")
 
 # Specify other source files
 set(SOURCES

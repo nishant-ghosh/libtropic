@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21.0)
 
 set(LT_HAL_SRCS
-    ${CMAKE_CURRENT_SOURCE_DIR}/libtropic_port_stm32_nucleo_f439zi.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtropic_port_stm32f4xx.c
 )
 
 set(LT_HAL_INC_DIRS

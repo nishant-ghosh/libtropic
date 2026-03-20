@@ -1,10 +1,10 @@
-#ifndef LIBTROPIC_PORT_STM32_NUCLEO_F439ZI_H
-#define LIBTROPIC_PORT_STM32_NUCLEO_F439ZI_H
+#ifndef LIBTROPIC_PORT_STM32F4XX_H
+#define LIBTROPIC_PORT_STM32F4XX_H
 
 /**
- * @file libtropic_port_stm32_nucleo_f439zi.h
+ * @file libtropic_port_stm32f4xx.h
  * @copyright Copyright (c) 2020-2026 Tropic Square s.r.o.
- * @brief Port for STM32 F439ZI using native SPI HAL (and GPIO HAL for chip select).
+ * @brief Port for STM32F4xx series using native SPI HAL (and GPIO HAL for chip select).
  *
  * @license For the license see LICENSE.md in the root directory of this source tree.
  */
@@ -12,12 +12,12 @@
 #include "stm32f4xx_hal.h"
 
 /**
- * @brief Device structure for STM32 F439ZI port.
+ * @brief Device structure for STM32F4xx port.
  *
  * @note Public members are meant to be configured by the developer before passing the handle to
  *       libtropic.
  */
-typedef struct lt_dev_stm32_nucleo_f439zi_t {
+typedef struct lt_dev_stm32f4xx_t {
     /** @brief @public Instance of STM SPI interface. Use STM32 macro (SPIX, e.g. SPI1). */
     SPI_TypeDef *spi_instance;
 
@@ -46,6 +46,6 @@ typedef struct lt_dev_stm32_nucleo_f439zi_t {
 
     /** @brief @private SPI handle. */
     SPI_HandleTypeDef spi_handle;
-} lt_dev_stm32_nucleo_f439zi_t;
+} lt_dev_stm32f4xx_t;
 
-#endif  // LIBTROPIC_PORT_STM32_NUCLEO_F439ZI_H
+#endif  // LIBTROPIC_PORT_STM32F4XX_H
