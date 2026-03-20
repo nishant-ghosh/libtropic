@@ -9,9 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - USB DevKit HAL: call `write()` in a loop, allow `EINTR` error code for both `write()` and `read()`.
+- Refer to USB Dongle as USB DevKit:
+  - Rename `hal/posix/usb_dongle/` to `hal/posix/usb_devkit/`.
+  - Rename `libtropic_port_posix_usb_dongle.*` to `libtropic_port_posix_usb_devkit.*`
+  - Rename `LT_USB_DONGLE_READ_WRITE_DELAY` to `LT_USB_DEVKIT_READ_WRITE_DELAY`.
+  - Rename `LT_USB_DONGLE_SPI_TRANSFER_BUFF_SIZE_MAX` to `LT_USB_DEVKIT_SPI_TRANSFER_BUFF_SIZE_MAX`.
+  - Rename `lt_dev_posix_usb_dongle_t` to `lt_dev_posix_usb_devkit_t`.
 
 ### Added
-- ECC + EdDSA example for USB Devkit.
+- ECC + EdDSA example for USB DevKit.
 
 ### Fixed
 - Change the type of `slot` parameter from `uint8_t` to `lt_pkey_index_t` in `lt_pairing_key_write()`, `lt_pairing_key_read()`, `lt_pairing_key_invalidate()`, `lt_out__pairing_key_write()`, `lt_out__pairing_key_read()`, `lt_out__pairing_key_invalidate()`.

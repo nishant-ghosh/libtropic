@@ -7,7 +7,7 @@ include (FetchContent)
 #                                                                         #
 ###########################################################################
 project(libtropic_hello_world
-        DESCRIPTION "Libtropic Hello World example on Linux using USB devkit driver."
+        DESCRIPTION "Libtropic Hello World example on Linux using USB DevKit driver."
         LANGUAGES C)
 
 set(PATH_LIBTROPIC ../../../../)
@@ -17,8 +17,8 @@ set(PATH_LIBTROPIC ../../../../)
 #   Configuration                                                         #
 #                                                                         #
 ###########################################################################
-# Override path to USB devkit device
-set(LT_USB_DEVKIT_PATH "/dev/ttyACM0" CACHE STRING "Path to the USB device representing the USB devkit serial port.")
+# Override path to USB DevKit device
+set(LT_USB_DEVKIT_PATH "/dev/ttyACM0" CACHE STRING "Path to the USB device representing the USB DevKit serial port.")
 message(STATUS "Using serial port: ${LT_USB_DEVKIT_PATH}. You can change it by passing -DLT_USB_DEVKIT_PATH=<path> to cmake.")
 
 # Select pairing keys written during manufacturing into your TROPIC01
@@ -85,7 +85,7 @@ target_sources(tropic PRIVATE ${LT_CAL_SRCS})
 target_include_directories(tropic PUBLIC ${LT_CAL_INC_DIRS})
 
 # Add USB DevKit POSIX HAL
-add_subdirectory("${PATH_LIBTROPIC}hal/posix/usb_dongle" "posix_usb_dongle")
+add_subdirectory("${PATH_LIBTROPIC}hal/posix/usb_devkit" "posix_usb_devkit")
 target_sources(tropic PRIVATE ${LT_HAL_SRCS})
 target_include_directories(tropic PUBLIC ${LT_HAL_INC_DIRS})
 

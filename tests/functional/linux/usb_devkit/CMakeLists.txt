@@ -10,7 +10,7 @@ endif()
 ###########################################################################
 project(libtropic_functional_tests_linux_usb
         VERSION 0.1.0
-        DESCRIPTION "Functional tests in Linux environment using USB dongle driver"
+        DESCRIPTION "Functional tests in Linux environment using TROPIC01 USB DevKit driver"
         LANGUAGES C)
 
 ###########################################################################
@@ -32,8 +32,8 @@ endif()
 #                                                                         #
 ###########################################################################
 
-# Override path to USB devkit device
-set(LT_USB_DEVKIT_PATH "/dev/ttyACM0" CACHE STRING "Path to the USB device representing the USB devkit serial port.")
+# Override path to USB DevKit device
+set(LT_USB_DEVKIT_PATH "/dev/ttyACM0" CACHE STRING "Path to the USB device representing the USB DevKit serial port.")
 message(STATUS "Using serial port: ${LT_USB_DEVKIT_PATH}. You can change it by passing -DLT_USB_DEVKIT_PATH=<path> to cmake.")
 
 # Optional prefix to tests registered to CTest. Useful when running same test against
@@ -61,8 +61,8 @@ add_subdirectory(${PATH_FN_TESTS} "libtropic_functional_tests")
 #                                                                         #
 ###########################################################################
 
-# Add POSIX USB dongle HAL
-add_subdirectory("${PATH_LIBTROPIC}/hal/posix/usb_dongle" "posix_usb_dongle_hal")
+# Add TROPIC01 USB DevKit POSIX HAL
+add_subdirectory("${PATH_LIBTROPIC}/hal/posix/usb_devkit" "posix_usb_devkit_hal")
 target_sources(tropic PRIVATE ${LT_HAL_SRCS})
 target_include_directories(tropic PUBLIC ${LT_HAL_INC_DIRS})
 

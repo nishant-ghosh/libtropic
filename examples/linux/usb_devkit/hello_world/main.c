@@ -1,6 +1,6 @@
 /**
  * @file main.c
- * @brief Simple "Hello, World!" example of using Libtropic with the USB devkit.
+ * @brief Simple "Hello, World!" example of using Libtropic with the USB DevKit.
  * @copyright Copyright (c) 2020-2026 Tropic Square s.r.o.
  *
  * @license For the license see LICENSE.md in the root directory of this source tree.
@@ -13,7 +13,7 @@
 #include "libtropic.h"
 #include "libtropic_common.h"
 #include "libtropic_mbedtls_v4.h"
-#include "libtropic_port_posix_usb_dongle.h"
+#include "libtropic_port_posix_usb_devkit.h"
 #include "psa/crypto.h"
 
 // @brief Message to send with Ping L3 command.
@@ -64,7 +64,7 @@ int main(void)
     //
     // Modify this according to your environment. Default values
     // are compatible with RPi and our RPi shield.
-    lt_dev_posix_usb_dongle_t device = {0};
+    lt_dev_posix_usb_devkit_t device = {0};
 
     // LT_USB_DEVKIT_PATH is defined in CMakeLists.txt. Pass -DLT_USB_DEVKIT_PATH=<path>
     // to cmake if you want to change it.
