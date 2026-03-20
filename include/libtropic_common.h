@@ -893,8 +893,14 @@ typedef enum lt_ecc_slot_t {
     TR01_ECC_SLOT_31,
 } lt_ecc_slot_t;
 
-/** @brief ECC key type */
-typedef enum lt_ecc_curve_type_t { TR01_CURVE_P256 = 1, TR01_CURVE_ED25519 } lt_ecc_curve_type_t;
+/** @brief The type of Elliptic Curve public key. Relevant to ECC_Key_Generate, ECC_Key_Store,
+ * ECC_Key_Read L3 commands. */
+typedef enum lt_ecc_curve_type_t {
+    /** @brief P256 Curve - 64-byte long public key. */
+    TR01_CURVE_P256 = 1,
+    /** @brief Ed25519 Curve - 32-byte long public key. */
+    TR01_CURVE_ED25519 = 2
+} lt_ecc_curve_type_t;
 
 /** @brief Length of public keys for P256 curve. */
 #define TR01_CURVE_P256_PUBKEY_LEN 64
@@ -903,8 +909,13 @@ typedef enum lt_ecc_curve_type_t { TR01_CURVE_P256 = 1, TR01_CURVE_ED25519 } lt_
 /** @brief Common length of private keys for both P256 and ED25519 curves. */
 #define TR01_CURVE_PRIVKEY_LEN 32
 
-/** @brief ECC key origin */
-typedef enum lt_ecc_key_origin_t { TR01_CURVE_GENERATED = 1, TR01_CURVE_STORED } lt_ecc_key_origin_t;
+/** @brief The origin of the Elliptic Curve public key. Relevant to ECC_Key_Read L3 command. */
+typedef enum lt_ecc_key_origin_t {
+    /** @brief The key is from key generation on the device. */
+    TR01_KEY_GENERATED = 1,
+    /** @brief The key is from key storage in the device. */
+    TR01_KEY_STORED = 2
+} lt_ecc_key_origin_t;
 
 /** @brief Length of the EC signature (RS) for both ECDSA and EDDSA. */
 #define TR01_ECDSA_EDDSA_SIGNATURE_LENGTH 64

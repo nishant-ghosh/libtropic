@@ -140,7 +140,7 @@ void lt_test_rev_ecc_key_generate(lt_handle_t *h)
         LT_TEST_ASSERT(1, (curve == TR01_CURVE_P256));
 
         LT_LOG_INFO("Checking origin of the read key...");
-        LT_TEST_ASSERT(1, (origin == TR01_CURVE_GENERATED));
+        LT_TEST_ASSERT(1, (origin == TR01_KEY_GENERATED));
 
         LT_LOG_INFO("Erasing the slot...");
         LT_TEST_ASSERT(LT_OK, lt_ecc_key_erase(h, i));
@@ -173,7 +173,7 @@ void lt_test_rev_ecc_key_generate(lt_handle_t *h)
         LT_TEST_ASSERT(1, (curve == TR01_CURVE_ED25519));
 
         LT_LOG_INFO("Checking origin of the read key...");
-        LT_TEST_ASSERT(1, (origin == TR01_CURVE_GENERATED));
+        LT_TEST_ASSERT(1, (origin == TR01_KEY_GENERATED));
 
         LT_LOG_INFO("Erasing the slot...");
         LT_TEST_ASSERT(LT_OK, lt_ecc_key_erase(h, i));
