@@ -3,8 +3,8 @@ Currently supported STM32 platforms are:
 
 - STM32F4xx series MCUs, tested with:
     - NUCLEO-F439ZI
-- NUCLEO-L432KC
-    - Using interrupt pin (`LT_USE_INT_PIN`) is not supported for this platform.
+- STM32L4xx series MCUs, tested with:
+    - NUCLEO-L432KC (using interrupt pin (`LT_USE_INT_PIN`) is not supported for this platform)
 - STM32U5xx series MCUs, tested with:
     - NUCLEO-U545RE-Q
 

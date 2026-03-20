@@ -1,10 +1,10 @@
-#ifndef LIBTROPIC_PORT_STM32_NUCLEO_L432KC_H
-#define LIBTROPIC_PORT_STM32_NUCLEO_L432KC_H
+#ifndef LIBTROPIC_PORT_STM32L4XX_H
+#define LIBTROPIC_PORT_STM32L4XX_H
 
 /**
- * @file libtropic_port_stm32_nucleo_l432kc.h
+ * @file libtropic_port_stm32l4xx.h
  * @copyright Copyright (c) 2020-2026 Tropic Square s.r.o.
- * @brief Port for STM32 L432KC using native SPI HAL (and GPIO HAL for chip select).
+ * @brief Port for STM32L4xx series using native SPI HAL (and GPIO HAL for chip select).
  *
  * @license For the license see LICENSE.md in the root directory of this source tree.
  */
@@ -12,12 +12,12 @@
 #include "stm32l4xx_hal.h"
 
 /**
- * @brief Device structure for STM32 L432KC port.
+ * @brief Device structure for STM32L4xx port.
  *
  * @note Public members are meant to be configured by the developer before passing the handle to
  *       libtropic.
  */
-typedef struct lt_dev_stm32_nucleo_l432kc_t {
+typedef struct lt_dev_stm32l4xx_t {
     /** @brief @public Instance of STM SPI interface. Use STM32 macro (SPIX, e.g. SPI1). */
     SPI_TypeDef *spi_instance;
 
@@ -39,6 +39,6 @@ typedef struct lt_dev_stm32_nucleo_l432kc_t {
 
     /** @brief @private SPI handle. */
     SPI_HandleTypeDef spi_handle;
-} lt_dev_stm32_nucleo_l432kc_t;
+} lt_dev_stm32l4xx_t;
 
-#endif  // LIBTROPIC_PORT_STM32_NUCLEO_L432KC_H
+#endif  // LIBTROPIC_PORT_STM32L4XX_H

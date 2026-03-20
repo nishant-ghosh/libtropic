@@ -18,7 +18,7 @@
 #include "libtropic.h"
 #include "libtropic_functional_tests.h"
 #include "libtropic_logging.h"
-#include "libtropic_port_stm32_nucleo_l432kc.h"
+#include "libtropic_port_stm32l4xx.h"
 #include "lt_test_common.h"
 
 #if LT_USE_TREZOR_CRYPTO
@@ -217,7 +217,7 @@ int main(void)
     lt_handle_t lt_handle = {0};
 
     /* Device mappings */
-    lt_dev_stm32_nucleo_l432kc_t device = {0};
+    lt_dev_stm32l4xx_t device = {0};
 
     device.spi_instance = LT_SPI_INSTANCE;
     device.baudrate_prescaler = SPI_BAUDRATEPRESCALER_16;

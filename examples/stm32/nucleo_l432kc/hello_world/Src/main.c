@@ -17,7 +17,7 @@
 
 #include "libtropic.h"
 #include "libtropic_mbedtls_v4.h"
-#include "libtropic_port_stm32_nucleo_l432kc.h"
+#include "libtropic_port_stm32l4xx.h"
 #include "psa/crypto.h"
 
 /** @addtogroup STM32L4xx_HAL_Examples
@@ -226,7 +226,7 @@ int main(void)
 
         The device structure has to be zero initialized!
         STM32 HAL depends on zero init values. */
-    lt_dev_stm32_nucleo_l432kc_t device = {0};
+    lt_dev_stm32l4xx_t device = {0};
 
     device.spi_instance = LT_SPI_INSTANCE;
     device.baudrate_prescaler = SPI_BAUDRATEPRESCALER_16;

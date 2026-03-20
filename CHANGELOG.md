@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Renamed `hal/stm32/nucleo_f439zi/libtropic_port_stm32_nucleo_f439zi.*` to `hal/stm32/stm32f4xx/libtropic_port_stm32f4xx.*`.
   - Renamed `LT_STM32_F439ZI_GPIO_OUTPUT_CHECK_ATTEMPTS` to `LT_STM32F4XX_GPIO_OUTPUT_CHECK_ATTEMPTS`.
   - Renamed `lt_dev_stm32_nucleo_f439zi_t` to `lt_dev_stm32f4xx_t`.
+- Rename STM32 Nucleo L432KC HAL to STM32L4xx HAL, as it is compatible with the entire MCU family:
+  - Renamed `hal/stm32/nucleo_l432kc/libtropic_port_stm32_nucleo_l432kc.*` to `hal/stm32/stm32l4xx/libtropic_port_stm32l4xx.*`.
+  - Renamed `LT_STM32_L432KC_GPIO_OUTPUT_CHECK_ATTEMPTS` to `LT_STM32L4XX_GPIO_OUTPUT_CHECK_ATTEMPTS`.
+  - Renamed `lt_dev_stm32_nucleo_l432kc_t` to `lt_dev_stm32l4xx_t`.
 
 ### Added
 - ECC + EdDSA example for USB DevKit.

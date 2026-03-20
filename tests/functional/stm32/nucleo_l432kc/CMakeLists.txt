@@ -110,7 +110,7 @@ endif()
 ###########################################################################
 
 # Add Libtropic STM32 HAL
-add_subdirectory("${PATH_LIBTROPIC}/hal/stm32/nucleo_l432kc" "nucleo_l432kc_hal")
+add_subdirectory("${PATH_LIBTROPIC}/hal/stm32/stm32l4xx" "stm32l4xx_hal")
 
 # Specify other source files
 set(SOURCES
