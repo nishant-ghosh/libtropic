@@ -29,7 +29,7 @@ uint8_t priv_test_key[] = {0x5e, 0xc6, 0xf1, 0xef, 0x96, 0x1f, 0x69, 0xb5, 0xd4,
 // Shared with cleanup function
 lt_handle_t *g_h;
 
-static lt_ret_t lt_test_rev_ecdsa_sign_cleanup(void)
+static lt_ret_t erase_ecc_slots_and_verify(void)
 {
     lt_ret_t ret;
     uint8_t read_pub_key[TR01_CURVE_P256_PUBKEY_LEN];  // The read key can have 32B or 64B, depending
@@ -39,14 +39,6 @@ static lt_ret_t lt_test_rev_ecdsa_sign_cleanup(void)
                                                        // pubkey on the P256 curve to be safe.
     lt_ecc_curve_type_t curve;
     lt_ecc_key_origin_t origin;
-
-    LT_LOG_INFO("Starting secure session with slot %d", (int)TR01_PAIRING_KEY_SLOT_INDEX_0);
-    ret = lt_verify_chip_and_start_secure_session(g_h, LT_TEST_SH0_PRIV, LT_TEST_SH0_PUB,
-                                                  TR01_PAIRING_KEY_SLOT_INDEX_0);
-    if (LT_OK != ret) {
-        LT_LOG_ERROR("Failed to establish secure session.");
-        return ret;
-    }
 
     LT_LOG_INFO("Erasing all ECC key slots");
     for (uint8_t i = TR01_ECC_SLOT_0; i <= TR01_ECC_SLOT_31; i++) {
@@ -64,6 +56,26 @@ static lt_ret_t lt_test_rev_ecdsa_sign_cleanup(void)
             LT_LOG_ERROR("Return value is not LT_L3_INVALID_KEY.");
             return ret;
         }
+    }
+
+    return LT_OK;
+}
+
+static lt_ret_t lt_test_rev_ecdsa_sign_cleanup(void)
+{
+    lt_ret_t ret;
+
+    LT_LOG_INFO("Starting secure session with slot %d", (int)TR01_PAIRING_KEY_SLOT_INDEX_0);
+    ret = lt_verify_chip_and_start_secure_session(g_h, LT_TEST_SH0_PRIV, LT_TEST_SH0_PUB,
+                                                  TR01_PAIRING_KEY_SLOT_INDEX_0);
+    if (LT_OK != ret) {
+        LT_LOG_ERROR("Failed to establish secure session.");
+        return ret;
+    }
+
+    ret = erase_ecc_slots_and_verify();
+    if (LT_OK != ret) {
+        return ret;
     }
 
     LT_LOG_INFO("Aborting secure session");
@@ -105,6 +117,10 @@ void lt_test_rev_ecdsa_sign(lt_handle_t *h)
     LT_LOG_INFO("Starting Secure Session with key %d", (int)TR01_PAIRING_KEY_SLOT_INDEX_0);
     LT_TEST_ASSERT(LT_OK, lt_verify_chip_and_start_secure_session(h, LT_TEST_SH0_PRIV, LT_TEST_SH0_PUB,
                                                                   TR01_PAIRING_KEY_SLOT_INDEX_0));
+
+    // We need to start with the slots erased.
+    LT_LOG_INFO("Erasing all ECC slots before starting the test...");
+    LT_TEST_ASSERT(LT_OK, erase_ecc_slots_and_verify());
     LT_LOG_LINE();
 
     lt_test_cleanup_function = &lt_test_rev_ecdsa_sign_cleanup;
