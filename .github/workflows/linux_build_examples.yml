@@ -63,3 +63,7 @@ jobs:
           cd ../../full_chain_verification
           cmake ./ -B build -G Ninja
           cd build && ninja
+
+          cd ../../ecc_eddsa
+          cmake ./ -B build -G Ninja
+          cd build && ninja
