@@ -78,7 +78,7 @@ See below for instructions based on your OS:
 !!! example "Installation Instructions"
     === ":fontawesome-brands-linux: Linux"
         1. Setup ESP-IDF and its dependencies:
-            - Complete the first 4 steps in the [official ESP-IDF setup guide](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/linux-macos-setup.html).
+            - Complete the first 4 steps in the [official ESP-IDF setup guide](https://docs.espressif.com/projects/esp-idf/en/v5.5.3/esp32/get-started/linux-macos-setup.html).
             - We recommend getting the 5.5.1 version, but any 5.x.x version should work.
         2. Get the Libtropic repository:
             - Using git: `git clone https://github.com/tropicsquare/libtropic.git`
