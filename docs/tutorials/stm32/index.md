@@ -1,5 +1,5 @@
 # STM32 Tutorials
-These tutorials will help you get started with TROPIC01 on STM32-based platforms using Libtropic. Currently, we officially support [Nucleo F439ZI](https://www.st.com/en/evaluation-tools/nucleo-f439zi.html) and [Nucleo L432KC](https://www.st.com/en/evaluation-tools/nucleo-l432kc.html) development boards.
+These tutorials will help you get started with TROPIC01 on STM32-based platforms using Libtropic. To see the currently supported STM32 platforms, refer to the [STM32 Compatibility](../../compatibility/host_platforms/stm32.md) page.
 
 We will go through our examples in the `examples/stm32/` directory. In this directory, there are multiple subdirectories for each supported Nucleo board. Most of the instructions in this tutorial are common for all of the boards.
 

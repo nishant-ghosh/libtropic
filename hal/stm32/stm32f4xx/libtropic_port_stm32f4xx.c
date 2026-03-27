@@ -1,7 +1,7 @@
 /**
- * @file libtropic_port_stm32_nucleo_f439zi.c
+ * @file libtropic_port_stm32f4xx.c
  * @copyright Copyright (c) 2020-2026 Tropic Square s.r.o.
- * @brief Port for STM32 F439ZI using native SPI HAL (and GPIO HAL for chip select).
+ * @brief Port for STM32F4xx series using native SPI HAL (and GPIO HAL for chip select).
  *
  * Most of this SPI code is inspired by https://github.com/STMicroelectronics/STM32CubeF4:
  * Projects/STM32F429I-Discovery/Examples/SPI/SPI_FullDuplex_ComPolling/Src/main.c
@@ -9,7 +9,7 @@
  * @license For the license see LICENSE.md in the root directory of this source tree.
  */
 
-#include "libtropic_port_stm32_nucleo_f439zi.h"
+#include "libtropic_port_stm32f4xx.h"
 
 #include <stdarg.h>
 #include <stdint.h>
@@ -23,11 +23,11 @@
 #include "libtropic_secure_memzero.h"
 #include "stm32f4xx_hal.h"
 
-#define LT_STM32_F439ZI_GPIO_OUTPUT_CHECK_ATTEMPTS 10
+#define LT_STM32F4XX_GPIO_OUTPUT_CHECK_ATTEMPTS 10
 
 lt_ret_t lt_port_random_bytes(lt_l2_state_t *s2, void *buff, size_t count)
 {
-    lt_dev_stm32_nucleo_f439zi_t *device = (lt_dev_stm32_nucleo_f439zi_t *)(s2->device);
+    lt_dev_stm32f4xx_t *device = (lt_dev_stm32f4xx_t *)(s2->device);
     size_t bytes_left = count;
     uint8_t *buff_ptr = buff;
     int ret;
@@ -53,11 +53,11 @@ lt_ret_t lt_port_random_bytes(lt_l2_state_t *s2, void *buff, size_t count)
 
 lt_ret_t lt_port_spi_csn_low(lt_l2_state_t *s2)
 {
-    lt_dev_stm32_nucleo_f439zi_t *device = (lt_dev_stm32_nucleo_f439zi_t *)(s2->device);
+    lt_dev_stm32f4xx_t *device = (lt_dev_stm32f4xx_t *)(s2->device);
 
     HAL_GPIO_WritePin(device->spi_cs_gpio_bank, device->spi_cs_gpio_pin, GPIO_PIN_RESET);
 
-    for (uint8_t read_attempts = 0; read_attempts < LT_STM32_F439ZI_GPIO_OUTPUT_CHECK_ATTEMPTS;
+    for (uint8_t read_attempts = 0; read_attempts < LT_STM32F4XX_GPIO_OUTPUT_CHECK_ATTEMPTS;
          read_attempts++) {
         if (!HAL_GPIO_ReadPin(device->spi_cs_gpio_bank, device->spi_cs_gpio_pin)) {
             return LT_OK;
@@ -70,11 +70,11 @@ lt_ret_t lt_port_spi_csn_low(lt_l2_state_t *s2)
 
 lt_ret_t lt_port_spi_csn_high(lt_l2_state_t *s2)
 {
-    lt_dev_stm32_nucleo_f439zi_t *device = (lt_dev_stm32_nucleo_f439zi_t *)(s2->device);
+    lt_dev_stm32f4xx_t *device = (lt_dev_stm32f4xx_t *)(s2->device);
 
     HAL_GPIO_WritePin(device->spi_cs_gpio_bank, device->spi_cs_gpio_pin, GPIO_PIN_SET);
 
-    for (uint8_t read_attempts = 0; read_attempts < LT_STM32_F439ZI_GPIO_OUTPUT_CHECK_ATTEMPTS;
+    for (uint8_t read_attempts = 0; read_attempts < LT_STM32F4XX_GPIO_OUTPUT_CHECK_ATTEMPTS;
          read_attempts++) {
         if (HAL_GPIO_ReadPin(device->spi_cs_gpio_bank, device->spi_cs_gpio_pin)) {
             return LT_OK;
@@ -87,7 +87,7 @@ lt_ret_t lt_port_spi_csn_high(lt_l2_state_t *s2)
 
 lt_ret_t lt_port_init(lt_l2_state_t *s2)
 {
-    lt_dev_stm32_nucleo_f439zi_t *device = (lt_dev_stm32_nucleo_f439zi_t *)(s2->device);
+    lt_dev_stm32f4xx_t *device = (lt_dev_stm32f4xx_t *)(s2->device);
     int ret;
 
     // Set the SPI parameters.
@@ -139,7 +139,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
 
 lt_ret_t lt_port_deinit(lt_l2_state_t *s2)
 {
-    lt_dev_stm32_nucleo_f439zi_t *device = (lt_dev_stm32_nucleo_f439zi_t *)(s2->device);
+    lt_dev_stm32f4xx_t *device = (lt_dev_stm32f4xx_t *)(s2->device);
     int ret;
 
     ret = HAL_SPI_DeInit(&device->spi_handle);
@@ -154,7 +154,7 @@ lt_ret_t lt_port_deinit(lt_l2_state_t *s2)
 lt_ret_t lt_port_spi_transfer(lt_l2_state_t *s2, uint8_t offset, uint16_t tx_data_length,
                               uint32_t timeout_ms)
 {
-    lt_dev_stm32_nucleo_f439zi_t *device = (lt_dev_stm32_nucleo_f439zi_t *)(s2->device);
+    lt_dev_stm32f4xx_t *device = (lt_dev_stm32f4xx_t *)(s2->device);
 
     if (offset + tx_data_length > TR01_L1_LEN_MAX) {
         LT_LOG_ERROR("Invalid data length!");
@@ -182,7 +182,7 @@ lt_ret_t lt_port_delay(lt_l2_state_t *s2, uint32_t ms)
 #if LT_USE_INT_PIN
 lt_ret_t lt_port_delay_on_int(lt_l2_state_t *s2, uint32_t ms)
 {
-    lt_dev_stm32_nucleo_f439zi_t *device = (lt_dev_stm32_nucleo_f439zi_t *)(s2->device);
+    lt_dev_stm32f4xx_t *device = (lt_dev_stm32f4xx_t *)(s2->device);
     uint32_t time_initial = HAL_GetTick();
     uint32_t time_actual;
 
