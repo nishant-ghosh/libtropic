@@ -313,7 +313,7 @@ lt_ret_t lt_ping(lt_handle_t *h, const uint8_t *msg_out, uint8_t *msg_in, const 
  *
  * @param h           Handle for communication with TROPIC01
  * @param pairing_pub 32B of pubkey
- * @param slot        Pairing key slot index (SH0PUB-SH3PUB)
+ * @param slot        Pairing key slot index
  *
  * @retval            LT_OK Function executed successfully
  * @retval            other Function did not execute successully, you might use lt_ret_verbose() to get
@@ -326,7 +326,7 @@ lt_ret_t lt_pairing_key_write(lt_handle_t *h, const uint8_t *pairing_pub, const 
  *
  * @param h           Handle for communication with TROPIC01
  * @param pairing_pub 32B of pubkey
- * @param slot        Pairing key slot index (SH0PUB-SH3PUB)
+ * @param slot        Pairing key slot index
  *
  * @retval            LT_OK Function executed successfully
  * @retval            other Function did not execute successully, you might use lt_ret_verbose() to get
@@ -343,7 +343,7 @@ lt_ret_t lt_pairing_key_read(lt_handle_t *h, uint8_t *pairing_pub, const lt_pkey
  * invalidated if operating outside this range. Refer to datasheet for absolute maximum ratings.
  *
  * @param h           Handle for communication with TROPIC01
- * @param slot        Pairing key slot index (SH0PUB-SH3PUB)
+ * @param slot        Pairing key slot index
  *
  * @retval            LT_OK Function executed successfully
  * @retval            other Function did not execute successully, you might use lt_ret_verbose() to get
