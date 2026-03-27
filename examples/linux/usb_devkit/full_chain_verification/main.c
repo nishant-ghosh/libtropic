@@ -1,6 +1,6 @@
 /**
  * @file main.c
- * @brief Utility for dumping certificates from TROPIC01 USB Devkit for Linux. Part of the Full chain
+ * @brief Utility for dumping certificates from TROPIC01 USB DevKit for Linux. Part of the Full chain
  * verification example.
  * @copyright Copyright (c) 2020-2026 Tropic Square s.r.o.
  *
@@ -14,7 +14,7 @@
 #include "libtropic.h"
 #include "libtropic_common.h"
 #include "libtropic_mbedtls_v4.h"
-#include "libtropic_port_posix_usb_dongle.h"
+#include "libtropic_port_posix_usb_devkit.h"
 #include "psa/crypto.h"
 
 lt_ret_t dump_cert_store(lt_handle_t *lt_handle)
@@ -97,7 +97,7 @@ int main(void)
     //
     // Modify this according to your environment. Default values
     // are compatible with RPi and our RPi shield.
-    lt_dev_posix_usb_dongle_t device = {0};
+    lt_dev_posix_usb_devkit_t device = {0};
 
     // LT_USB_DEVKIT_PATH is defined in CMakeLists.txt. Pass -DLT_USB_DEVKIT_PATH=<path>
     // to cmake if you want to change it.
