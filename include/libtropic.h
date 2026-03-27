@@ -313,26 +313,26 @@ lt_ret_t lt_ping(lt_handle_t *h, const uint8_t *msg_out, uint8_t *msg_in, const 
  *
  * @param h           Handle for communication with TROPIC01
  * @param pairing_pub 32B of pubkey
- * @param slot        Pairing key lot SH0PUB - SH3PUB
+ * @param slot        Pairing key slot index
  *
  * @retval            LT_OK Function executed successfully
  * @retval            other Function did not execute successully, you might use lt_ret_verbose() to get
  * verbose encoding of returned value
  */
-lt_ret_t lt_pairing_key_write(lt_handle_t *h, const uint8_t *pairing_pub, const uint8_t slot);
+lt_ret_t lt_pairing_key_write(lt_handle_t *h, const uint8_t *pairing_pub, const lt_pkey_index_t slot);
 
 /**
  * @brief Reads pairing public key from TROPIC01's pairing key slot 0-3
  *
  * @param h           Handle for communication with TROPIC01
  * @param pairing_pub 32B of pubkey
- * @param slot        Pairing key lot SH0PUB - SH3PUB
+ * @param slot        Pairing key slot index
  *
  * @retval            LT_OK Function executed successfully
  * @retval            other Function did not execute successully, you might use lt_ret_verbose() to get
  * verbose encoding of returned value
  */
-lt_ret_t lt_pairing_key_read(lt_handle_t *h, uint8_t *pairing_pub, const uint8_t slot);
+lt_ret_t lt_pairing_key_read(lt_handle_t *h, uint8_t *pairing_pub, const lt_pkey_index_t slot);
 
 /**
  * @brief Invalidates pairing key in slot 0-3
@@ -343,13 +343,13 @@ lt_ret_t lt_pairing_key_read(lt_handle_t *h, uint8_t *pairing_pub, const uint8_t
  * invalidated if operating outside this range. Refer to datasheet for absolute maximum ratings.
  *
  * @param h           Handle for communication with TROPIC01
- * @param slot        Pairing key lot SH0PUB - SH3PUB
+ * @param slot        Pairing key slot index
  *
  * @retval            LT_OK Function executed successfully
  * @retval            other Function did not execute successully, you might use lt_ret_verbose() to get
  * verbose encoding of returned value
  */
-lt_ret_t lt_pairing_key_invalidate(lt_handle_t *h, const uint8_t slot);
+lt_ret_t lt_pairing_key_invalidate(lt_handle_t *h, const lt_pkey_index_t slot);
 
 /**
  * @brief Writes configuration object specified by `addr`. Make sure to read the Configuration Objects

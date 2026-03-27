@@ -471,7 +471,7 @@ static int session_initial(lt_handle_t *h)
 
     // Write pairing keys into slots 1,2,3
     printf("Will write new pairing keys to slots 1, 2 and 3:\n");
-    for (uint8_t i = TR01_PAIRING_KEY_SLOT_INDEX_1; i <= TR01_PAIRING_KEY_SLOT_INDEX_3; i++) {
+    for (lt_pkey_index_t i = TR01_PAIRING_KEY_SLOT_INDEX_1; i <= TR01_PAIRING_KEY_SLOT_INDEX_3; i++) {
         printf("\tWriting to pairing key slot %" PRIu8 "...", i);
         ret = lt_pairing_key_write(h, pub_keys[i], i);
         if (LT_OK != ret) {
@@ -581,7 +581,7 @@ static int session1(lt_handle_t *h)
 
     uint8_t dummy_key[TR01_SHIPUB_LEN] = {0};
     printf("Will try to write all pairing key slots (should fail due to unauthorized access):\n");
-    for (uint8_t i = TR01_PAIRING_KEY_SLOT_INDEX_0; i <= TR01_PAIRING_KEY_SLOT_INDEX_3; i++) {
+    for (lt_pkey_index_t i = TR01_PAIRING_KEY_SLOT_INDEX_0; i <= TR01_PAIRING_KEY_SLOT_INDEX_3; i++) {
         printf("\tWriting pairing key slot %" PRIu8 "...", i);
         ret = lt_pairing_key_write(h, dummy_key, i);
         if (LT_L3_UNAUTHORIZED != ret) {
@@ -651,7 +651,7 @@ static int session2(lt_handle_t *h)
     printf("OK (failed)\n");
 
     printf("Will try to write all pairing key slots (should fail due to unauthorized access):\n");
-    for (uint8_t i = TR01_PAIRING_KEY_SLOT_INDEX_0; i <= TR01_PAIRING_KEY_SLOT_INDEX_3; i++) {
+    for (lt_pkey_index_t i = TR01_PAIRING_KEY_SLOT_INDEX_0; i <= TR01_PAIRING_KEY_SLOT_INDEX_3; i++) {
         printf("\tWriting pairing key slot %" PRIu8 "...", i);
         ret = lt_pairing_key_write(h, dummy_key, i);
         if (LT_L3_UNAUTHORIZED != ret) {
@@ -853,7 +853,7 @@ static int session3(lt_handle_t *h)
     printf("OK (failed)\n");
 
     printf("Will try to write all pairing key slots (should fail due to unauthorized access):\n");
-    for (uint8_t i = TR01_PAIRING_KEY_SLOT_INDEX_0; i <= TR01_PAIRING_KEY_SLOT_INDEX_3; i++) {
+    for (lt_pkey_index_t i = TR01_PAIRING_KEY_SLOT_INDEX_0; i <= TR01_PAIRING_KEY_SLOT_INDEX_3; i++) {
         printf("\tWriting pairing key slot %" PRIu8 "...", i);
         ret = lt_pairing_key_write(h, dummy_key, i);
         if (LT_L3_UNAUTHORIZED != ret) {
