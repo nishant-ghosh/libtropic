@@ -10,11 +10,11 @@ extern "C" {
 extern lt_ret_t (*lt_test_cleanup_function)(void);
 
 #if LT_USE_SH0_ENG_SAMPLE
-#define LT_TEST_SH0_PRIV sh0priv_eng_sample
-#define LT_TEST_SH0_PUB sh0pub_eng_sample
+#define LT_TEST_SH0_PRIV lt_sh0priv_eng_sample
+#define LT_TEST_SH0_PUB lt_sh0pub_eng_sample
 #elif LT_USE_SH0_PROD0
-#define LT_TEST_SH0_PRIV sh0priv_prod0
-#define LT_TEST_SH0_PUB sh0pub_prod0
+#define LT_TEST_SH0_PRIV lt_sh0priv_prod0
+#define LT_TEST_SH0_PUB lt_sh0pub_prod0
 #endif
 
 /**

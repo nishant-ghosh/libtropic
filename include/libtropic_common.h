@@ -102,7 +102,7 @@ extern "C" {
  * the slot 0 after you write your own pairing key to another slot. Refer to the section 5.4 (Security
  * Lifecycle Management) in the datasheet for more information.
  */
-extern const uint8_t sh0priv_eng_sample[];
+extern const uint8_t lt_sh0priv_eng_sample[];
 /**
  * @brief Host MCU's X25519 public key (stored in TROPIC01) to execute a Secure Channel Handshake on
  * Pairing Key slot 0 of the engineering (pre-production) TROPIC01 samples.
@@ -111,7 +111,7 @@ extern const uint8_t sh0priv_eng_sample[];
  * the slot 0 after you write your own pairing key to another slot. Refer to the section 5.4 (Security
  * Lifecycle Management) in the datasheet for more information.
  */
-extern const uint8_t sh0pub_eng_sample[];
+extern const uint8_t lt_sh0pub_eng_sample[];
 /**
  * @brief Host MCU's X25519 private key to execute a Secure Channel Handshake on Pairing Key slot 0 of
  * the production TROPIC01 chips.
@@ -120,7 +120,7 @@ extern const uint8_t sh0pub_eng_sample[];
  * the slot 0 after you write your own pairing key to another slot. Refer to the section 5.4 (Security
  * Lifecycle Management) in the datasheet for more information.
  */
-extern const uint8_t sh0priv_prod0[];
+extern const uint8_t lt_sh0priv_prod0[];
 /**
  * @brief Host MCU's X25519 public key (stored in TROPIC01) to execute a Secure Channel Handshake on
  * Pairing Key slot 0 of the production TROPIC01 chips.
@@ -129,7 +129,7 @@ extern const uint8_t sh0priv_prod0[];
  * the slot 0 after you write your own pairing key to another slot. Refer to the section 5.4 (Security
  * Lifecycle Management) in the datasheet for more information.
  */
-extern const uint8_t sh0pub_prod0[];
+extern const uint8_t lt_sh0pub_prod0[];
 
 //--------------------------------------------------------------------------------------------------------------------//
 

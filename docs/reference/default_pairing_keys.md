@@ -9,8 +9,8 @@ At the time of manufacturing, Tropic Square configures the Pairing Key slot 0 of
 ## Default Pairing Keys in Libtropic
 Libtropic provides both of these default $S_{H0PUB}$ and $S_{H0PRIV}$ keys by including `libtropic_common.h`:
 
-1. arrays `sh0pub_prod0` and `sh0priv_prod0` - production keys found in the majority of distributed TROPIC01 chips (see [Available Parts](https://github.com/tropicsquare/tropic01?tab=readme-ov-file#available-parts) table in the TROPIC01 GitHub repository for P/N values),
-2. arrays `sh0pub_eng_sample` and `sh0priv_eng_sample` - keys found in engineering (pre-production) samples of TROPIC01 with P/N `TROPIC01-ES`.
+1. arrays `lt_sh0pub_prod0` and `lt_sh0priv_prod0` - production keys found in the majority of distributed TROPIC01 chips (see [Available Parts](https://github.com/tropicsquare/tropic01?tab=readme-ov-file#available-parts) table in the TROPIC01 GitHub repository for P/N values),
+2. arrays `lt_sh0pub_eng_sample` and `lt_sh0priv_eng_sample` - keys found in engineering (pre-production) samples of TROPIC01 with P/N `TROPIC01-ES`.
 
 ### Establishing Your First Secure Channel Session
 To establish a Secure Channel Session with your new TROPIC01, do the following:

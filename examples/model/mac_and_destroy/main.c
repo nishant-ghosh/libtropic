@@ -23,8 +23,8 @@
 
 // Pairing keys the model was configured with, defaults to prod0 keys.
 // Provide your own keys here if you configured the model differently.
-#define DEFAULT_SH0_PRIV sh0priv_prod0
-#define DEFAULT_SH0_PUB sh0pub_prod0
+#define DEFAULT_SH0_PRIV lt_sh0priv_prod0
+#define DEFAULT_SH0_PUB lt_sh0pub_prod0
 
 /** @brief Last slot in User memory used for storing of M&D related data (only in this example). */
 #define MACANDD_R_MEM_DATA_SLOT (511)
