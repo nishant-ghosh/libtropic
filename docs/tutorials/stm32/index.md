@@ -20,11 +20,11 @@ We will go through our examples in the `examples/stm32/` directory. In this dire
         
         |  TROPIC01     |   NUCLEO F439ZI  |
         |---------------|------------------|
-        |  GND          |  GND             |
         |  3V3          |  3V3             |
+        |  GND          |  GND             |
+        |  SCK          |  GPIOA_5         |
         |  MISO (SDO)   |  GPIOA_6         |
         |  MOSI (SDI)   |  GPIOA_7         |
-        |  SCK          |  GPIOA_5         |
         |  CS (CSN)     |  GPIOD_14        |
         |  GPO          |  GPIOF_15        |
 
@@ -34,11 +34,11 @@ We will go through our examples in the `examples/stm32/` directory. In this dire
 
         |  TROPIC01     |  NUCLEO L432KC  |
         |---------------|-----------------|
-        |  GND          |  GND            |
         |  3V3          |  3V3            |
+        |  GND          |  GND            |
+        |  SCK          |  A4             |
         |  MISO (SDO)   |  A5             |
         |  MOSI (SDI)   |  A6             |
-        |  SCK          |  A4             |
         |  CS (CSN)     |  A3             |
     
     ??? question "Advanced: How to Use Different Nucleo Pins?"
