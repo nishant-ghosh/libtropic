@@ -37,8 +37,8 @@ We will go through our examples in the `examples/stm32/` directory. In this dire
         |  3V3          |  3V3            |
         |  GND          |  GND            |
         |  SCK          |  A4             |
-        |  MISO (SDO)   |  A6             |
-        |  MOSI (SDI)   |  A5             |
+        |  MISO (SDO)   |  A5             |
+        |  MOSI (SDI)   |  A6             |
         |  CS (CSN)     |  A3             |
     
     ??? question "Advanced: How to Use Different Nucleo Pins?"
