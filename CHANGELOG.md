@@ -31,10 +31,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - ECC + EdDSA example for USB DevKit.
 - STM32L4xx HAL: support for TROPIC01 GPO pin.
+- Arrays to firmware update files which contain firmware version of the update: `fw_CPU_ver`, `fw_SPECT_ver`.
 
 ### Fixed
 - Change the type of `slot` parameter from `uint8_t` to `lt_pkey_index_t` in `lt_pairing_key_write()`, `lt_pairing_key_read()`, `lt_pairing_key_invalidate()`, `lt_out__pairing_key_write()`, `lt_out__pairing_key_read()`, `lt_out__pairing_key_invalidate()`.
 - `examples/model/mac_and_destroy/`: Log the correct number of wrong attempts and indexes of destroyed slots.
+- Target version reporting in Firmware Update examples for Linux.
 
 ## [3.2.0]
 
