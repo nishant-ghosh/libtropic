@@ -555,7 +555,7 @@ lt_ret_t lt_ecc_key_erase(lt_handle_t *h, const lt_ecc_slot_t ecc_slot);
  * @param h            Handle for communication with TROPIC01
  * @param ecc_slot     Slot containing a private key, TR01_ECC_SLOT_0 - TR01_ECC_SLOT_31
  * @param msg_hash     Buffer containing a 32-byte hash of the message to sign
- * @param msg_hash_len Length of the hash
+ * @param msg_hash_len Length of the hash; must be exactly 32 bytes
  * @param rs           Buffer for storing a signature in a form of R and S bytes (should always have
  * length 64 B).
  *
