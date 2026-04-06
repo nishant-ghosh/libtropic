@@ -56,7 +56,7 @@ void lt_test_rev_eddsa_sign(lt_handle_t *h);
  *  8. Verify the signature.
  *  9. Erase each slot.
  *  10. Sign message hash with each erased slot and check for fail.
- *  11. Do steps 2-9, but instead of storing the key, generate it.
+ *  11. Do steps 2-10, but instead of storing the key, generate it.
  *
  * @param h     Handle for communication with TROPIC01
  */
