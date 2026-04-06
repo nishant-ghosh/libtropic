@@ -560,7 +560,7 @@ lt_ret_t lt_ecc_key_erase(lt_handle_t *h, const lt_ecc_slot_t ecc_slot);
  * length 64 B).
  *
  * @retval             LT_OK Function executed successfully
- * @retval             other Function did not execute successully, you might use lt_ret_verbose() to
+ * @retval             other Function did not execute successfully, you might use lt_ret_verbose() to
  * get verbose encoding of returned value
  */
 lt_ret_t lt_ecc_ecdsa_sign(lt_handle_t *h, const lt_ecc_slot_t ecc_slot, const uint8_t *msg_hash,
