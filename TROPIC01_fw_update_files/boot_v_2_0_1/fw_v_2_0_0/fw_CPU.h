@@ -3,6 +3,11 @@
 #include <stdint.h>
 
 /**
+ * @brief CPU firmware version array {reserved, patch, minor, major}
+ */
+const uint8_t fw_CPU_ver[4] = {0, 0, 0, 2};
+
+/**
  * @brief CPU firmware version fw_v2.0.0.hex32_signed_chunks.bin for bootloader v2.0.1
  */
 const uint8_t fw_CPU[] = {
