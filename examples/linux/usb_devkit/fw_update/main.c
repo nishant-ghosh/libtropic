@@ -128,8 +128,8 @@ int main(void)
     }
 
     printf("Versions to update to:\n");
-    printf("  - RISC-V FW version: %d.%d.%d\n", 6, 6, 6);
-    printf("  - SPECT FW version: %d.%d.%d\n", 6, 6, 6);
+    printf("  - RISC-V FW version: %d.%d.%d\n", fw_CPU_ver[3], fw_CPU_ver[2], fw_CPU_ver[1]);
+    printf("  - SPECT FW version: %d.%d.%d\n", fw_SPECT_ver[3], fw_SPECT_ver[2], fw_SPECT_ver[1]);
 
     printf("Proceed with update? [y/N]: ");
     char user_input = getchar();
