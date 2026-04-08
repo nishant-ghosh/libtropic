@@ -75,10 +75,10 @@
 /* Definition for GPIO interrupt pin clock resources
  * Following GPIO is used to check on INT pin for READY signal during communication.
  */
-#define LT_INT_BANK GPIOC
-#define LT_INT_PIN GPIO_PIN_15
+#define LT_INT_BANK GPIOA
+#define LT_INT_PIN GPIO_PIN_11
 /* Definition for GPIO interrupt pin clock resources */
-#define LT_INT_CLK_ENABLE() __HAL_RCC_GPIOC_CLK_ENABLE()
+#define LT_INT_CLK_ENABLE() __HAL_RCC_GPIOA_CLK_ENABLE()
 #endif
 
 /* Exported variables ------------------------------------------------------- */
