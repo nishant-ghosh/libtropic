@@ -5,6 +5,7 @@
  * @license For the license see LICENSE.md in the root directory of this source tree.
  */
 
+#include <stdio.h>
 #include <string.h>
 #include <time.h>
 
@@ -51,6 +52,10 @@ static int cleanup(void)
 int main(void)
 {
     int ret = 0;
+
+    // Disable buffering.
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
 
     // CFP initialization
 #if LT_USE_MBEDTLS_V4
