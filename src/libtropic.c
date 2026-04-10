@@ -57,6 +57,10 @@ lt_ret_t lt_init(lt_handle_t *h)
         return ret;
     }
 
+    // Init CRC error counters
+    h->l2.l2_crc_error_count = 0;
+    h->l2.l2_in_crc_error_count = 0;
+
     ret = lt_crypto_ctx_init(h->l3.crypto_ctx);
     if (ret != LT_OK) {
         goto l1_cleanup;

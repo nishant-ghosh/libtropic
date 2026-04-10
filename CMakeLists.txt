@@ -97,6 +97,16 @@ else()
     message(FATAL_ERROR "Incorrect logging level specified: '${LT_LOG_LVL}'\nAvailable logging levels: ${lt_log_lvl_choices}")
 endif()
 
+# Set count of attempts to:
+# - resend request in case of LT_L2_CRC_ERR is received
+# - ask TROPIC01 to resend response in case of LT_L2_IN_CRC_ERR is received
+# Must be non-negative. Set to 0 to disable automatic resending.
+set(LT_CRC_ERR_RESEND_ATTEMPTS "3" CACHE STRING "Count of attempts to resend request/response on CRC or IN_CRC error.")
+
+if(NOT LT_CRC_ERR_RESEND_ATTEMPTS MATCHES "^[0-9]+$")
+    message(FATAL_ERROR "LT_CRC_ERR_RESEND_ATTEMPTS must be a non-negative integer, got '${LT_CRC_ERR_RESEND_ATTEMPTS}'")
+endif()
+
 # Check whether compiling standalone (e.g. as a library) or as a child project (= has parent scope)
 # and save result to HAS_PARENT_SCOPE.
 get_directory_property(HAS_PARENT_SCOPE PARENT_DIRECTORY)
@@ -283,3 +293,5 @@ endif()
 if(LT_RETRIEVE_ALARM_LOG)
     target_compile_definitions(tropic PUBLIC LT_RETRIEVE_ALARM_LOG)
 endif()
+
+target_compile_definitions(tropic PRIVATE LT_CRC_ERR_RESEND_ATTEMPTS=${LT_CRC_ERR_RESEND_ATTEMPTS)

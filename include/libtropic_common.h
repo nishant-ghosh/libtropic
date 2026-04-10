@@ -214,6 +214,9 @@ typedef struct lt_l2_state_t {
     void *device;
     uint8_t buff[TR01_L1_CHIP_STATUS_SIZE + TR01_L2_MAX_FRAME_SIZE];
     bool startup_req_sent;
+
+    uint32_t l2_in_crc_error_count;
+    uint32_t l2_crc_error_count;
 } lt_l2_state_t;
 
 // #define LT_SIZE_OF_L3_BUFF (1000)
@@ -408,6 +411,17 @@ typedef enum lt_ret_t {
 } lt_ret_t;
 
 #define LT_TR01_REBOOT_DELAY_MS 250
+
+//--------------------------------------------------------------------------------------------------------------------//
+
+#ifndef LT_CRC_ERR_RESEND_ATTEMPTS
+/** @brief Count of attempts to resend request/response on LT_L2_CRC_ERR or LT_L2_IN_CRC_ERR error.
+ *
+ * @note In CMake-based builds it is set in CMakeLists.txt and can be configured using CMake
+ * parameters.
+ */
+#define LT_CRC_ERR_RESEND_ATTEMPTS 3
+#endif
 
 //--------------------------------------------------------------------------------------------------------------------//
 /** @brief Maximal size of TROPIC01's certificate */

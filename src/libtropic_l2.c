@@ -81,11 +81,10 @@ lt_ret_t lt_l2_receive(lt_l2_state_t *s2)
 
     ret = lt_l2_frame_check(s2->buff);
 
-    if ((ret == LT_L2_CRC_ERR) || (ret == LT_L2_GEN_ERR)) {
-        // There was an error when checking received data.
-        // Let's consider that length byte is correct, but CRC is not.
-        // We try three times to resend the last response.
-        for (int i = 0; i < 3; i++) {
+    if (ret == LT_L2_IN_CRC_ERR) {
+        s2->l2_in_crc_error_count++;
+
+        for (int i = 0; i < LT_CRC_ERR_RESEND_ATTEMPTS; i++) {
             ret = lt_l2_resend_response(s2);
             if (ret == LT_OK) {
                 break;
