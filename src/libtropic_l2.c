@@ -82,11 +82,11 @@ lt_ret_t lt_l2_receive(lt_l2_state_t *s2)
     ret = lt_l2_frame_check(s2->buff);
 
     if (ret == LT_L2_IN_CRC_ERR) {
-        s2->l2_in_crc_error_count++;
-
         for (int i = 0; i < LT_CRC_ERR_RESEND_ATTEMPTS; i++) {
+            s2->l2_in_crc_error_count++;
+
             ret = lt_l2_resend_response(s2);
-            if (ret == LT_OK) {
+            if (ret == LT_OK || ret != LT_L2_IN_CRC_ERR) {
                 break;
             }
         }
