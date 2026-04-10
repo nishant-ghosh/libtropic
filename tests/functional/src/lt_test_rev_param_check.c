@@ -180,8 +180,6 @@ void lt_test_rev_param_check(lt_handle_t *h)
         uint8_t buf[1];
         LT_TEST_ASSERT(LT_PARAM_ERR, lt_random_value_get(NULL, buf, sizeof(buf)));
         LT_TEST_ASSERT(LT_PARAM_ERR, lt_random_value_get(h, NULL, sizeof(buf)));
-        LT_TEST_ASSERT(LT_PARAM_ERR,
-                       lt_random_value_get(h, buf, (uint16_t)(TR01_RANDOM_VALUE_GET_LEN_MAX + 1)));
     }
 
     LT_TEST_ASSERT(LT_PARAM_ERR, lt_ecc_key_generate(NULL, TR01_ECC_SLOT_0, TR01_CURVE_ED25519));

@@ -347,7 +347,7 @@ lt_ret_t lt_in__r_mem_data_erase(lt_handle_t *h);
  * @param rnd_bytes_cnt   Number of random bytes to get (255 bytes is the maximum)
  * @return                LT_OK if success, otherwise returns other error code.
  */
-lt_ret_t lt_out__random_value_get(lt_handle_t *h, const uint16_t rnd_bytes_cnt);
+lt_ret_t lt_out__random_value_get(lt_handle_t *h, const uint8_t rnd_bytes_cnt);
 
 /**
  * @brief Decodes Random_Value_Get result payload.
@@ -359,7 +359,7 @@ lt_ret_t lt_out__random_value_get(lt_handle_t *h, const uint16_t rnd_bytes_cnt);
  * @param rnd_bytes_cnt     Number of random bytes to get (255 bytes is the maximum)
  * @return                  LT_OK if success, otherwise returns other error code.
  */
-lt_ret_t lt_in__random_value_get(lt_handle_t *h, uint8_t *rnd_bytes, const uint16_t rnd_bytes_cnt);
+lt_ret_t lt_in__random_value_get(lt_handle_t *h, uint8_t *rnd_bytes, const uint8_t rnd_bytes_cnt);
 
 /**
  * @brief Encodes ECC_Key_Generate command payload.

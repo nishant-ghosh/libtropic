@@ -924,9 +924,9 @@ lt_ret_t lt_in__r_mem_data_erase(lt_handle_t *h)
     return LT_OK;
 }
 
-lt_ret_t lt_out__random_value_get(lt_handle_t *h, const uint16_t rnd_bytes_cnt)
+lt_ret_t lt_out__random_value_get(lt_handle_t *h, const uint8_t rnd_bytes_cnt)
 {
-    if ((rnd_bytes_cnt > TR01_RANDOM_VALUE_GET_LEN_MAX) || !h) {
+    if (!h) {
         return LT_PARAM_ERR;
     }
     if (h->l3.session_status != LT_SECURE_SESSION_ON) {
@@ -944,9 +944,9 @@ lt_ret_t lt_out__random_value_get(lt_handle_t *h, const uint16_t rnd_bytes_cnt)
     return lt_l3_encrypt_request(&h->l3);
 }
 
-lt_ret_t lt_in__random_value_get(lt_handle_t *h, uint8_t *rnd_bytes, const uint16_t rnd_bytes_cnt)
+lt_ret_t lt_in__random_value_get(lt_handle_t *h, uint8_t *rnd_bytes, const uint8_t rnd_bytes_cnt)
 {
-    if (!h || !rnd_bytes || (rnd_bytes_cnt > TR01_RANDOM_VALUE_GET_LEN_MAX)) {
+    if (!h || !rnd_bytes) {
         return LT_PARAM_ERR;
     }
     if (h->l3.session_status != LT_SECURE_SESSION_ON) {
