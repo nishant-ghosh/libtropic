@@ -482,7 +482,7 @@ lt_ret_t lt_r_mem_data_erase(lt_handle_t *h, const uint16_t udata_slot);
  * @retval                  other Function did not execute successully, you might use lt_ret_verbose()
  * to get verbose encoding of returned value
  */
-lt_ret_t lt_random_value_get(lt_handle_t *h, uint8_t *rnd_bytes, const uint16_t rnd_bytes_cnt);
+lt_ret_t lt_random_value_get(lt_handle_t *h, uint8_t *rnd_bytes, const uint8_t rnd_bytes_cnt);
 
 /**
  * @brief Generates ECC key in the specified ECC key slot
