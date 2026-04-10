@@ -294,4 +294,4 @@ if(LT_RETRIEVE_ALARM_LOG)
     target_compile_definitions(tropic PUBLIC LT_RETRIEVE_ALARM_LOG)
 endif()
 
-target_compile_definitions(tropic PRIVATE LT_CRC_ERR_RESEND_ATTEMPTS=${LT_CRC_ERR_RESEND_ATTEMPTS)
+target_compile_definitions(tropic PRIVATE LT_CRC_ERR_RESEND_ATTEMPTS=${LT_CRC_ERR_RESEND_ATTEMPTS})
