@@ -137,23 +137,30 @@ lt_ret_t lt_l2_send_encrypted_cmd(lt_l2_state_t *s2, uint8_t *buff, uint16_t buf
 
     uint16_t buff_offset = 0;
 
+    // Count of attempts to resend the frame on LT_L2_CRC_ERR.
+    uint32_t frame_resend_counter = 0;
+
+    // req->req_len gets overwritten, so we need to keep copy to increment
+    // buff_offset at the end of the loop.
+    uint16_t req_len;
+
     // Split encrypted buffer into chunks and proceed them into L2 transfers:
     for (int i = 0; i < chunk_num; i++) {
         req->req_id = TR01_L2_ENCRYPTED_CMD_REQ_ID;
         // If the currently processed chunk is the last one, get its length (may be shorter than
         // L2_CHUNK_MAX_DATA_SIZE)
         if (i == (chunk_num - 1)) {
-            req->req_len = last_chunk_len;
+            req_len = last_chunk_len;
         }
         else {
-            req->req_len = TR01_L2_CHUNK_MAX_DATA_SIZE;
+            req_len = TR01_L2_CHUNK_MAX_DATA_SIZE;
         }
-        memcpy(req->l3_chunk, buff + buff_offset, req->req_len);
-        buff_offset += req->req_len;  // Move offset for next chunk
+        req->req_len = req_len;
+        memcpy(req->l3_chunk, buff + buff_offset, req_len);
         add_crc(req);
 
         // Send L2 request containing a chunk from L3 buff
-        ret = lt_l1_write(s2, 2 + req->req_len + 2, LT_L1_TIMEOUT_MS_DEFAULT);
+        ret = lt_l1_write(s2, 2 + req_len + 2, LT_L1_TIMEOUT_MS_DEFAULT);
         if (ret != LT_OK) {
             return ret;
         }
@@ -166,9 +173,43 @@ lt_ret_t lt_l2_send_encrypted_cmd(lt_l2_state_t *s2, uint8_t *buff, uint16_t buf
 
         // Check status byte of this frame
         ret = lt_l2_frame_check(s2->buff);
+
+        // In case of IN_CRC error, request to resend the last frame.
+        if (ret == LT_L2_IN_CRC_ERR) {
+            for (int attempt = 0; attempt < LT_CRC_ERR_RESEND_ATTEMPTS; attempt++) {
+                s2->l2_in_crc_error_count++;
+
+                ret = lt_l2_resend_response(s2);
+                if (ret == LT_OK || ret == LT_L2_REQ_CONT) {
+                    break;
+                }
+                // Return immediately on other errors.
+                else if (ret != LT_L2_IN_CRC_ERR) {
+                    return ret;
+                }
+            }
+        }
+
+        // In case of CRC error, resend the last frame.
+        if (ret == LT_L2_CRC_ERR) {
+            if (frame_resend_counter > LT_CRC_ERR_RESEND_ATTEMPTS) {
+                LT_LOG_ERROR("Received LT_L2_CRC_ERR after reaching resend attempt limit of " PRIu32);
+                return ret;
+            }
+
+            s2->l2_crc_error_count++;
+            frame_resend_counter++;
+            i--;
+            continue;
+        }
+
+        // In other cases, return immediately.
         if (ret != LT_OK && ret != LT_L2_REQ_CONT) {
             return ret;
         }
+
+        buff_offset += req_len;    // Move offset for next chunk
+        frame_resend_counter = 0;  // Frame sent successfully, reset the counter.
     }
 
     return LT_OK;
@@ -191,6 +232,9 @@ lt_ret_t lt_l2_recv_encrypted_res(lt_l2_state_t *s2, uint8_t *buff, uint16_t max
     // Tropic can respond with various lengths of chunks, this loop should be limited
     uint16_t loops = 0;
 
+    // Count of attempts to resend the frame on LT_L2_IN_CRC_ERR.
+    uint32_t frame_resend_counter = 0;
+
     do {
         // Get one L2 frame of a device's response
         ret = lt_l1_read(s2, TR01_L1_LEN_MAX, LT_L1_TIMEOUT_MS_DEFAULT);
@@ -212,6 +256,19 @@ lt_ret_t lt_l2_recv_encrypted_res(lt_l2_state_t *s2, uint8_t *buff, uint16_t max
                 offset += resp->rsp_len;
                 loops++;
                 break;
+            case LT_L2_IN_CRC_ERR:
+                // Host received corrupted frame. Ask for resend.
+                frame_resend_counter++;
+
+                struct lt_l2_resend_req_t *p_l2_req = (struct lt_l2_resend_req_t *)s2->buff;
+                p_l2_req->req_id = TR01_L2_RESEND_REQ_ID;
+                p_l2_req->req_len = TR01_L2_RESEND_REQ_LEN;
+
+                ret = lt_l2_send(s2);
+                if (ret != LT_OK) {
+                    return ret;
+                }
+                break;
             case LT_OK:
                 // This was last L2 frame of L3 packet, copy it and return
                 memcpy(buff + offset, (struct l2_encrypted_rsp_t *)resp->l3_chunk, resp->rsp_len);
@@ -220,6 +277,10 @@ lt_ret_t lt_l2_recv_encrypted_res(lt_l2_state_t *s2, uint8_t *buff, uint16_t max
                 // Any other frame status is not expected
                 return ret;
         }
+
+        // Frame received OK, resetting resend counter.
+        frame_resend_counter = 0;
+
     } while (loops < LT_L2_RECV_ENC_RES_MAX_LOOPS);
 
     return LT_FAIL;
