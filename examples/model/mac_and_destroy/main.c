@@ -682,9 +682,9 @@ int main(void)
     printf("Initialized final_key: %s\n", print_buff);
 
     uint8_t final_key_exported[TR01_MAC_AND_DESTROY_DATA_SIZE] = {0};
-    printf("\nWill do %d PIN check attempts with wrong PIN:\n", MACANDD_ROUNDS);
-    for (int i = 1; i < MACANDD_ROUNDS; i++) {
-        printf("\tInputting wrong PIN -> slot #%d will be destroyed...\n", i);
+    printf("\nWill do %d PIN check attempts with wrong PIN:\n", MACANDD_ROUNDS - 1);
+    for (int i = 0; i < MACANDD_ROUNDS - 1; i++) {
+        printf("\tInputting wrong PIN -> slot #%d will be destroyed...\n", MACANDD_ROUNDS - 1 - i);
         ret = PIN_entry_check(&lt_handle, pin_wrong, sizeof(pin_wrong), additional_data,
                               sizeof(additional_data), final_key_exported);
         if (ret != LT_FAIL) {
