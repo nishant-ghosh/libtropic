@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Renamed `hal/stm32/nucleo_l432kc/libtropic_port_stm32_nucleo_l432kc.*` to `hal/stm32/stm32l4xx/libtropic_port_stm32l4xx.*`.
   - Renamed `LT_STM32_L432KC_GPIO_OUTPUT_CHECK_ATTEMPTS` to `LT_STM32L4XX_GPIO_OUTPUT_CHECK_ATTEMPTS`.
   - Renamed `lt_dev_stm32_nucleo_l432kc_t` to `lt_dev_stm32l4xx_t`.
+- `lt_ecc_ecdsa_sign` now expects a 32-byte hash instead of an arbitrary message - provided data are not hashed anymore. Select a hash function that outputs 32 bytes (for example, SHA-256). If using a longer digest, apply standard truncation as appropriate; do not pad shorter digests.
 
 ### Added
 - ECC + EdDSA example for USB DevKit.
