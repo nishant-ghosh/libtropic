@@ -57,7 +57,7 @@ First, install the dependencies and prepare the repository:
             - Fedora: `sudo dnf install make`
         3. Install GCC cross-compiler for ARM:
             - Ubuntu/Debian: `sudo apt update && sudo apt install gcc-arm-none-eabi`
-            - Fedora: `sudo dnf install arm-none-eabi-gcc`
+            - Fedora: `sudo dnf install arm-none-eabi-gcc arm-none-eabi-binutils-cs arm-none-eabi-newlib`
         4. Install [OpenOCD](https://openocd.org/pages/getting-openocd.html):
             - Ubuntu/Debian: `sudo apt update && sudo apt install openocd`
             - Fedora: `sudo dnf install openocd`
