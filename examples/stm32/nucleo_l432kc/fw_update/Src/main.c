@@ -5,9 +5,31 @@
  * @copyright Copyright (c) 2020-2026 Tropic Square s.r.o.
  *
  * @license For the license see LICENSE.md in the root directory of this source tree.
+ */
+
+// This project is based on SPI_FullDuplex_ComPolling example by MCD Application Team
+// and modified by Tropic Square to run Libtropic functional tests, see original
+// file header attached below.
+
+/**
+ ******************************************************************************
+ * @file    SPI/SPI_FullDuplex_ComPolling/Src/main.c
+ * @author  MCD Application Team
+ * @brief   This sample code shows how to use STM32L4xx SPI HAL API to transmit
+ *          and receive a data buffer with a communication process based on
+ *          Polling transfer.
+ *          The communication is done using 2 Boards.
+ ******************************************************************************
+ * @attention
  *
- * This example project is based on the SPI/SPI_FullDuplex_ComPolling example from STM32 example
- * library which was created by the MCD Application Team.
+ * Copyright (c) 2017 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
  */
 
 /* Includes ------------------------------------------------------------------*/
