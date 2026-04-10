@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Change the type of `slot` parameter from `uint8_t` to `lt_pkey_index_t` in `lt_pairing_key_write()`, `lt_pairing_key_read()`, `lt_pairing_key_invalidate()`, `lt_out__pairing_key_write()`, `lt_out__pairing_key_read()`, `lt_out__pairing_key_invalidate()`.
+- `examples/model/mac_and_destroy/`: Log the correct number of wrong attempts and indexes of destroyed slots.
 
 ## [3.2.0]
 
