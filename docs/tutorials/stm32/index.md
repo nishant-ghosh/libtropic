@@ -40,6 +40,7 @@ We will go through our examples in the `examples/stm32/` directory. In this dire
         |  MISO (SDO)   |  A5             |
         |  MOSI (SDI)   |  A6             |
         |  CS (CSN)     |  A3             |
+        |  GPO          |  D10            |
     
     ??? question "Advanced: How to Use Different Nucleo Pins?"
         The pin assignments above are used in our examples by default. The pins can be changed in the source code of each example. However, apart from changing assignment, you also have to initialize different peripherals, which is not documented here.

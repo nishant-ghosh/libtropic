@@ -45,10 +45,6 @@ project(
 #                                                                         #
 ###########################################################################
 
-if(LT_USE_INT_PIN)
-    message(FATAL_ERROR "Using interrupt pin is currently not supported on Nucleo L432KC board")
-endif()
-
 if (LT_CAL STREQUAL "openssl")
     message(FATAL_ERROR "OpenSSL is not supported on STM32!")
 endif()
