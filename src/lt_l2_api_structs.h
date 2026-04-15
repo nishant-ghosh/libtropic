@@ -515,7 +515,7 @@ LT_STATIC_ASSERT(
 // clang-format on
 
 // Firmware update API structs for ABAB silicon revision
-#ifdef ABAB
+#ifdef LT_SILICON_REV_ABAB
 /** @brief Request ID */
 #define TR01_L2_MUTABLE_FW_UPDATE_REQ_ID 0xb1
 /** @brief Request min length */
@@ -598,7 +598,7 @@ LT_STATIC_ASSERT(
 #endif
 
 // Firmware update API structs for ACAB silicon revision
-#ifdef ACAB
+#ifdef LT_SILICON_REV_ACAB
 /** @brief Request ID */
 #define TR01_L2_MUTABLE_FW_UPDATE_REQ_ID 0xb0
 /** @brief Request min length */

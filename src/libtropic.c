@@ -602,7 +602,7 @@ lt_ret_t lt_reboot(lt_handle_t *h, const lt_startup_id_t startup_id)
     return LT_OK;
 }
 
-#ifdef ABAB
+#ifdef LT_SILICON_REV_ABAB
 lt_ret_t lt_mutable_fw_erase(lt_handle_t *h, const lt_bank_id_t bank_id)
 {
     if (!h || ((bank_id != TR01_FW_BANK_FW1) && (bank_id != TR01_FW_BANK_FW2) &&
@@ -698,7 +698,7 @@ lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const uint
 
     return LT_OK;
 }
-#elif ACAB
+#elif LT_SILICON_REV_ACAB
 lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *update_request)
 {
     if (!h || !update_request) {
@@ -809,7 +809,7 @@ lt_ret_t lt_mutable_fw_update_data(lt_handle_t *h, const uint8_t *update_data,
     return LT_OK;
 }
 #else
-#error "Undefined silicon revision. Please define either ABAB or ACAB."
+#error "Undefined silicon revision! One of the LT_SILICON_REV_* macros must be defined."
 #endif
 
 lt_ret_t lt_get_log_req(lt_handle_t *h, uint8_t *log_msg, const uint16_t log_msg_max_size,
@@ -1943,7 +1943,7 @@ lt_ret_t lt_print_chip_id(const struct lt_chip_id_t *chip_id,
 lt_ret_t lt_do_mutable_fw_update(lt_handle_t *h, const uint8_t *update_data,
                                  const uint16_t update_data_size, const lt_bank_id_t bank_id)
 {
-#ifdef ABAB
+#ifdef LT_SILICON_REV_ABAB
     if (!h || !update_data || update_data_size > TR01_MUTABLE_FW_UPDATE_SIZE_MAX ||
         ((bank_id != TR01_FW_BANK_FW1) && (bank_id != TR01_FW_BANK_FW2) &&
          (bank_id != TR01_FW_BANK_SPECT1) && (bank_id != TR01_FW_BANK_SPECT2))) {
@@ -1959,7 +1959,7 @@ lt_ret_t lt_do_mutable_fw_update(lt_handle_t *h, const uint8_t *update_data,
         return ret;
     }
 
-#elif ACAB
+#elif LT_SILICON_REV_ACAB
     LT_UNUSED(bank_id);  // bank_id is not used with ACAB, chip handles banks on its own
     if (!h || !update_data || update_data_size > TR01_MUTABLE_FW_UPDATE_SIZE_MAX) {
         return LT_PARAM_ERR;
@@ -1978,7 +1978,7 @@ lt_ret_t lt_do_mutable_fw_update(lt_handle_t *h, const uint8_t *update_data,
     }
 
 #else
-#error "Undefined silicon revision. Please define either ABAB or ACAB."
+#error "Undefined silicon revision! One of the LT_SILICON_REV_* macros must be defined."
 #endif
 
     return LT_OK;

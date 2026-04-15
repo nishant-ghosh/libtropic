@@ -273,7 +273,7 @@ void lt_test_rev_param_check(lt_handle_t *h)
     // --------------------------------------------------------
     // Silicon revision specific functions
     // --------------------------------------------------------
-#ifdef ABAB
+#ifdef LT_SILICON_REV_ABAB
     LT_TEST_ASSERT(LT_PARAM_ERR, lt_mutable_fw_erase(NULL, TR01_FW_BANK_FW1));
     LT_TEST_ASSERT(LT_PARAM_ERR, lt_mutable_fw_erase(h, 0xFFFFFFFF));
 
@@ -289,7 +289,7 @@ void lt_test_rev_param_check(lt_handle_t *h)
         LT_TEST_ASSERT(LT_PARAM_ERR,
                        lt_mutable_fw_update(h, dummy_data, sizeof(dummy_data), 0xFFFFFFFF));
     }
-#elif ACAB
+#elif LT_SILICON_REV_ACAB
     {
         uint8_t dummy_data[1];
         LT_TEST_ASSERT(LT_PARAM_ERR, lt_mutable_fw_update(NULL, dummy_data));
