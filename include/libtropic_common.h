@@ -297,7 +297,8 @@ typedef enum lt_ret_t {
        Application FW - it will stay in Start-up Mode no matter the `startup_id`), or
 
        - `startup_id`==`TR01_MAINTENANCE_REBOOT` and TROPIC01's mode after successful reboot is **not**
-       `LT_TR01_MAINTENANCE`.
+       `LT_TR01_MAINTENANCE` (this can e.g. happen when Maintenance Mode is disabled in R-Config or
+       I-Config).
     */
     LT_REBOOT_UNSUCCESSFUL = 6,
 
