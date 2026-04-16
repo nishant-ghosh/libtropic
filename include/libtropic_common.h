@@ -642,6 +642,39 @@ typedef enum lt_bank_id_t {
 } lt_bank_id_t;
 
 /**
+ * @brief Format of the first chunk in the mutable FW update data.
+ * @note This format applies to silicon revision ACAB and newer.
+ */
+typedef struct lt_mutable_fw_update_chunk_0_t {
+    uint8_t req_len;       /**< Length byte. */
+    uint8_t signature[64]; /**< Signature of SHA256 hash calculated from the rest of the data in
+                              Mutable_FW_Update_Req.REQ_DATA field. */
+    uint8_t hash[32]; /**< SHA256 hash of the first FW chunk sent in Mutable_FW_Update_Data_Req. */
+    uint16_t type;    /**< FW type which is going to be updated. */
+    uint8_t padding;  /**< Padding, zero value. */
+    uint8_t header_version; /**< Version of used header. */
+    uint32_t version;       /**< Version of the mutable FW. */
+} __attribute__((__packed__)) lt_mutable_fw_update_chunk_0_t;
+
+// clang-format off
+/** \cond */
+LT_STATIC_ASSERT(
+    ( sizeof(struct lt_mutable_fw_update_chunk_0_t) )
+    ==
+    (
+        LT_MEMBER_SIZE(struct lt_mutable_fw_update_chunk_0_t, req_len) + 
+        LT_MEMBER_SIZE(struct lt_mutable_fw_update_chunk_0_t, signature) + 
+        LT_MEMBER_SIZE(struct lt_mutable_fw_update_chunk_0_t, hash) + 
+        LT_MEMBER_SIZE(struct lt_mutable_fw_update_chunk_0_t, type) + 
+        LT_MEMBER_SIZE(struct lt_mutable_fw_update_chunk_0_t, padding) + 
+        LT_MEMBER_SIZE(struct lt_mutable_fw_update_chunk_0_t, header_version) +
+        LT_MEMBER_SIZE(struct lt_mutable_fw_update_chunk_0_t, version)
+    )
+)
+/** \endcond */
+// clang-format on
+
+/**
  * @brief When in MAINTENANCE mode, it is possible to read firmware header from a firmware bank.
  * Returned data differs based on bootloader version. This header layout is returned by bootloader
  * version v1.0.1

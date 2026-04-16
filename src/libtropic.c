@@ -705,18 +705,6 @@ lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *update_request)
         return LT_PARAM_ERR;
     }
 
-    // This structure reflects incomming data and is used for passing those data into l2 frame
-    struct data_format_t {
-        uint8_t req_len;       /**< Length byte */
-        uint8_t signature[64]; /**< Signature of SHA256 hash of all following data in this packet */
-        uint8_t
-            hash[32];  /**< SHA256 HASH of first FW chunk of data sent using Mutable_FW_Update_Data */
-        uint16_t type; /**< FW type which is going to be updated */
-        uint8_t padding;        /**< Padding, zero value */
-        uint8_t header_version; /**< Version of used header */
-        uint32_t version;       /**< Version of FW */
-    } __attribute__((__packed__));
-
     // Setup a request pointer to l2 buffer, which is placed in handle
     struct lt_l2_mutable_fw_update_req_t *p_l2_req = (struct lt_l2_mutable_fw_update_req_t *)
                                                          h->l2.buff;
@@ -725,18 +713,19 @@ lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *update_request)
                                                           h->l2.buff;
 
     // Setup a pointer to incomming data
-    struct data_format_t *data_p = (struct data_format_t *)(update_request);
+    struct lt_mutable_fw_update_chunk_0_t *fw_chunk_0 =
+        (struct lt_mutable_fw_update_chunk_0_t *)(update_request);
 
     p_l2_req->req_id = TR01_L2_MUTABLE_FW_UPDATE_REQ_ID;
     p_l2_req->req_len = TR01_L2_MUTABLE_FW_UPDATE_REQ_LEN;
 
-    memcpy(p_l2_req->signature, data_p->signature, sizeof(data_p->signature));
-    memcpy(p_l2_req->hash, data_p->hash, sizeof(data_p->hash));
+    memcpy(p_l2_req->signature, fw_chunk_0->signature, sizeof(fw_chunk_0->signature));
+    memcpy(p_l2_req->hash, fw_chunk_0->hash, sizeof(fw_chunk_0->hash));
 
-    p_l2_req->type = data_p->type;
-    p_l2_req->padding = data_p->padding;
-    p_l2_req->header_version = data_p->header_version;
-    p_l2_req->version = data_p->version;
+    p_l2_req->type = fw_chunk_0->type;
+    p_l2_req->padding = fw_chunk_0->padding;
+    p_l2_req->header_version = fw_chunk_0->header_version;
+    p_l2_req->version = fw_chunk_0->version;
 
     lt_ret_t ret = lt_l2_send(&h->l2);
     if (ret != LT_OK) {
