@@ -635,8 +635,8 @@ lt_ret_t lt_mutable_fw_erase(lt_handle_t *h, const lt_bank_id_t bank_id)
     return LT_OK;
 }
 
-lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const uint16_t fw_data_size,
-                              lt_bank_id_t bank_id)
+lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const size_t fw_data_size,
+                              const lt_bank_id_t bank_id)
 {
     if (!h || !fw_data || fw_data_size > TR01_MUTABLE_FW_UPDATE_SIZE_MAX ||
         ((bank_id != TR01_FW_BANK_FW1) && (bank_id != TR01_FW_BANK_FW2) &&

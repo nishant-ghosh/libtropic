@@ -232,18 +232,19 @@ lt_ret_t lt_reboot(lt_handle_t *h, const lt_startup_id_t startup_id);
 lt_ret_t lt_mutable_fw_erase(lt_handle_t *h, const lt_bank_id_t bank_id);
 
 /**
- * @brief Update mutable firmware in one of banks
+ * @brief Performs FW update by sending multiple Mutable_FW_Update_Req L2 requests.
+ * @note This function is used with silicon revision ABAB.
  *
  * @param h             Handle for communication with TROPIC01
- * @param fw_data       Array with firmware bytes
- * @param fw_data_size  Number of firmware's bytes in passed array
- * @param bank_id       enum lt_bank_id_t
- * lt_ret_t             LT_OK            - SUCCESS
- *                      other parameters - ERROR, for verbose output pass return value to function
- * lt_ret_verbose()
+ * @param fw_data       Firmware update data
+ * @param fw_data_size  Size of firmware update data
+ * @param bank_id       Mutable firmware bank ID
+ * @retval              LT_OK Function executed successfully
+ * @retval              other Function did not execute successully, you might use lt_ret_verbose() to
+ * get verbose encoding of returned value
  */
-lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const uint16_t fw_data_size,
-                              lt_bank_id_t bank_id);
+lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const size_t fw_data_size,
+                              const lt_bank_id_t bank_id);
 
 #elif defined(LT_SILICON_REV_ACAB)
 /** @brief Maximal size of update data */
