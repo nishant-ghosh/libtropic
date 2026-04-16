@@ -699,9 +699,9 @@ lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const uint
     return LT_OK;
 }
 #elif defined(LT_SILICON_REV_ACAB)
-lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *update_request)
+lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const size_t fw_data_size)
 {
-    if (!h || !update_request) {
+    if (!h || !fw_data || fw_data_size < sizeof(lt_mutable_fw_update_chunk_0_t)) {
         return LT_PARAM_ERR;
     }
 
@@ -714,7 +714,7 @@ lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *update_request)
 
     // Setup a pointer to incomming data
     struct lt_mutable_fw_update_chunk_0_t *fw_chunk_0 =
-        (struct lt_mutable_fw_update_chunk_0_t *)(update_request);
+        (struct lt_mutable_fw_update_chunk_0_t *)(fw_data);
 
     p_l2_req->req_id = TR01_L2_MUTABLE_FW_UPDATE_REQ_ID;
     p_l2_req->req_len = TR01_L2_MUTABLE_FW_UPDATE_REQ_LEN;
@@ -1955,7 +1955,7 @@ lt_ret_t lt_do_mutable_fw_update(lt_handle_t *h, const uint8_t *update_data,
     }
 
     // send the update 'request'
-    lt_ret_t ret = lt_mutable_fw_update(h, update_data);
+    lt_ret_t ret = lt_mutable_fw_update(h, update_data, update_data_size);
     if (ret != LT_OK) {
         return ret;
     }

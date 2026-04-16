@@ -249,13 +249,15 @@ lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const uint
 #define TR01_MUTABLE_FW_UPDATE_SIZE_MAX 30720
 
 /**
- * @brief Sends mutable firmware update L2 request to TROPIC01 with silicon revision ACAB
+ * @brief Sends Mutable_FW_Update_Req L2 request.
+ * @note This function is used with silicon revision ACAB and newer.
  *
- * @param h               Handle for communication with TROPIC01
- * @param update_request  Array with firmware update request bytes
- * @return                LT_OK if success, otherwise returns other error code.
+ * @param h             Handle for communication with TROPIC01
+ * @param fw_data       Firmware update data
+ * @param fw_data_size  Size of firmware update data
+ * @return              LT_OK if success, otherwise returns other error code.
  */
-lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *update_request);
+lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const size_t fw_data_size);
 
 /**
  * @brief Sends mutable firmware update data to TROPIC01 with silicon revision ACAB. Function
