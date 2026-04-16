@@ -219,10 +219,11 @@ lt_ret_t lt_reboot(lt_handle_t *h, const lt_startup_id_t startup_id);
 /** @brief Maximal size of update data */
 #define TR01_MUTABLE_FW_UPDATE_SIZE_MAX 25600
 /**
- * @brief Erase mutable firmware in one of banks
+ * @brief Erases the given mutable firmware bank using Mutable_FW_Erase_Req L2 request.
+ * @note This function is used with silicon revision ABAB.
  *
  * @param h           Handle for communication with TROPIC01
- * @param bank_id     enum lt_bank_id_t
+ * @param bank_id     Mutable firmware bank ID
  *
  * @retval            LT_OK Function executed successfully
  * @retval            other Function did not execute successully, you might use lt_ret_verbose() to get
