@@ -3,6 +3,11 @@
 #include <stdint.h>
 
 /**
+ * @brief SPECT firmware version array {reserved, patch, minor, major}
+ */
+const uint8_t fw_SPECT_ver[4] = {0, 0, 0, 1};
+
+/**
  * @brief SPECT firmware version spect_app-v1.0.0_signed.bin for bootloader v1.0.1
  */
 const uint8_t fw_SPECT[] = {
