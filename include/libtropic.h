@@ -260,16 +260,17 @@ lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const uint
 lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const size_t fw_data_size);
 
 /**
- * @brief Sends mutable firmware update data to TROPIC01 with silicon revision ACAB. Function
- * `lt_mutable_fw_update()` must be called first to start authenticated mutable fw update.
+ * @brief Performs the rest of the FW update by sending multiple Mutable_FW_Update_Data_Req L2
+ * requests.
+ * @attention `lt_mutable_fw_update()` must be called before this function.
+ * @note This function is used with silicon revision ACAB and newer.
  *
- * @param h                 Handle for communication with TROPIC01
- * @param update_data       Array with firmware update data bytes
- * @param update_data_size  Size of update data
- * @return                  LT_OK if success, otherwise returns other error code.
+ * @param h             Handle for communication with TROPIC01
+ * @param fw_data       Firmware update data
+ * @param fw_data_size  Size of firmware update data
+ * @return              LT_OK if success, otherwise returns other error code.
  */
-lt_ret_t lt_mutable_fw_update_data(lt_handle_t *h, const uint8_t *update_data,
-                                   const uint16_t update_data_size);
+lt_ret_t lt_mutable_fw_update_data(lt_handle_t *h, const uint8_t *fw_data, const size_t fw_data_size);
 
 #endif
 /**

@@ -743,11 +743,10 @@ lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const size
     return LT_OK;
 }
 
-lt_ret_t lt_mutable_fw_update_data(lt_handle_t *h, const uint8_t *update_data,
-                                   const uint16_t update_data_size)
+lt_ret_t lt_mutable_fw_update_data(lt_handle_t *h, const uint8_t *fw_data, const size_t fw_data_size)
 {
-    if (!h || !update_data || update_data_size <= (TR01_L2_MUTABLE_FW_UPDATE_REQ_LEN + 1U) ||
-        update_data_size > TR01_MUTABLE_FW_UPDATE_SIZE_MAX) {
+    if (!h || !fw_data || fw_data_size <= (TR01_L2_MUTABLE_FW_UPDATE_REQ_LEN + 1U) ||
+        fw_data_size > TR01_MUTABLE_FW_UPDATE_SIZE_MAX) {
         return LT_PARAM_ERR;
     }
 
@@ -757,9 +756,6 @@ lt_ret_t lt_mutable_fw_update_data(lt_handle_t *h, const uint8_t *update_data,
     // Setup a request pointer to l2 buffer with response data
     struct lt_l2_mutable_fw_update_rsp_t *p_l2_resp = (struct lt_l2_mutable_fw_update_rsp_t *)
                                                           h->l2.buff;
-
-    // Normalized sizes for arithmetic.
-    size_t upd_size = (size_t)update_data_size;
     size_t copy_len;
 
     // Compute how many bytes are available in the `lt_l2_mutable_fw_update_data_req_t` struct starting
@@ -770,16 +766,16 @@ lt_ret_t lt_mutable_fw_update_data(lt_handle_t *h, const uint8_t *update_data,
 
     // Data consist of "request" and "data" parts,
     // 'data' byte chunks are taken starting from 'chunk_index'
-    for (size_t chunk_index = (size_t)TR01_L2_MUTABLE_FW_UPDATE_REQ_LEN + 1U; chunk_index < upd_size;
-         chunk_index += copy_len) {
-        copy_len = (size_t)update_data[chunk_index] + 1U;
+    for (size_t chunk_index = (size_t)TR01_L2_MUTABLE_FW_UPDATE_REQ_LEN + 1U;
+         chunk_index < fw_data_size; chunk_index += copy_len) {
+        copy_len = (size_t)fw_data[chunk_index] + 1U;
 
-        if (copy_len > upd_size - chunk_index || copy_len > dest_capacity) {
+        if (copy_len > fw_data_size - chunk_index || copy_len > dest_capacity) {
             return LT_PARAM_ERR;
         }
 
         p2_l2_req->req_id = TR01_L2_MUTABLE_FW_UPDATE_DATA_REQ;
-        memcpy((uint8_t *)&p2_l2_req->req_len, update_data + chunk_index, copy_len);
+        memcpy((uint8_t *)&p2_l2_req->req_len, fw_data + chunk_index, copy_len);
 
         lt_ret_t ret = lt_l2_send(&h->l2);
         if (ret != LT_OK) {
