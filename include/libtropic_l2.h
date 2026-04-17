@@ -59,6 +59,19 @@ lt_ret_t lt_l2_resend_response(lt_l2_state_t *s2);
 lt_ret_t lt_l2_receive(lt_l2_state_t *s2);
 
 /**
+ * @brief Send L2 Request and receive L2 Response.
+ *
+ * This function combines lt_l2_send and lt_l2_receive with additional
+ * handling of resending outgoing frames on LT_L2_CRC_ERROR errors.
+ *
+ * @param s2          Structure holding l2 state
+ *
+ * @retval            LT_OK Function executed successfully
+ * @retval            other Function did not execute successully
+ */
+lt_ret_t lt_l2_transfer(lt_l2_state_t *s2);
+
+/**
  * @brief Sends content of encrypted L3 command's buffer over Layer 2.
  *
  * Data are sent from handle's `l3_buff`.

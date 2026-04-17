@@ -81,18 +81,41 @@ lt_ret_t lt_l2_receive(lt_l2_state_t *s2)
 
     ret = lt_l2_frame_check(s2->buff);
 
-    if (ret == LT_L2_IN_CRC_ERR) {
-        for (int i = 0; i < LT_CRC_ERR_RESEND_ATTEMPTS; i++) {
-            s2->l2_in_crc_error_count++;
+    // Rest of errors are reported directly to upper layers, without trying to resend response.
+    return ret;
+}
 
-            ret = lt_l2_resend_response(s2);
-            if (ret == LT_OK || ret != LT_L2_IN_CRC_ERR) {
-                break;
+lt_ret_t lt_l2_transfer(lt_l2_state_t *s2)
+{
+    uint8_t req_buff_backup[LT_SIZE_OF_L2_BUFF];
+    memcpy(req_buff_backup, s2->buff, LT_SIZE_OF_L2_BUFF);
+
+    lt_ret_t ret;
+    for (int i = 0; i < LT_CRC_ERR_RESEND_ATTEMPTS; i++) {
+        ret = lt_l2_send(s2);
+        if (ret != LT_OK) {
+            return ret;
+        }
+
+        ret = lt_l2_receive(s2);
+        if (ret == LT_L2_IN_CRC_ERR) {
+            for (int j = 0; j < LT_CRC_ERR_RESEND_ATTEMPTS; j++) {
+                s2->l2_in_crc_error_count++;
+
+                ret = lt_l2_resend_response(s2);
+                if (ret == LT_OK || ret != LT_L2_IN_CRC_ERR) {
+                    break;
+                }
             }
+        }
+        else if (ret == LT_L2_CRC_ERR) {
+            memcpy(s2->buff, req_buff_backup, LT_SIZE_OF_L2_BUFF);
+        }
+        else {
+            break;
         }
     }
 
-    // Rest of errors are reported directly to upper layers, without trying to resend response.
     return ret;
 }
 
