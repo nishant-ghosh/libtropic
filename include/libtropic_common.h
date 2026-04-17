@@ -210,9 +210,12 @@ typedef enum lt_tr01_mode_t {
 } lt_tr01_mode_t;
 
 //--------------------------------------------------------------------------------------------------------------------//
+/** @brief Size of the buffer for Requests/Responses in L2 state structure. */
+#define LT_SIZE_OF_L2_BUFF TR01_L1_LEN_MAX
+
 typedef struct lt_l2_state_t {
     void *device;
-    uint8_t buff[TR01_L1_CHIP_STATUS_SIZE + TR01_L2_MAX_FRAME_SIZE];
+    uint8_t buff[LT_SIZE_OF_L2_BUFF];
     bool startup_req_sent;
 
     uint32_t l2_in_crc_error_count;
