@@ -32,10 +32,13 @@ void lt_test_mock_attrs(lt_handle_t *h);
 /**
  * @brief Test for handling invalid CRC in TROPIC01 responses.
  *
+ * @note Get_Info Request is used for testing.
+ *
  * Test steps:
- *  1. Mock a response with an invalid CRC for a dummy request (Get_Info is used).
- *  2. Send request.
- *  3. Verify that Libtropic correctly identifies the invalid CRC and returns an error.
+ *  1. Mock init sequence and initialize Libtropic handle.
+ *  2. Deplete all retry attempts and check if LT_L2_IN_CRC_ERR was returned.
+ *  3. Send one corrupted frame and then a correct one and check if LT_OK is returned.
+ *  4. Deinitialize Libtropic handle.
  *
  * @param h Handle for communication with TROPIC01
  */
