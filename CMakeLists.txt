@@ -101,10 +101,10 @@ endif()
 # - resend request in case of LT_L2_CRC_ERR is received
 # - ask TROPIC01 to resend response in case of LT_L2_IN_CRC_ERR is received
 # Must be non-negative. Set to 0 to disable automatic resending.
-set(LT_CRC_ERR_RESEND_ATTEMPTS "3" CACHE STRING "Count of attempts to resend request/response on CRC or IN_CRC error.")
+set(LT_CRC_ERR_RETRY_ATTEMPTS "3" CACHE STRING "Count of attempts to resend request/response on CRC or IN_CRC error.")
 
-if(NOT LT_CRC_ERR_RESEND_ATTEMPTS MATCHES "^[0-9]+$")
-    message(FATAL_ERROR "LT_CRC_ERR_RESEND_ATTEMPTS must be a non-negative integer, got '${LT_CRC_ERR_RESEND_ATTEMPTS}'")
+if(NOT LT_CRC_ERR_RETRY_ATTEMPTS MATCHES "^[0-9]+$")
+    message(FATAL_ERROR "LT_CRC_ERR_RETRY_ATTEMPTS must be a non-negative integer, got '${LT_CRC_ERR_RETRY_ATTEMPTS}'")
 endif()
 
 # Check whether compiling standalone (e.g. as a library) or as a child project (= has parent scope)
@@ -294,4 +294,4 @@ if(LT_RETRIEVE_ALARM_LOG)
     target_compile_definitions(tropic PUBLIC LT_RETRIEVE_ALARM_LOG)
 endif()
 
-target_compile_definitions(tropic PRIVATE LT_CRC_ERR_RESEND_ATTEMPTS=${LT_CRC_ERR_RESEND_ATTEMPTS})
+target_compile_definitions(tropic PRIVATE LT_CRC_ERR_RETRY_ATTEMPTS=${LT_CRC_ERR_RETRY_ATTEMPTS})

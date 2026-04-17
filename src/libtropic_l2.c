@@ -91,30 +91,46 @@ lt_ret_t lt_l2_transfer(lt_l2_state_t *s2)
     memcpy(req_buff_backup, s2->buff, LT_SIZE_OF_L2_BUFF);
 
     lt_ret_t ret;
-    for (int i = 0; i < LT_CRC_ERR_RESEND_ATTEMPTS; i++) {
+    bool retry_communication;
+    int total_retry_count = 0;
+
+    do {
+        retry_communication = false;
+
         ret = lt_l2_send(s2);
         if (ret != LT_OK) {
             return ret;
         }
 
         ret = lt_l2_receive(s2);
+
+        // If CRC of incoming Response is invalid, try to get a new Reponse.
         if (ret == LT_L2_IN_CRC_ERR) {
-            for (int j = 0; j < LT_CRC_ERR_RESEND_ATTEMPTS; j++) {
+            while (total_retry_count < LT_CRC_ERR_RETRY_ATTEMPTS) {
                 s2->l2_in_crc_error_count++;
 
                 ret = lt_l2_resend_response(s2);
                 if (ret == LT_OK || ret != LT_L2_IN_CRC_ERR) {
                     break;
                 }
+
+                total_retry_count++;
             }
         }
-        else if (ret == LT_L2_CRC_ERR) {
-            memcpy(s2->buff, req_buff_backup, LT_SIZE_OF_L2_BUFF);
+
+        // After receiving Response frame with correct CRC (or exceeded count of attempts),
+        // check if TROPIC01 received our Request OK. If not, and total number
+        // of retries was not exhausted yet, retry whole communication.
+        if (ret == LT_L2_CRC_ERR) {
+            s2->l2_crc_error_count++;
+
+            if (total_retry_count < LT_CRC_ERR_RETRY_ATTEMPTS) {
+                memcpy(s2->buff, req_buff_backup, LT_SIZE_OF_L2_BUFF);
+                total_retry_count++;
+                retry_communication = true;
+            }
         }
-        else {
-            break;
-        }
-    }
+    } while (retry_communication);
 
     return ret;
 }
@@ -199,7 +215,7 @@ lt_ret_t lt_l2_send_encrypted_cmd(lt_l2_state_t *s2, uint8_t *buff, uint16_t buf
 
         // In case of IN_CRC error, request to resend the last frame.
         if (ret == LT_L2_IN_CRC_ERR) {
-            for (int attempt = 0; attempt < LT_CRC_ERR_RESEND_ATTEMPTS; attempt++) {
+            for (int attempt = 0; attempt < LT_CRC_ERR_RETRY_ATTEMPTS; attempt++) {
                 s2->l2_in_crc_error_count++;
 
                 ret = lt_l2_resend_response(s2);
@@ -215,7 +231,7 @@ lt_ret_t lt_l2_send_encrypted_cmd(lt_l2_state_t *s2, uint8_t *buff, uint16_t buf
 
         // In case of CRC error, resend the last frame.
         if (ret == LT_L2_CRC_ERR) {
-            if (frame_resend_counter > LT_CRC_ERR_RESEND_ATTEMPTS) {
+            if (frame_resend_counter > LT_CRC_ERR_RETRY_ATTEMPTS) {
                 LT_LOG_ERROR("Received LT_L2_CRC_ERR after reaching resend attempt limit of " PRIu32);
                 return ret;
             }

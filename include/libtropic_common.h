@@ -416,13 +416,13 @@ typedef enum lt_ret_t {
 
 //--------------------------------------------------------------------------------------------------------------------//
 
-#ifndef LT_CRC_ERR_RESEND_ATTEMPTS
+#ifndef LT_CRC_ERR_RETRY_ATTEMPTS
 /** @brief Count of attempts to resend request/response on LT_L2_CRC_ERR or LT_L2_IN_CRC_ERR error.
  *
  * @note In CMake-based builds it is set in CMakeLists.txt and can be configured using CMake
  * parameters.
  */
-#define LT_CRC_ERR_RESEND_ATTEMPTS 3
+#define LT_CRC_ERR_RETRY_ATTEMPTS 3
 #endif
 
 //--------------------------------------------------------------------------------------------------------------------//
