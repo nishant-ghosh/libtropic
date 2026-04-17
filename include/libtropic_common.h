@@ -219,7 +219,6 @@ typedef struct lt_l2_state_t {
     uint32_t l2_crc_error_count;
 } lt_l2_state_t;
 
-// #define LT_SIZE_OF_L3_BUFF (1000)
 #ifndef LT_SIZE_OF_L3_BUFF
 #define LT_SIZE_OF_L3_BUFF TR01_L3_PACKET_MAX_SIZE
 #endif
