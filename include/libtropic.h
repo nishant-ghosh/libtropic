@@ -799,20 +799,30 @@ lt_ret_t lt_print_fw_header(lt_handle_t *h, const lt_bank_id_t bank_id,
                             int (*print_func)(const char *format, ...));
 
 /**
- * @brief Performs mutable firmware update on ABAB and ACAB silicon revisions.
- * @important After this function returns successfully, the handle (`lt_handle_t`) has to be
- * initialized again (i.e. calling `lt_deinit()` and `lt_init()`).
+ * @brief Helper function to perform mutable firmware update on both firmware banks.
+ * @note This helper function follows the recommended FW update process.
+ * @note This helper function is compatible with all silicon revisions.
+ * @important Even if this function fails, the Application FW might still be bootable (atleast one
+ * of the banks was updated successfully). However, ignoring this is strongly discouraged:
+ *  - There is a non-negligible security risk.
+ *  - Libtropic was not reinitialized to be compatible with the updated Application FW - some
+ *    functionalities may not be available or may produce undefined behavior.
+ *  - **Solution**: call this function again and make sure it suceeds. If it continues to fail, refer
+ *    to our [FAQ](https://tropicsquare.github.io/libtropic/latest/faq/) or contact us via our [support
+ *    portal](https://support.desk.tropicsquare.com/servicedesk/customer/user/login?destination=portals).
  *
- * @param h                 Handle for communication with TROPIC01
- * @param update_data       Pointer to the data to be written
- * @param update_data_size  Size of the data to be written
- * @param bank_id           Bank ID where the update should be applied, valid values are
- *                             For ABAB: TR01_FW_BANK_FW1, TR01_FW_BANK_FW2, TR01_FW_BANK_SPECT1,
- * TR01_FW_BANK_SPECT2 For ACAB: Parameter is ignored, chip is handling firmware banks on its own
- * @return                  LT_OK if success, otherwise returns other error code.
+ * @param h                   Handle for communication with TROPIC01
+ * @param cpu_fw_data         Firmware update data for RISC-V main CPU
+ * @param cpu_fw_data_size    Size of firmware update data for RISC-V main CPU
+ * @param spect_fw_data       Firmware update data for SPECT coprocessor
+ * @param spect_fw_data_size  Size of firmware update data for SPECT coprocessor
+ * @retval                    LT_OK Function executed successfully
+ * @retval                    other Function did not execute successully, you might use
+ * lt_ret_verbose() to get verbose encoding of returned value
  */
-lt_ret_t lt_do_mutable_fw_update(lt_handle_t *h, const uint8_t *update_data,
-                                 const uint16_t update_data_size, const lt_bank_id_t bank_id);
+lt_ret_t lt_do_mutable_fw_update(lt_handle_t *h, const uint8_t *cpu_fw_data,
+                                 const size_t cpu_fw_data_size, const uint8_t *spect_fw_data,
+                                 const size_t spect_fw_data_size);
 
 /** @} */  // end of libtropic_API_helpers group
 #endif
