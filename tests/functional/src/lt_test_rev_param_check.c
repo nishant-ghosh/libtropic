@@ -292,8 +292,10 @@ void lt_test_rev_param_check(lt_handle_t *h)
 #elif defined(LT_SILICON_REV_ACAB)
     {
         uint8_t dummy_data[1];
-        LT_TEST_ASSERT(LT_PARAM_ERR, lt_mutable_fw_update(NULL, dummy_data));
-        LT_TEST_ASSERT(LT_PARAM_ERR, lt_mutable_fw_update(h, NULL));
+        LT_TEST_ASSERT(LT_PARAM_ERR, lt_mutable_fw_update(NULL, dummy_data, sizeof(dummy_data)));
+        LT_TEST_ASSERT(LT_PARAM_ERR, lt_mutable_fw_update(h, NULL, sizeof(dummy_data)));
+        LT_TEST_ASSERT(LT_PARAM_ERR, lt_mutable_fw_update(h, dummy_data,
+                                                          sizeof(lt_mutable_fw_update_chunk_0_t) - 1));
 
         LT_TEST_ASSERT(LT_PARAM_ERR,
                        lt_mutable_fw_update_data(NULL, dummy_data, TR01_L2_MUTABLE_FW_UPDATE_REQ_LEN));
@@ -357,11 +359,16 @@ void lt_test_rev_param_check(lt_handle_t *h)
     {
         uint8_t data[1] = {0};
         LT_TEST_ASSERT(LT_PARAM_ERR,
-                       lt_do_mutable_fw_update(NULL, data, sizeof(data), TR01_FW_BANK_FW1));
-        LT_TEST_ASSERT(LT_PARAM_ERR, lt_do_mutable_fw_update(h, NULL, sizeof(data), TR01_FW_BANK_FW1));
-        LT_TEST_ASSERT(LT_PARAM_ERR, lt_do_mutable_fw_update(
-                                         h, data, (uint16_t)(TR01_MUTABLE_FW_UPDATE_SIZE_MAX + 1),
-                                         TR01_FW_BANK_FW1));
+                       lt_do_mutable_fw_update(NULL, data, sizeof(data), data, sizeof(data)));
+        LT_TEST_ASSERT(LT_PARAM_ERR,
+                       lt_do_mutable_fw_update(h, NULL, sizeof(data), data, sizeof(data)));
+        LT_TEST_ASSERT(LT_PARAM_ERR,
+                       lt_do_mutable_fw_update(h, data, (TR01_MUTABLE_FW_UPDATE_SIZE_MAX + 1), data,
+                                               sizeof(data)));
+        LT_TEST_ASSERT(LT_PARAM_ERR,
+                       lt_do_mutable_fw_update(h, data, sizeof(data), NULL, sizeof(data)));
+        LT_TEST_ASSERT(LT_PARAM_ERR, lt_do_mutable_fw_update(h, data, sizeof(data), data,
+                                                             (TR01_MUTABLE_FW_UPDATE_SIZE_MAX + 1)));
     }
 
     {
