@@ -304,11 +304,7 @@ lt_ret_t lt_l2_recv_encrypted_res(lt_l2_state_t *s2, uint8_t *buff, uint16_t max
                 while (frame_resend_counter < LT_CRC_ERR_RETRY_ATTEMPTS) {
                     frame_resend_counter++;
 
-                    struct lt_l2_resend_req_t *p_l2_req = (struct lt_l2_resend_req_t *)s2->buff;
-                    p_l2_req->req_id = TR01_L2_RESEND_REQ_ID;
-                    p_l2_req->req_len = TR01_L2_RESEND_REQ_LEN;
-
-                    ret = lt_l2_send(s2);
+                    ret = lt_l2_resend_response(s2);
                     if (ret == LT_L2_IN_CRC_ERR) {
                         s2->l2_in_crc_error_count++;
 
