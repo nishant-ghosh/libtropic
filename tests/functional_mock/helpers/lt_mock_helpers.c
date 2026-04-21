@@ -167,7 +167,7 @@ lt_ret_t mock_l3_result(lt_handle_t *h, const uint8_t *result_plaintext,
     return LT_OK;
 }
 
-lt_ret_t mock_l3_command_responses(lt_handle_t *h, const size_t chunk_count)
+lt_ret_t mock_l3_command_responses(lt_handle_t *h, const size_t chunk_count, bool corrupt_crc)
 {
     if (chunk_count > 1) {
         LT_LOG_ERROR("Only single chunk supported now!");
@@ -189,6 +189,11 @@ lt_ret_t mock_l3_command_responses(lt_handle_t *h, const size_t chunk_count)
     };
 
     uint16_t crc = crc16(req_ok_frame + 1, 2);
+
+    if (corrupt_crc) {
+        crc = ~crc;
+    }
+
     req_ok_frame[TR01_L2_RSP_DATA_RSP_CRC_OFFSET] = crc >> 8;
     req_ok_frame[TR01_L2_RSP_DATA_RSP_CRC_OFFSET + 1] = crc & 0x00FF;
 

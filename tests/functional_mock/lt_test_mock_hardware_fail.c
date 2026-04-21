@@ -53,7 +53,7 @@ void lt_test_mock_hardware_fail(lt_handle_t *h)
     for (int slot = TR01_PAIRING_KEY_SLOT_INDEX_0; slot <= TR01_PAIRING_KEY_SLOT_INDEX_3; slot++) {
         LT_LOG_INFO("Mocking for slot %d...", slot);
         // Mock replies to the command.
-        LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1));
+        LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, false));
 
         // Mock command result itself.
         uint8_t pairing_key_write_plaintext[] = {
@@ -72,7 +72,7 @@ void lt_test_mock_hardware_fail(lt_handle_t *h)
     for (int slot = TR01_PAIRING_KEY_SLOT_INDEX_0; slot <= TR01_PAIRING_KEY_SLOT_INDEX_3; slot++) {
         LT_LOG_INFO("Mocking for slot %d...", slot);
         // Mock replies to the command.
-        LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1));
+        LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, false));
 
         // Mock command result itself.
         uint8_t pairing_key_invalidate_plaintext[] = {
@@ -87,7 +87,7 @@ void lt_test_mock_hardware_fail(lt_handle_t *h)
 
     LT_LOG_INFO("Mocking HARDWARE_FAIL in R_Config_Write reply...");
     // Mock replies to the command.
-    LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1));
+    LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, false));
 
     // Mock command result itself.
     uint8_t r_config_write_plaintext[] = {
@@ -102,7 +102,7 @@ void lt_test_mock_hardware_fail(lt_handle_t *h)
 
     LT_LOG_INFO("Mocking HARDWARE_FAIL in I_Config_Write reply...");
     // Mock replies to the command.
-    LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1));
+    LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, false));
 
     // Mock command result itself.
     uint8_t i_config_write_plaintext[] = {
@@ -117,7 +117,7 @@ void lt_test_mock_hardware_fail(lt_handle_t *h)
 
     LT_LOG_INFO("Mocking HARDWARE_FAIL in R_Mem_Data_Write reply...");
     // Mock replies to the command.
-    LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1));
+    LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, false));
 
     // Mock command result itself.
     uint8_t r_mem_data_write_plaintext[] = {
