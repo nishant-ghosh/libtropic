@@ -6,6 +6,8 @@
  * @license For the license see LICENSE.md in the root directory of this source tree.
  */
 
+#include <string.h>
+
 #include "libtropic.h"
 #include "libtropic_common.h"
 #include "libtropic_logging.h"
@@ -14,7 +16,9 @@
 #include "lt_l1.h"
 #include "lt_l2_api_structs.h"
 #include "lt_l2_frame_check.h"
+#include "lt_l3_process.h"
 #include "lt_mock_helpers.h"
+#include "lt_port_wrap.h"
 #include "lt_test_common.h"
 
 void lt_test_mock_invalid_in_crc(lt_handle_t *h)
@@ -39,8 +43,10 @@ void lt_test_mock_invalid_in_crc(lt_handle_t *h)
     LT_LOG_INFO("Initializing handle");
     LT_TEST_ASSERT(LT_OK, lt_init(h));
 
-    // 2. Deplete all retry attempts and check if LT_L2_IN_CRC_ERR was returned.
+    // 2. Test LT_L2_IN_CRC_ERR retry mechanism on L2: Deplete all retry attempts and check if
+    // LT_L2_IN_CRC_ERR was returned.
     // ---------------------------------------------------------------------------------------------
+    LT_LOG_INFO("Mocking responses to Get_Info request with invalid CRC...");
 
     const uint8_t chip_ready = TR01_L1_CHIP_MODE_READY_bit;
     struct lt_l2_get_info_rsp_t get_info_resp_corrupted_crc = {
@@ -60,11 +66,15 @@ void lt_test_mock_invalid_in_crc(lt_handle_t *h)
                                                 calc_mocked_resp_len(&get_info_resp_corrupted_crc)));
     }
 
-    LT_LOG_INFO("Sending Get_Info request with invalid CRC in response...");
     LT_TEST_ASSERT(LT_L2_IN_CRC_ERR, lt_get_info_riscv_fw_ver(h, dummy_out));
+    // Check IN_CRC error counter and restart it.
+    LT_TEST_ASSERT(1 + LT_CRC_ERR_RETRY_ATTEMPTS, h->l2.l2_in_crc_error_count);
+    h->l2.l2_in_crc_error_count = 0;
 
-    // 3. Send one corrupted frame and then a correct one and check if LT_OK is returned.
+    // 3. Test LT_L2_IN_CRC_ERR retry mechanism on L2: Send one corrupted frame and then a correct one
+    // and check if LT_OK is returned.
     // ---------------------------------------------------------------------------------------------
+    LT_LOG_INFO("Mocking reponses to Get_Info request with one invalid and one correct CRC...");
 
     LT_TEST_ASSERT(LT_OK, lt_mock_hal_enqueue_response(&h->l2, &chip_ready, sizeof(chip_ready)));
     LT_TEST_ASSERT(LT_OK,
@@ -80,11 +90,64 @@ void lt_test_mock_invalid_in_crc(lt_handle_t *h)
     LT_TEST_ASSERT(LT_OK, lt_mock_hal_enqueue_response(&h->l2, (uint8_t *)&get_info_resp,
                                                        calc_mocked_resp_len(&get_info_resp)));
 
-    LT_LOG_INFO("Sending Get_Info request with correct CRC...");
     LT_TEST_ASSERT(LT_OK, lt_get_info_riscv_fw_ver(h, dummy_out));
 
-    // 4. Deinitialize Libtropic handle
+    // Check IN_CRC error counter and restart it.
+    LT_TEST_ASSERT(1, h->l2.l2_in_crc_error_count);
+    h->l2.l2_in_crc_error_count = 0;
+
+    // 4. Start mocked Secure Session.
     // ---------------------------------------------------------------------------------------------
+    LT_LOG_INFO("Setting up session...");
+    uint8_t kcmd[TR01_AES256_KEY_LEN];
+    uint8_t kres[TR01_AES256_KEY_LEN];
+    LT_TEST_ASSERT(LT_OK, lt_random_bytes(h, kcmd, sizeof(kcmd)));
+    memcpy(kres, kcmd, TR01_AES256_KEY_LEN);
+    LT_TEST_ASSERT(LT_OK, mock_session_start(h, kcmd, kres));
+
+    // 5. Test LT_L2_IN_CRC_ERR retry mechanism on L3: Deplete all retry attempts and check if
+    // LT_L2_IN_CRC_ERR was returned. Use lt_ping as a dummy command.
+    // ---------------------------------------------------------------------------------------------
+    LT_LOG_INFO("Mocking responses to lt_ping with invalid CRC...");
+
+    // Enqueue count of responses based on configured resend attempts.
+    // 1 + LT_CRC_ERR_RETRY_ATTEMPTS, because first is normal Request, remaining are retries.
+    for (int i = 0; i < 1 + LT_CRC_ERR_RETRY_ATTEMPTS; i++) {
+        LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, true));
+    }
+
+    const uint8_t msg_out[] = {'H', 'E', 'L', 'L', 'O'};
+    uint8_t msg_in[sizeof(msg_out)];
+    LT_TEST_ASSERT(LT_L2_IN_CRC_ERR, lt_ping(h, msg_out, msg_in, sizeof(msg_out)));
+
+    // Check IN_CRC error counter and restart it.
+    LT_TEST_ASSERT(1 + LT_CRC_ERR_RETRY_ATTEMPTS, h->l2.l2_in_crc_error_count);
+    h->l2.l2_in_crc_error_count = 0;
+
+    // 6. Test LT_L2_IN_CRC_ERR retry mechanism on L3: Send one corrupted frame and then a correct one
+    // and check if LT_OK is returned. Use lt_ping as a dummy command.
+    // ---------------------------------------------------------------------------------------------
+    LT_LOG_INFO("Mocking responses to lt_ping with one invalid and one correct CRC...");
+
+    // Enqueue one response with invalid CRC and one response with correct CRC.
+    LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, true));
+    LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, false));
+
+    // Mock command result itself.
+    uint8_t lt_ping_plaintext[] = {TR01_L3_RESULT_OK, 'H', 'E', 'L', 'L', 'O'};
+    LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext)));
+
+    LT_TEST_ASSERT(LT_OK, lt_ping(h, msg_out, msg_in, sizeof(msg_out)));
+
+    // Check IN_CRC error counter and restart it.
+    LT_TEST_ASSERT(1, h->l2.l2_in_crc_error_count);
+    h->l2.l2_in_crc_error_count = 0;
+
+    // 7. Terminate the session and deinitialize the Libtropic handle
+    // ---------------------------------------------------------------------------------------------
+
+    LT_LOG_INFO("Terminating the Secure Session...");
+    LT_TEST_ASSERT(LT_OK, mock_session_abort(h));
 
     LT_LOG_INFO("Deinitializing handle");
     LT_TEST_ASSERT(LT_OK, lt_deinit(h));
