@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.2.1]
 
 ### Fixed
-- FW update: added necessary reboot into Maintenance Mode before updating the second FW bank pair. Without it, only one FW bank pair is updated.
+- FW update: added necessary reboot into Maintenance Mode before updating the second FW bank pair. Without the reboot, only one FW bank pair was updated.
 
 ## [3.2.0]
 
