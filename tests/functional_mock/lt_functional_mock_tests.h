@@ -38,13 +38,13 @@ void lt_test_mock_attrs(lt_handle_t *h);
  *  1. Mock init sequence and initialize Libtropic handle.
  *  2. Test LT_L2_IN_CRC_ERR retry mechanism on L2: Deplete all retry attempts and check if
  *     LT_L2_IN_CRC_ERR was returned.
- *  3. Test LT_L2_IN_CRC_ERR retry mechanism on L2: Send one corrupted frame and then a correct
- *     one and check if LT_OK is returned.
+ *  3. Test LT_L2_IN_CRC_ERR retry mechanism on L2: Send random number of corrupted frames
+ *     (in range [1, LT_CRC_ERR_RETRY_ATTEMPTS]) and then a correct one and check if LT_OK is returned.
  *  4. Start mocked Secure Session.
  *  5. Test LT_L2_IN_CRC_ERR retry mechanism on L3: Deplete all retry attempts and check if
  *     LT_L2_IN_CRC_ERR was returned.
- *  6. Test LT_L2_IN_CRC_ERR retry mechanism on L3: Send one corrupted frame and then a correct
- *     one and check if LT_OK is returned.
+ *  6. Test LT_L2_IN_CRC_ERR retry mechanism on L3: Send random number of corrupted frames
+ *     (in range [1, LT_CRC_ERR_RETRY_ATTEMPTS]) and then a correct one and check if LT_OK is returned.
  *  7. Terminate the session and deinitialize the Libtropic handle.
  *
  * @param h Handle for communication with TROPIC01
