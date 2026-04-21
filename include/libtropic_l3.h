@@ -99,10 +99,11 @@ lt_ret_t lt_in__ping(lt_handle_t *h, uint8_t *msg_in, const uint16_t msg_len);
  *
  * @param h           Handle for communication with TROPIC01
  * @param pairing_pub 32B of pubkey
- * @param slot        Pairing key lot SH0PUB - SH3PUB
+ * @param slot        Pairing key slot index
  * @return            LT_OK if success, otherwise returns other error code.
  */
-lt_ret_t lt_out__pairing_key_write(lt_handle_t *h, const uint8_t *pairing_pub, const uint8_t slot);
+lt_ret_t lt_out__pairing_key_write(lt_handle_t *h, const uint8_t *pairing_pub,
+                                   const lt_pkey_index_t slot);
 /**
  * @brief Decodes Pairing_Key_Write result payload.
  * @note Used for separate L3 communication, for more information read info
@@ -119,10 +120,10 @@ lt_ret_t lt_in__pairing_key_write(lt_handle_t *h);
  * at the top of this file.
  *
  * @param h           Handle for communication with TROPIC01
- * @param slot        Slot to read pairing key from
+ * @param slot        Pairing key slot index
  * @return            LT_OK if success, otherwise returns other error code.
  */
-lt_ret_t lt_out__pairing_key_read(lt_handle_t *h, const uint8_t slot);
+lt_ret_t lt_out__pairing_key_read(lt_handle_t *h, const lt_pkey_index_t slot);
 
 /**
  * @brief Decodes Pairing_Key_Read result payload.
@@ -141,10 +142,10 @@ lt_ret_t lt_in__pairing_key_read(lt_handle_t *h, uint8_t *pubkey);
  * read info at the top of this file.
  *
  * @param h           Handle for communication with TROPIC01
- * @param slot        Slot to invalidate pairing key in
+ * @param slot        Pairing key slot index
  * @return            LT_OK if success, otherwise returns other error code.
  */
-lt_ret_t lt_out__pairing_key_invalidate(lt_handle_t *h, const uint8_t slot);
+lt_ret_t lt_out__pairing_key_invalidate(lt_handle_t *h, const lt_pkey_index_t slot);
 
 /**
  * @brief Decodes Pairing_Key_Invalidate result payload.
@@ -346,7 +347,7 @@ lt_ret_t lt_in__r_mem_data_erase(lt_handle_t *h);
  * @param rnd_bytes_cnt   Number of random bytes to get (255 bytes is the maximum)
  * @return                LT_OK if success, otherwise returns other error code.
  */
-lt_ret_t lt_out__random_value_get(lt_handle_t *h, const uint16_t rnd_bytes_cnt);
+lt_ret_t lt_out__random_value_get(lt_handle_t *h, const uint8_t rnd_bytes_cnt);
 
 /**
  * @brief Decodes Random_Value_Get result payload.
@@ -358,7 +359,7 @@ lt_ret_t lt_out__random_value_get(lt_handle_t *h, const uint16_t rnd_bytes_cnt);
  * @param rnd_bytes_cnt     Number of random bytes to get (255 bytes is the maximum)
  * @return                  LT_OK if success, otherwise returns other error code.
  */
-lt_ret_t lt_in__random_value_get(lt_handle_t *h, uint8_t *rnd_bytes, const uint16_t rnd_bytes_cnt);
+lt_ret_t lt_in__random_value_get(lt_handle_t *h, uint8_t *rnd_bytes, const uint8_t rnd_bytes_cnt);
 
 /**
  * @brief Encodes ECC_Key_Generate command payload.
@@ -462,14 +463,14 @@ lt_ret_t lt_in__ecc_key_erase(lt_handle_t *h);
  * @note Used for separate L3 communication, for more information read info
  * at the top of this file.
  *
- * @param h           Handle for communication with TROPIC01
- * @param slot        ECC key slot to use for signing
- * @param msg         Message to sign
- * @param msg_len     Length of the message
- * @return            LT_OK if success, otherwise returns other error code.
+ * @param h            Handle for communication with TROPIC01
+ * @param slot         ECC key slot to use for signing
+ * @param msg_hash     Buffer containing a 32-byte hash of the message to sign
+ * @param msg_hash_len Length of the hash; must be exactly 32 bytes
+ * @return             LT_OK if success, otherwise returns other error code
  */
-lt_ret_t lt_out__ecc_ecdsa_sign(lt_handle_t *h, const lt_ecc_slot_t slot, const uint8_t *msg,
-                                const uint32_t msg_len);
+lt_ret_t lt_out__ecc_ecdsa_sign(lt_handle_t *h, const lt_ecc_slot_t slot, const uint8_t *msg_hash,
+                                const uint32_t msg_hash_len);
 
 /**
  * @brief Decodes ECDSA_Sign result payload.

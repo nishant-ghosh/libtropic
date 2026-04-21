@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- USB DevKit HAL: call `write()` in a loop, allow `EINTR` error code for both `write()` and `read()`.
+- Refer to USB Dongle as USB DevKit:
+  - Rename `hal/posix/usb_dongle/` to `hal/posix/usb_devkit/`.
+  - Rename `libtropic_port_posix_usb_dongle.*` to `libtropic_port_posix_usb_devkit.*`
+  - Rename `LT_USB_DONGLE_READ_WRITE_DELAY` to `LT_USB_DEVKIT_READ_WRITE_DELAY`.
+  - Rename `LT_USB_DONGLE_SPI_TRANSFER_BUFF_SIZE_MAX` to `LT_USB_DEVKIT_SPI_TRANSFER_BUFF_SIZE_MAX`.
+  - Rename `lt_dev_posix_usb_dongle_t` to `lt_dev_posix_usb_devkit_t`.
+- Added `lt_` prefixes to `sh0priv_eng_sample`, `sh0pub_eng_sample`, `sh0priv_prod0`, `sh0pub_prod0` arrays to avoid name collisions.
+- Renamed `TR01_CURVE_GENERATED` to `TR01_KEY_GENERATED` and `TR01_CURVE_STORED` to `TR01_KEY_STORED` in the `lt_ecc_key_origin_t` enum (typo).
+- Rename STM32 Nucleo F439ZI HAL to STM32F4xx HAL to provide compatibility with the MCU family:
+  - Renamed `hal/stm32/nucleo_f439zi/libtropic_port_stm32_nucleo_f439zi.*` to `hal/stm32/stm32f4xx/libtropic_port_stm32f4xx.*`.
+  - Renamed `LT_STM32_F439ZI_GPIO_OUTPUT_CHECK_ATTEMPTS` to `LT_STM32F4XX_GPIO_OUTPUT_CHECK_ATTEMPTS`.
+  - Renamed `lt_dev_stm32_nucleo_f439zi_t` to `lt_dev_stm32f4xx_t`.
+- Rename STM32 Nucleo L432KC HAL to STM32L4xx HAL to provide compatibility with the MCU family:
+  - Renamed `hal/stm32/nucleo_l432kc/libtropic_port_stm32_nucleo_l432kc.*` to `hal/stm32/stm32l4xx/libtropic_port_stm32l4xx.*`.
+  - Renamed `LT_STM32_L432KC_GPIO_OUTPUT_CHECK_ATTEMPTS` to `LT_STM32L4XX_GPIO_OUTPUT_CHECK_ATTEMPTS`.
+  - Renamed `lt_dev_stm32_nucleo_l432kc_t` to `lt_dev_stm32l4xx_t`.
+- `lt_ecc_ecdsa_sign` now expects a 32-byte hash instead of an arbitrary message - provided data are not hashed anymore. Select a hash function that outputs 32 bytes (for example, SHA-256). If using a longer digest, apply standard truncation as appropriate; do not pad shorter digests.
+- `lt_random_value_get()`, `lt_out__random_value_get()`, `lt_in__random_value_get()`: changed type of `rnd_bytes_cnt` parameter to `uint8_t` to align with the TROPIC01 User API.
+
+### Added
+- ECC + EdDSA example for USB DevKit.
+- STM32L4xx HAL: support for TROPIC01 GPO pin.
+- Arrays to firmware update files which contain firmware version of the update: `fw_CPU_ver`, `fw_SPECT_ver`.
+
+### Fixed
+- Change the type of `slot` parameter from `uint8_t` to `lt_pkey_index_t` in `lt_pairing_key_write()`, `lt_pairing_key_read()`, `lt_pairing_key_invalidate()`, `lt_out__pairing_key_write()`, `lt_out__pairing_key_read()`, `lt_out__pairing_key_invalidate()`.
+- `examples/model/mac_and_destroy/`: Log the correct number of wrong attempts and indexes of destroyed slots.
+- Target version reporting in Firmware Update examples for Linux.
+
 ## [3.2.1]
 
 ### Fixed

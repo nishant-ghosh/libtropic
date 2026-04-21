@@ -1202,6 +1202,8 @@ LT_STATIC_ASSERT(
 #define TR01_L3_ECDSA_SIGN_CMD_ID 0x70
 /** @brief Command length (fields: CMD_ID + CMD_DATA) */
 #define TR01_L3_ECDSA_SIGN_CMD_SIZE 48u
+/** @brief Length of the msg_hash field */
+#define TR01_L3_ECDSA_SIGN_CMD_MSG_HASH_LEN 32u
 
 /** @brief Result length (fields: RESULT + RES_DATA) */
 #define TR01_L3_ECDSA_SIGN_RES_SIZE 80u
@@ -1220,17 +1222,17 @@ struct lt_l3_ecdsa_sign_cmd_t {
      * @brief
      * The slot (from the ECC Keys partition in R-Memory) to read the key for ECDSA signing.
      */
-    uint16_t slot; /**< ECC Key slot */
+    uint16_t slot;
     /**
      * @brief
      * The padding by dummy data.
      */
-    uint8_t padding[13]; /**< Padding */
+    uint8_t padding[13];
     /**
      * @brief
-     * The hash of the message to sign (max size of 32 bytes).
+     * The 32-byte hash of the message to sign.
      */
-    uint8_t msg_hash[32]; /**< Hash of the Message to sign. */
+    uint8_t msg_hash[TR01_L3_ECDSA_SIGN_CMD_MSG_HASH_LEN];
 } __attribute__((packed));
 
 // clang-format off

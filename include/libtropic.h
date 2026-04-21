@@ -313,26 +313,26 @@ lt_ret_t lt_ping(lt_handle_t *h, const uint8_t *msg_out, uint8_t *msg_in, const 
  *
  * @param h           Handle for communication with TROPIC01
  * @param pairing_pub 32B of pubkey
- * @param slot        Pairing key lot SH0PUB - SH3PUB
+ * @param slot        Pairing key slot index
  *
  * @retval            LT_OK Function executed successfully
  * @retval            other Function did not execute successully, you might use lt_ret_verbose() to get
  * verbose encoding of returned value
  */
-lt_ret_t lt_pairing_key_write(lt_handle_t *h, const uint8_t *pairing_pub, const uint8_t slot);
+lt_ret_t lt_pairing_key_write(lt_handle_t *h, const uint8_t *pairing_pub, const lt_pkey_index_t slot);
 
 /**
  * @brief Reads pairing public key from TROPIC01's pairing key slot 0-3
  *
  * @param h           Handle for communication with TROPIC01
  * @param pairing_pub 32B of pubkey
- * @param slot        Pairing key lot SH0PUB - SH3PUB
+ * @param slot        Pairing key slot index
  *
  * @retval            LT_OK Function executed successfully
  * @retval            other Function did not execute successully, you might use lt_ret_verbose() to get
  * verbose encoding of returned value
  */
-lt_ret_t lt_pairing_key_read(lt_handle_t *h, uint8_t *pairing_pub, const uint8_t slot);
+lt_ret_t lt_pairing_key_read(lt_handle_t *h, uint8_t *pairing_pub, const lt_pkey_index_t slot);
 
 /**
  * @brief Invalidates pairing key in slot 0-3
@@ -343,13 +343,13 @@ lt_ret_t lt_pairing_key_read(lt_handle_t *h, uint8_t *pairing_pub, const uint8_t
  * invalidated if operating outside this range. Refer to datasheet for absolute maximum ratings.
  *
  * @param h           Handle for communication with TROPIC01
- * @param slot        Pairing key lot SH0PUB - SH3PUB
+ * @param slot        Pairing key slot index
  *
  * @retval            LT_OK Function executed successfully
  * @retval            other Function did not execute successully, you might use lt_ret_verbose() to get
  * verbose encoding of returned value
  */
-lt_ret_t lt_pairing_key_invalidate(lt_handle_t *h, const uint8_t slot);
+lt_ret_t lt_pairing_key_invalidate(lt_handle_t *h, const lt_pkey_index_t slot);
 
 /**
  * @brief Writes configuration object specified by `addr`. Make sure to read the Configuration Objects
@@ -482,7 +482,7 @@ lt_ret_t lt_r_mem_data_erase(lt_handle_t *h, const uint16_t udata_slot);
  * @retval                  other Function did not execute successully, you might use lt_ret_verbose()
  * to get verbose encoding of returned value
  */
-lt_ret_t lt_random_value_get(lt_handle_t *h, uint8_t *rnd_bytes, const uint16_t rnd_bytes_cnt);
+lt_ret_t lt_random_value_get(lt_handle_t *h, uint8_t *rnd_bytes, const uint8_t rnd_bytes_cnt);
 
 /**
  * @brief Generates ECC key in the specified ECC key slot
@@ -549,21 +549,22 @@ lt_ret_t lt_ecc_key_read(lt_handle_t *h, const lt_ecc_slot_t ecc_slot, uint8_t *
 lt_ret_t lt_ecc_key_erase(lt_handle_t *h, const lt_ecc_slot_t ecc_slot);
 
 /**
- * @brief Performs ECDSA sign of a message with a private ECC key stored in TROPIC01
+ * @brief Calculates ECDSA signature of a message hash (32 bytes) with a private ECC key stored in
+ * TROPIC01.
  *
- * @param h           Handle for communication with TROPIC01
- * @param ecc_slot    Slot containing a private key, TR01_ECC_SLOT_0 - TR01_ECC_SLOT_31
- * @param msg         Buffer containing a message
- * @param msg_len     Length of the message
- * @param rs          Buffer for storing a signature in a form of R and S bytes (should always have
- * length 64B)
+ * @param h            Handle for communication with TROPIC01
+ * @param ecc_slot     Slot containing a private key, TR01_ECC_SLOT_0 - TR01_ECC_SLOT_31
+ * @param msg_hash     Buffer containing a 32-byte hash of the message to sign
+ * @param msg_hash_len Length of the hash; must be exactly 32 bytes
+ * @param rs           Buffer for storing a signature in a form of R and S bytes (should always have
+ * length 64 B).
  *
- * @retval            LT_OK Function executed successfully
- * @retval            other Function did not execute successully, you might use lt_ret_verbose() to get
- * verbose encoding of returned value
+ * @retval             LT_OK Function executed successfully
+ * @retval             other Function did not execute successfully, you might use lt_ret_verbose() to
+ * get verbose encoding of returned value
  */
-lt_ret_t lt_ecc_ecdsa_sign(lt_handle_t *h, const lt_ecc_slot_t ecc_slot, const uint8_t *msg,
-                           const uint32_t msg_len, uint8_t *rs);
+lt_ret_t lt_ecc_ecdsa_sign(lt_handle_t *h, const lt_ecc_slot_t ecc_slot, const uint8_t *msg_hash,
+                           const uint32_t msg_hash_len, uint8_t *rs);
 
 /**
  * @brief Performs EdDSA sign of a message with a private ECC key stored in TROPIC01

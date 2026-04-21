@@ -22,7 +22,7 @@ extern "C" {
 
 /** @brief Size of CHIP_STATUS field */
 #define TR01_L1_CHIP_STATUS_SIZE 1u
-/** @brief Maximal number of data bytes in one L1 transfer */
+/** @brief Minimal number of data bytes in one L1 transfer */
 #define TR01_L1_LEN_MIN TR01_L1_CHIP_STATUS_SIZE
 /** @brief Maximal number of data bytes in one L1 transfer */
 #define TR01_L1_LEN_MAX (TR01_L1_CHIP_STATUS_SIZE + TR01_L2_MAX_FRAME_SIZE)
@@ -102,7 +102,7 @@ extern "C" {
  * the slot 0 after you write your own pairing key to another slot. Refer to the section 5.4 (Security
  * Lifecycle Management) in the datasheet for more information.
  */
-extern const uint8_t sh0priv_eng_sample[];
+extern const uint8_t lt_sh0priv_eng_sample[];
 /**
  * @brief Host MCU's X25519 public key (stored in TROPIC01) to execute a Secure Channel Handshake on
  * Pairing Key slot 0 of the engineering (pre-production) TROPIC01 samples.
@@ -111,7 +111,7 @@ extern const uint8_t sh0priv_eng_sample[];
  * the slot 0 after you write your own pairing key to another slot. Refer to the section 5.4 (Security
  * Lifecycle Management) in the datasheet for more information.
  */
-extern const uint8_t sh0pub_eng_sample[];
+extern const uint8_t lt_sh0pub_eng_sample[];
 /**
  * @brief Host MCU's X25519 private key to execute a Secure Channel Handshake on Pairing Key slot 0 of
  * the production TROPIC01 chips.
@@ -120,7 +120,7 @@ extern const uint8_t sh0pub_eng_sample[];
  * the slot 0 after you write your own pairing key to another slot. Refer to the section 5.4 (Security
  * Lifecycle Management) in the datasheet for more information.
  */
-extern const uint8_t sh0priv_prod0[];
+extern const uint8_t lt_sh0priv_prod0[];
 /**
  * @brief Host MCU's X25519 public key (stored in TROPIC01) to execute a Secure Channel Handshake on
  * Pairing Key slot 0 of the production TROPIC01 chips.
@@ -129,7 +129,7 @@ extern const uint8_t sh0priv_prod0[];
  * the slot 0 after you write your own pairing key to another slot. Refer to the section 5.4 (Security
  * Lifecycle Management) in the datasheet for more information.
  */
-extern const uint8_t sh0pub_prod0[];
+extern const uint8_t lt_sh0pub_prod0[];
 
 //--------------------------------------------------------------------------------------------------------------------//
 
@@ -893,8 +893,14 @@ typedef enum lt_ecc_slot_t {
     TR01_ECC_SLOT_31,
 } lt_ecc_slot_t;
 
-/** @brief ECC key type */
-typedef enum lt_ecc_curve_type_t { TR01_CURVE_P256 = 1, TR01_CURVE_ED25519 } lt_ecc_curve_type_t;
+/** @brief Type of the Elliptic Curve used for the key pair. Used by the ECC_Key_Generate,
+ * ECC_Key_Store and ECC_Key_Read L3 commands. */
+typedef enum lt_ecc_curve_type_t {
+    /** @brief Curve P-256. */
+    TR01_CURVE_P256 = 1,
+    /** @brief Curve Ed25519. */
+    TR01_CURVE_ED25519 = 2
+} lt_ecc_curve_type_t;
 
 /** @brief Length of public keys for P256 curve. */
 #define TR01_CURVE_P256_PUBKEY_LEN 64
@@ -903,8 +909,14 @@ typedef enum lt_ecc_curve_type_t { TR01_CURVE_P256 = 1, TR01_CURVE_ED25519 } lt_
 /** @brief Common length of private keys for both P256 and ED25519 curves. */
 #define TR01_CURVE_PRIVKEY_LEN 32
 
-/** @brief ECC key origin */
-typedef enum lt_ecc_key_origin_t { TR01_CURVE_GENERATED = 1, TR01_CURVE_STORED } lt_ecc_key_origin_t;
+/** @brief Origin of the Elliptic Curve private key used to derive the public key. Used by the
+ * ECC_Key_Read L3 command. */
+typedef enum lt_ecc_key_origin_t {
+    /** @brief Private key was generated via the ECC_Key_Generate L3 command. */
+    TR01_KEY_GENERATED = 1,
+    /** @brief Private key was stored via the ECC_Key_Store L3 command. */
+    TR01_KEY_STORED = 2
+} lt_ecc_key_origin_t;
 
 /** @brief Length of the EC signature (RS) for both ECDSA and EDDSA. */
 #define TR01_ECDSA_EDDSA_SIGNATURE_LENGTH 64

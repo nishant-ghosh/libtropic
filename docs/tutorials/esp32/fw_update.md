@@ -14,13 +14,15 @@
         ```bash { .copy }
         idf.py build flash monitor
         ```
+        After this, you should see a colored output in your terminal.
+
+        !!! tip "Closing the ESP-IDF serial monitor"
+            To close the ESP-IDF serial monitor, press <kbd>Ctrl</kbd> + <kbd>]</kbd>. Refer to the [ESP-IDF monitor documentation](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-guides/tools/idf-monitor.html) for a full list of available keyboard shortcuts.
 
     === ":fontawesome-brands-apple: macOS"
         TBA
 
     === ":fontawesome-brands-windows: Windows"
         TBA
-
-    After this, you should see a colored output in your terminal.
 
 [Next example :material-arrow-right:](hello_world.md){ .md-button }

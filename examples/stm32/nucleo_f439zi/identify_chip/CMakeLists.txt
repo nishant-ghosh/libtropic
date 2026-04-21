@@ -85,6 +85,7 @@ FetchContent_Declare(
     mbedtls_v4
     URL https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-4.0.0/mbedtls-4.0.0.tar.bz2
     URL_HASH SHA256=2f3a47f7b3a541ddef450e4867eeecb7ce2ef7776093f3a11d6d43ead6bf2827
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 
 # We configure MbedTLS using config file with following configuration:
@@ -119,7 +120,7 @@ target_sources(tropic PRIVATE ${LT_CAL_SRCS})
 target_include_directories(tropic PUBLIC ${LT_CAL_INC_DIRS})
 
 # Add Libtropic STM32 HAL
-add_subdirectory("${PATH_LIBTROPIC}hal/stm32/nucleo_f439zi" "nucleo_f439zi_hal")
+add_subdirectory("${PATH_LIBTROPIC}hal/stm32/stm32f4xx" "stm32f4xx_hal")
 
 # Specify other source files
 set(SOURCES

@@ -1,7 +1,7 @@
 /**
  * @file main.c
  * @brief Example showing how to perform an update of the TROPIC01 firmware using Libtropic with the
- * USB devkit.
+ * USB DevKit.
  * @copyright Copyright (c) 2020-2026 Tropic Square s.r.o.
  *
  * @license For the license see LICENSE.md in the root directory of this source tree.
@@ -16,7 +16,7 @@
 #include "libtropic.h"
 #include "libtropic_common.h"
 #include "libtropic_mbedtls_v4.h"
-#include "libtropic_port_posix_usb_dongle.h"
+#include "libtropic_port_posix_usb_devkit.h"
 #include "psa/crypto.h"
 
 lt_ret_t get_fw_versions(lt_handle_t *lt_handle)
@@ -78,7 +78,7 @@ int main(void)
     //
     // Modify this according to your environment. Default values
     // are compatible with RPi and our RPi shield.
-    lt_dev_posix_usb_dongle_t device = {0};
+    lt_dev_posix_usb_devkit_t device = {0};
 
     // LT_USB_DEVKIT_PATH is defined in CMakeLists.txt. Pass -DLT_USB_DEVKIT_PATH=<path>
     // to cmake if you want to change it.
@@ -128,8 +128,8 @@ int main(void)
     }
 
     printf("Versions to update to:\n");
-    printf("  - RISC-V FW version: %d.%d.%d\n", 6, 6, 6);
-    printf("  - SPECT FW version: %d.%d.%d\n", 6, 6, 6);
+    printf("  - RISC-V FW version: %d.%d.%d\n", fw_CPU_ver[3], fw_CPU_ver[2], fw_CPU_ver[1]);
+    printf("  - SPECT FW version: %d.%d.%d\n", fw_SPECT_ver[3], fw_SPECT_ver[2], fw_SPECT_ver[1]);
 
     printf("Proceed with update? [y/N]: ");
     char user_input = getchar();

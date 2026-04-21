@@ -6,6 +6,9 @@ The functional tests are organized into two categories, as some of them may caus
 - **Reversible** (`lt_test_rev_*.c`): only reversible operations are executed on the TROPIC01.
 - **Irreversible** (`lt_test_ire_*.c`): irreversible operations are executed: the state or contents of the TROPIC01 **cannot** be reverted.
 
+!!! warning "Functional tests reversibility"
+    *Reversible* means that the state of the TROPIC01 can be reverted back to the factory state. However, **it does not** mean that any data or changes stored or done by the user will be retained. For example, ECC keys or contents of R-Memory can be deleted by reversible tests.
+
 ## Compilation and Running
 !!! danger "DANGER!"
     Functional tests are for internal use only and are provided only for reference. Some tests can **destroy** your chip. **Do not run the tests** unless you use model only or you are absolutely sure what you are doing. If you damage your chip with the tests, we are unable to provide any support.

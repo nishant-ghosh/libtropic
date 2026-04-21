@@ -5,6 +5,7 @@
  * @license For the license see LICENSE.md in the root directory of this source tree.
  */
 
+#include <stdio.h>
 #include <string.h>
 #include <time.h>
 
@@ -12,7 +13,7 @@
 #include "libtropic_common.h"
 #include "libtropic_functional_tests.h"
 #include "libtropic_logging.h"
-#include "libtropic_port_posix_usb_dongle.h"
+#include "libtropic_port_posix_usb_devkit.h"
 
 #if LT_USE_TREZOR_CRYPTO
 #include "libtropic_trezor_crypto.h"
@@ -52,6 +53,10 @@ int main(void)
 {
     int ret = 0;
 
+    // Disable buffering.
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
+
     // CFP initialization
 #if LT_USE_MBEDTLS_V4
     psa_status_t status = psa_crypto_init();
@@ -76,7 +81,7 @@ int main(void)
 #endif
 
     // Device mappings
-    lt_dev_posix_usb_dongle_t device = {0};
+    lt_dev_posix_usb_devkit_t device = {0};
 
     // LT_USB_DEVKIT_PATH is defined in CMakeLists.txt.
     int dev_path_len = snprintf(device.dev_path, sizeof(device.dev_path), "%s", LT_USB_DEVKIT_PATH);

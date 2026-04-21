@@ -4,9 +4,29 @@
  * @copyright Copyright (c) 2020-2026 Tropic Square s.r.o.
  *
  * @license For the license see LICENSE.md in the root directory of this source tree.
+ */
+
+// This project is based on UART_Printf example by MCD Application Team
+// and modified by Tropic Square to run Libtropic functional tests, see original
+// file header attached below.
+
+/**
+ ******************************************************************************
+ * @file    UART/UART_Printf/Src/main.c
+ * @author  MCD Application Team
+ * @brief   This example shows how to retarget the C library printf function
+ *          to the UART.
+ ******************************************************************************
+ * @attention
  *
- * This example project is based on the UART/UART_Printf example from STM32 example library
- * which was created by the MCD Application Team.
+ * Copyright (c) 2017 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
  */
 
 /* Includes ------------------------------------------------------------------*/
@@ -18,7 +38,7 @@
 #include "libtropic.h"
 #include "libtropic_functional_tests.h"
 #include "libtropic_logging.h"
-#include "libtropic_port_stm32_nucleo_f439zi.h"
+#include "libtropic_port_stm32f4xx.h"
 #include "lt_test_common.h"
 #include "syscalls.h"
 
@@ -181,7 +201,7 @@ int main(void)
     lt_handle_t lt_handle = {0};
 
     /* Device mappings */
-    lt_dev_stm32_nucleo_f439zi_t device = {0};
+    lt_dev_stm32f4xx_t device = {0};
 
     device.spi_instance = LT_SPI_INSTANCE;
     device.baudrate_prescaler = SPI_BAUDRATEPRESCALER_16;

@@ -45,10 +45,6 @@ project(
 #                                                                         #
 ###########################################################################
 
-if(LT_USE_INT_PIN)
-    message(FATAL_ERROR "Using interrupt pin is currently not supported on Nucleo L432KC board")
-endif()
-
 if (LT_CAL STREQUAL "openssl")
     message(FATAL_ERROR "OpenSSL is not supported on STM32!")
 endif()
@@ -110,7 +106,7 @@ endif()
 ###########################################################################
 
 # Add Libtropic STM32 HAL
-add_subdirectory("${PATH_LIBTROPIC}/hal/stm32/nucleo_l432kc" "nucleo_l432kc_hal")
+add_subdirectory("${PATH_LIBTROPIC}/hal/stm32/stm32l4xx" "stm32l4xx_hal")
 
 # Specify other source files
 set(SOURCES

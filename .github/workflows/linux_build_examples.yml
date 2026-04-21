@@ -46,7 +46,7 @@ jobs:
           cmake ./ -B build -G Ninja
           cd build && ninja
 
-      - name: Build USB Devkit examples
+      - name: Build USB DevKit examples
         run: |
           cd examples/linux/usb_devkit/hello_world
           cmake ./ -B build -G Ninja
@@ -61,5 +61,9 @@ jobs:
           cd build && ninja
 
           cd ../../full_chain_verification
+          cmake ./ -B build -G Ninja
+          cd build && ninja
+
+          cd ../../ecc_eddsa
           cmake ./ -B build -G Ninja
           cd build && ninja

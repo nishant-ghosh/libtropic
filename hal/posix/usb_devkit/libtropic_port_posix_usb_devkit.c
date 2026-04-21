@@ -1,29 +1,29 @@
 /**
- * @file libtropic_port_posix_usb_dongle.c
+ * @file libtropic_port_posix_usb_devkit.c
  * @copyright Copyright (c) 2020-2026 Tropic Square s.r.o.
- * @brief Port for communication with USB UART Dongle (TS1302).
+ * @brief Port for communication with TROPIC01 USB DevKit.
  *
- * The TS1302 dongle uses a special protocol to translate UART communication to SPI. This port
- * implements the protocol. More info about the dongle in GitHub repo:
- * https://github.com/tropicsquare/ts13-usb-dev-kit-fw
+ * The TROPIC01 USB DevKit uses a special protocol to translate UART communication to SPI. This port
+ * implements the protocol. More info about the USB DevKit here:
+ * https://github.com/tropicsquare/devboards/tree/main/TROPIC01_USB_Devkit
  *
  * @license For the license see LICENSE.md in the root directory of this source tree.
  */
 
-#include "libtropic_port_posix_usb_dongle.h"
+#include "libtropic_port_posix_usb_devkit.h"
 
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
 #include <limits.h>
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <termios.h>
-#include <time.h>
 #include <unistd.h>
 
 #include "libtropic_common.h"
@@ -32,7 +32,7 @@
 #include "libtropic_port.h"
 
 #if LT_USE_INT_PIN
-#error "Interrupt PIN not supported in the USB dongle port!"
+#error "Interrupt PIN not supported in the USB DevKit port!"
 #endif
 
 // getentropy() has a limit of random bytes it can generate in one call. The POSIX.1-2024 standard
@@ -43,57 +43,101 @@
 #define GETENTROPY_MAX 256
 #endif
 
+// Maximum number of consecutive EINTR retries for read()/write() operations.
+#define LT_PORT_EINTR_RETRY_MAX 10U
+
 /**
  * @brief Writes data to a serial port (specified by fd).
+ * @note Returns after all bytes have been written or if an error occurred (EINTR is tolerated).
  *
- * @param  fd        File descriptor of the port to write to.
- * @param  buffer    Pointer to the buffer containing the data to be written.
- * @param  size      Size of the data in bytes to be written from the buffer.
+ * @param[in] fd      File descriptor of the port to write to.
+ * @param[in] buffer  Pointer to the buffer containing the data to be written.
+ * @param[in] size    Size of the data in bytes to be written from the buffer.
  *
- * @return Returns 0 on success, or -1 on error.
+ * @return Returns true on success, false on error.
  */
-static int write_port(int fd, uint8_t *buffer, size_t size)
+static bool write_port(int fd, const uint8_t *buffer, size_t size)
 {
-    ssize_t written_bytes = write(fd, buffer, size);
-    if (written_bytes != (ssize_t)size) {
-        LT_LOG_ERROR("Failed to write to port, written_bytes=%zd.", written_bytes);
-        return -1;
+    size_t written_total = 0;
+    size_t eintr_retries = 0;  // Used for tracking retries upon receiving EINTR.
+
+    while (written_total < size) {
+        ssize_t written_bytes = write(fd, buffer + written_total, size - written_total);
+        if (written_bytes < 0) {
+            if (errno == EINTR) {
+                if (++eintr_retries > LT_PORT_EINTR_RETRY_MAX) {
+                    LT_LOG_ERROR("write() returned EINTR too many times (max=%u).",
+                                 LT_PORT_EINTR_RETRY_MAX);
+                    return false;
+                }
+                LT_LOG_INFO("write() interrupted by a signal, will try again.");
+                continue;
+            }
+            LT_LOG_ERROR("write() failed: errno=%d (%s).", errno, strerror(errno));
+            return false;
+        }
+
+        eintr_retries = 0;
+
+        if (written_bytes == 0) {
+            LT_LOG_ERROR("Failed to write to port (write() returned 0).");
+            return false;
+        }
+
+        written_total += (size_t)written_bytes;
     }
-    return 0;
+
+    return true;
 }
 
 /**
  * @brief Reads data from a serial port (specified by fd).
+ * @note Returns after all bytes have been read, after a timeout or if an error occurred (EINTR is
+ * tolerated).
  *
- * @note  Returns after all the desired bytes have been read, or if there is a timeout or other error.
+ * @param[in]  fd      The file descriptor to read from.
+ * @param[out] buffer  Pointer to the buffer where the read data will be stored.
+ * @param[in]  size    Number of bytes to read into the buffer.
  *
- * @param fd        The file descriptor to read from.
- * @param buffer    Pointer to the buffer where the read data will be stored.
- * @param size      The maximum number of bytes to read into the buffer.
- *
- * @return Returns the number of bytes actually read on success, or -1 on error.
+ * @return Returns true on success, false on error.
  */
-static ssize_t read_port(int fd, uint8_t *buffer, size_t size)
+static bool read_port(int fd, uint8_t *buffer, size_t size)
 {
     size_t received = 0;
+    size_t eintr_retries = 0;  // Used for tracking retries upon receiving EINTR.
+
     while (received < size) {
         ssize_t read_bytes = read(fd, buffer + received, size - received);
         if (read_bytes < 0) {
-            LT_LOG_ERROR("Failed to read from port, read_bytes=%zd.", read_bytes);
-            return -1;
+            if (errno == EINTR) {
+                if (++eintr_retries > LT_PORT_EINTR_RETRY_MAX) {
+                    LT_LOG_ERROR("read() returned EINTR too many times (max=%u).",
+                                 LT_PORT_EINTR_RETRY_MAX);
+                    return false;
+                }
+                LT_LOG_INFO("read() interrupted by a signal, will try again.");
+                continue;
+            }
+            LT_LOG_ERROR("read() failed: errno=%d (%s).", errno, strerror(errno));
+            return false;
         }
+
+        eintr_retries = 0;
+
         if (read_bytes == 0) {
-            // Timeout.
-            break;
+            LT_LOG_ERROR("Failed to read from port (read() returned 0): timeout or EOF.");
+            return false;
         }
-        received += read_bytes;
+
+        received += (size_t)read_bytes;
     }
-    return received;
+
+    return true;
 }
 
 lt_ret_t lt_port_init(lt_l2_state_t *s2)
 {
-    lt_dev_posix_usb_dongle_t *device = (lt_dev_posix_usb_dongle_t *)s2->device;
+    lt_dev_posix_usb_devkit_t *device = (lt_dev_posix_usb_devkit_t *)s2->device;
 
     // Initialize the serial port.
     device->fd = open(device->dev_path, O_RDWR | O_NOCTTY);
@@ -166,7 +210,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
 
 lt_ret_t lt_port_deinit(lt_l2_state_t *s2)
 {
-    lt_dev_posix_usb_dongle_t *device = (lt_dev_posix_usb_dongle_t *)s2->device;
+    lt_dev_posix_usb_devkit_t *device = (lt_dev_posix_usb_devkit_t *)s2->device;
 
     if (close(device->fd)) {
         return LT_FAIL;
@@ -220,20 +264,22 @@ lt_ret_t lt_port_spi_csn_low(lt_l2_state_t *s2)
 
 lt_ret_t lt_port_spi_csn_high(lt_l2_state_t *s2)
 {
-    lt_dev_posix_usb_dongle_t *device = (lt_dev_posix_usb_dongle_t *)s2->device;
+    lt_dev_posix_usb_devkit_t *device = (lt_dev_posix_usb_devkit_t *)s2->device;
 
     uint8_t cs_high[] = "CS=0\n";  // Yes, CS=0 really means that CSN is low
-    if (write_port(device->fd, cs_high, 5) != 0) {
+    if (!write_port(device->fd, cs_high, 5)) {
+        LT_LOG_ERROR("Failed to send CS=0 command.");
         return LT_L1_SPI_ERROR;
     }
 
     uint8_t buff[4];
-    int read_bytes = read_port(device->fd, buff, 4);
-    if (read_bytes != 4) {
+    if (!read_port(device->fd, buff, 4)) {
+        LT_LOG_ERROR("Failed to read response for CS=0 command.");
         return LT_L1_SPI_ERROR;
     }
 
     if (memcmp(buff, "OK\r\n", 4) != 0) {
+        LT_LOG_ERROR("USB DevKit did not ACK CS=0 command.");
         return LT_L1_SPI_ERROR;
     }
     return LT_OK;
@@ -244,32 +290,33 @@ lt_ret_t lt_port_spi_transfer(lt_l2_state_t *s2, uint8_t offset, uint16_t tx_dat
 {
     LT_UNUSED(timeout_ms);
 
-    lt_dev_posix_usb_dongle_t *device = (lt_dev_posix_usb_dongle_t *)s2->device;
+    lt_dev_posix_usb_devkit_t *device = (lt_dev_posix_usb_devkit_t *)s2->device;
 
     if (offset + tx_data_length > TR01_L1_LEN_MAX) {
         return LT_L1_DATA_LEN_ERROR;
     }
 
-    // Bytes from handle which are about to be sent are encoded as chars and stored to buffered_chars.
-    uint8_t buffered_chars[LT_USB_DONGLE_SPI_TRANSFER_BUFF_SIZE_MAX] = {0};
+    // Bytes from handle which are about to be sent are encoded as chars and stored to
+    // buffered_chars.
+    uint8_t buffered_chars[LT_USB_DEVKIT_SPI_TRANSFER_BUFF_SIZE_MAX] = {0};
     for (int i = 0; i < tx_data_length; i++) {
         sprintf((char *)(buffered_chars + i * 2), "%02" PRIX8, s2->buff[i + offset]);
     }
 
-    // Control characters to keep CS LOW (they are expected by USB dongle, see the top of this file
-    // for more information).
+    // Control characters to keep CS LOW (they are expected by USB DevKit, see the top of this file for
+    // more information).
     buffered_chars[tx_data_length * 2] = 'x';
     buffered_chars[tx_data_length * 2 + 1] = '\n';
 
-    int ret = write_port(device->fd, buffered_chars, (tx_data_length * 2) + 2);
-    if (ret != 0) {
+    if (!write_port(device->fd, buffered_chars, (tx_data_length * 2) + 2)) {
+        LT_LOG_ERROR("Failed to write SPI payload.");
         return LT_L1_SPI_ERROR;
     }
 
-    lt_port_delay(s2, LT_USB_DONGLE_READ_WRITE_DELAY);
+    lt_port_delay(s2, LT_USB_DEVKIT_READ_WRITE_DELAY);
 
-    int read_bytes = read_port(device->fd, buffered_chars, (2 * tx_data_length) + 2);
-    if (read_bytes != ((2 * tx_data_length) + 2)) {
+    if (!read_port(device->fd, buffered_chars, (2 * tx_data_length) + 2)) {
+        LT_LOG_ERROR("Failed to read SPI payload.");
         return LT_L1_SPI_ERROR;
     }
 

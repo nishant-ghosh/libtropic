@@ -7,7 +7,7 @@ include (FetchContent)
 #                                                                         #
 ###########################################################################
 project(libtropic_identify_chip
-        DESCRIPTION "Libtropic chip identification example on Linux using USB devkit driver."
+        DESCRIPTION "Libtropic chip identification example on Linux using USB DevKit driver."
         LANGUAGES C)
 
 set(PATH_LIBTROPIC ../../../../)
@@ -18,7 +18,7 @@ set(PATH_LIBTROPIC ../../../../)
 #                                                                         #
 ###########################################################################
 if (NOT DEFINED LT_USB_DEVKIT_PATH)
-    set(LT_USB_DEVKIT_PATH "/dev/ttyACM0" CACHE STRING "Path to the USB device representing the USB devkit serial port.")
+    set(LT_USB_DEVKIT_PATH "/dev/ttyACM0" CACHE STRING "Path to the USB device representing the USB DevKit serial port.")
 endif()
 message(STATUS "Using serial port: ${LT_USB_DEVKIT_PATH}. You can change it by passing -DLT_USB_DEVKIT_PATH=<path> to cmake.")
 
@@ -48,6 +48,7 @@ FetchContent_Declare(
     mbedtls_v4
     URL https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-4.0.0/mbedtls-4.0.0.tar.bz2
     URL_HASH SHA256=2f3a47f7b3a541ddef450e4867eeecb7ce2ef7776093f3a11d6d43ead6bf2827
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 FetchContent_MakeAvailable(mbedtls_v4)
 target_link_libraries(tropic PUBLIC mbedtls)
@@ -63,7 +64,7 @@ target_sources(tropic PRIVATE ${LT_CAL_SRCS})
 target_include_directories(tropic PUBLIC ${LT_CAL_INC_DIRS})
 
 # Add USB DevKit POSIX HAL
-add_subdirectory("${PATH_LIBTROPIC}hal/posix/usb_dongle" "posix_usb_dongle")
+add_subdirectory("${PATH_LIBTROPIC}hal/posix/usb_devkit" "posix_usb_devkit")
 target_sources(tropic PRIVATE ${LT_HAL_SRCS})
 target_include_directories(tropic PUBLIC ${LT_HAL_INC_DIRS})
 
