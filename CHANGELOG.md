@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Renamed `lt_dev_stm32_nucleo_l432kc_t` to `lt_dev_stm32l4xx_t`.
 - `lt_ecc_ecdsa_sign` now expects a 32-byte hash instead of an arbitrary message - provided data are not hashed anymore. Select a hash function that outputs 32 bytes (for example, SHA-256). If using a longer digest, apply standard truncation as appropriate; do not pad shorter digests.
 - `lt_random_value_get()`, `lt_out__random_value_get()`, `lt_in__random_value_get()`: changed type of `rnd_bytes_cnt` parameter to `uint8_t` to align with the TROPIC01 User API.
-- Added `LT_SILICON_REV_` prefix to `ABAB` and `ACAB` internal macros to avoid naming collisions (affects users that don't build Libtropic with CMake).
+- Added the `LT_SILICON_REV_` prefix to the `ABAB` and `ACAB` build-time configuration macros to avoid naming collisions; these macros are user-facing when building Libtropic from sources, especially outside CMake.
 
 ### Added
 - ECC + EdDSA example for USB DevKit.
