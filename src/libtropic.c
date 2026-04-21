@@ -1858,7 +1858,8 @@ lt_ret_t lt_print_chip_id(const struct lt_chip_id_t *chip_id,
             break;
 
         default:
-            if (0 > print_func("Fab ID         = 0x%03" PRIX16 " (%s)\n", parsed_fab_id, "N/A")) {
+            if (0 >
+                print_func("Fab ID                 = 0x%03" PRIX16 " (%s)\n", parsed_fab_id, "N/A")) {
                 return LT_FAIL;
             }
             break;
