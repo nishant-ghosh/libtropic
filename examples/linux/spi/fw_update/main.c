@@ -154,84 +154,19 @@ int main(void)
         mbedtls_psa_crypto_free();
         return 0;
     }
-    printf("\nStarting firmware update...\n");
 
-    // The chip must be in Start-up Mode to be able to perform a firmware update.
-    printf("- Sending maintenance reboot request...");
-    ret = lt_reboot(&lt_handle, TR01_MAINTENANCE_REBOOT);
+    printf("\nUpdating TROPIC01 firmware...");
+    // This helper function implements the recommended FW update process.
+    ret = lt_do_mutable_fw_update(&lt_handle, fw_CPU, sizeof(fw_CPU), fw_SPECT, sizeof(fw_SPECT));
     if (ret != LT_OK) {
-        fprintf(stderr, "\nlt_reboot() failed, ret=%s\n", lt_ret_verbose(ret));
+        fprintf(stderr, "\nlt_do_mutable_fw_update() failed, ret=%s\n", lt_ret_verbose(ret));
+        fprintf(stderr,
+                "Tip: turn logging on to see more information (compile with -DLT_LOG_LVL=Info)\n");
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
         return -1;
     }
     printf("OK\n");
-
-    printf("- Updating TR01_FW_BANK_FW1 and TR01_FW_BANK_SPECT1\n");
-    printf("  - Updating RISC-V FW...");
-    ret = lt_do_mutable_fw_update(&lt_handle, fw_CPU, sizeof(fw_CPU), TR01_FW_BANK_FW1);
-    if (ret != LT_OK) {
-        fprintf(stderr, "\nRISC-V FW update failed, ret=%s\n", lt_ret_verbose(ret));
-        lt_deinit(&lt_handle);
-        mbedtls_psa_crypto_free();
-        return -1;
-    }
-    printf("OK\n");
-
-    printf("  - Updating SPECT FW...");
-    ret = lt_do_mutable_fw_update(&lt_handle, fw_SPECT, sizeof(fw_SPECT), TR01_FW_BANK_SPECT1);
-    if (ret != LT_OK) {
-        fprintf(stderr, "\nSPECT FW update failed, ret=%s\n", lt_ret_verbose(ret));
-        lt_deinit(&lt_handle);
-        mbedtls_psa_crypto_free();
-        return -1;
-    }
-    printf("OK\n");
-
-    // Reboot into Maintenance Mode. This step is crucial if we want to update both FW bank pairs.
-    // If the reboot is not done, then in the case of ACAB silicon revision, the second FW bank pair
-    // will not be updated, which increases the possibility of a downgrade attack.
-    printf("- Rebooting TROPIC01 into Maintenance Mode...");
-    ret = lt_reboot(&lt_handle, TR01_MAINTENANCE_REBOOT);
-    if (ret != LT_OK) {
-        fprintf(stderr, "\nlt_reboot() failed, ret=%s\n", lt_ret_verbose(ret));
-        lt_deinit(&lt_handle);
-        mbedtls_psa_crypto_free();
-        return -1;
-    }
-    printf("OK\n");
-
-    printf("- Updating TR01_FW_BANK_FW2 and TR01_FW_BANK_SPECT2\n");
-    printf("  - Updating RISC-V FW...");
-    ret = lt_do_mutable_fw_update(&lt_handle, fw_CPU, sizeof(fw_CPU), TR01_FW_BANK_FW2);
-    if (ret != LT_OK) {
-        fprintf(stderr, "\nRISC-V FW update failed, ret=%s\n", lt_ret_verbose(ret));
-        lt_deinit(&lt_handle);
-        mbedtls_psa_crypto_free();
-        return -1;
-    }
-    printf("OK\n");
-
-    printf("  - Updating SPECT FW...");
-    ret = lt_do_mutable_fw_update(&lt_handle, fw_SPECT, sizeof(fw_SPECT), TR01_FW_BANK_SPECT2);
-    if (ret != LT_OK) {
-        fprintf(stderr, "\nSPECT FW update failed, ret=%s\n", lt_ret_verbose(ret));
-        lt_deinit(&lt_handle);
-        mbedtls_psa_crypto_free();
-        return -1;
-    }
-    printf("OK\n");
-    printf("Successfully updated all 4 FW banks.\n\n");
-
-    printf("Sending reboot request...");
-    ret = lt_reboot(&lt_handle, TR01_REBOOT);
-    if (ret != LT_OK) {
-        fprintf(stderr, "\nlt_reboot() failed, ret=%s\n", lt_ret_verbose(ret));
-        lt_deinit(&lt_handle);
-        mbedtls_psa_crypto_free();
-        return -1;
-    }
-    printf("OK!\nTROPIC01 is executing Application FW now\n");
 
     if (get_fw_versions(&lt_handle) != LT_OK) {
         lt_deinit(&lt_handle);

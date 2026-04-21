@@ -131,90 +131,24 @@ void app_main(void)
         mbedtls_psa_crypto_free();
         return;
     }
-    ESP_LOGI(TAG, "OK");
+
+    ESP_LOGI(TAG, "Versions to update to:");
+    ESP_LOGI(TAG, "  - RISC-V FW version: %d.%d.%d", fw_CPU_ver[3], fw_CPU_ver[2], fw_CPU_ver[1]);
+    ESP_LOGI(TAG, "  - SPECT FW version: %d.%d.%d", fw_SPECT_ver[3], fw_SPECT_ver[2], fw_SPECT_ver[1]);
+
     ESP_LOGI(TAG, "");
-
-    ESP_LOGI(TAG, "Starting firmware update...");
-
-    // The chip must be in Start-up Mode to be able to perform a firmware update.
-    ESP_LOGI(TAG, "- Sending maintenance reboot request...");
-    ret = lt_reboot(&lt_handle, TR01_MAINTENANCE_REBOOT);
+    ESP_LOGI(TAG, "Updating TROPIC01 firmware...");
+    // This helper function implements the recommended FW update process.
+    ret = lt_do_mutable_fw_update(&lt_handle, fw_CPU, sizeof(fw_CPU), fw_SPECT, sizeof(fw_SPECT));
     if (ret != LT_OK) {
-        ESP_LOGE(TAG, "Maintenance reboot failed, ret=%s", lt_ret_verbose(ret));
+        ESP_LOGE(TAG, "lt_do_mutable_fw_update() failed, ret=%s\n", lt_ret_verbose(ret));
+        ESP_LOGE(TAG,
+                 "Tip: turn logging on to see more information (compile with -DLT_LOG_LVL=Info)\n");
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
         return;
     }
     ESP_LOGI(TAG, "OK");
-
-    ESP_LOGI(TAG, "- Updating TR01_FW_BANK_FW1 and TR01_FW_BANK_SPECT1");
-    ESP_LOGI(TAG, "  - Updating RISC-V FW...");
-    ret = lt_do_mutable_fw_update(&lt_handle, fw_CPU, sizeof(fw_CPU), TR01_FW_BANK_FW1);
-    if (ret != LT_OK) {
-        ESP_LOGE(TAG, "RISC-V FW update failed, ret=%s", lt_ret_verbose(ret));
-        lt_deinit(&lt_handle);
-        mbedtls_psa_crypto_free();
-        return;
-    }
-    ESP_LOGI(TAG, "OK");
-
-    ESP_LOGI(TAG, "  - Updating SPECT FW...");
-    ret = lt_do_mutable_fw_update(&lt_handle, fw_SPECT, sizeof(fw_SPECT), TR01_FW_BANK_SPECT1);
-    if (ret != LT_OK) {
-        ESP_LOGE(TAG, "SPECT FW update failed, ret=%s", lt_ret_verbose(ret));
-        lt_deinit(&lt_handle);
-        mbedtls_psa_crypto_free();
-        return;
-    }
-    ESP_LOGI(TAG, "OK");
-
-    // Reboot into Maintenance Mode. This step is crucial if we want to update both FW bank pairs.
-    // If the reboot is not done, then in the case of ACAB silicon revision, the second FW bank pair
-    // will not be updated, which increases the possibility of a downgrade attack.
-    ESP_LOGI(TAG, "- Rebooting TROPIC01 into Maintenance Mode...");
-    ret = lt_reboot(&lt_handle, TR01_MAINTENANCE_REBOOT);
-    if (ret != LT_OK) {
-        ESP_LOGE(TAG, "lt_reboot() failed, ret=%s", lt_ret_verbose(ret));
-        lt_deinit(&lt_handle);
-        mbedtls_psa_crypto_free();
-        return;
-    }
-    ESP_LOGI(TAG, "OK");
-
-    ESP_LOGI(TAG, "- Updating TR01_FW_BANK_FW2 and TR01_FW_BANK_SPECT2");
-    ESP_LOGI(TAG, "  - Updating RISC-V FW...");
-    ret = lt_do_mutable_fw_update(&lt_handle, fw_CPU, sizeof(fw_CPU), TR01_FW_BANK_FW2);
-    if (ret != LT_OK) {
-        ESP_LOGE(TAG, "RISC-V FW update failed, ret=%s", lt_ret_verbose(ret));
-        lt_deinit(&lt_handle);
-        mbedtls_psa_crypto_free();
-        return;
-    }
-    ESP_LOGI(TAG, "OK");
-
-    ESP_LOGI(TAG, "  - Updating SPECT FW...");
-    ret = lt_do_mutable_fw_update(&lt_handle, fw_SPECT, sizeof(fw_SPECT), TR01_FW_BANK_SPECT2);
-    if (ret != LT_OK) {
-        ESP_LOGE(TAG, "SPECT FW update failed, ret=%s", lt_ret_verbose(ret));
-        lt_deinit(&lt_handle);
-        mbedtls_psa_crypto_free();
-        return;
-    }
-    ESP_LOGI(TAG, "OK");
-    ESP_LOGI(TAG, "Successfully updated all 4 FW banks.");
-    ESP_LOGI(TAG, "");
-
-    ESP_LOGI(TAG, "Sending reboot request...");
-    ret = lt_reboot(&lt_handle, TR01_REBOOT);
-    if (ret != LT_OK) {
-        ESP_LOGE(TAG, "lt_reboot() failed, ret=%s", lt_ret_verbose(ret));
-        lt_deinit(&lt_handle);
-        mbedtls_psa_crypto_free();
-        return;
-    }
-    ESP_LOGI(TAG, "OK");
-    ESP_LOGI(TAG, "TROPIC01 is executing Application FW now");
-    ESP_LOGI(TAG, "");
 
     if (get_fw_versions(&lt_handle) != LT_OK) {
         lt_deinit(&lt_handle);
