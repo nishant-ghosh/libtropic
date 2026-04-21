@@ -87,6 +87,10 @@ lt_ret_t lt_l2_receive(lt_l2_state_t *s2)
 
 lt_ret_t lt_l2_transfer(lt_l2_state_t *s2)
 {
+    if (!s2) {
+        return LT_PARAM_ERR;
+    }
+
     uint8_t req_buff_backup[LT_SIZE_OF_L2_BUFF];
     memcpy(req_buff_backup, s2->buff, LT_SIZE_OF_L2_BUFF);
 
