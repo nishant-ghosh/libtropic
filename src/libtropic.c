@@ -2034,7 +2034,7 @@ lt_ret_t lt_do_mutable_fw_update(lt_handle_t *h, const uint8_t *cpu_fw_data,
 
 // 5. Check both FW bank pairs contain the new FW versions. We do this only for ACAB revision and
 // newer, because FW update data for ABAB did not contain information about the FW version.
-#ifndef LT_SILICON_REV_ABAB
+#if !defined(LT_SILICON_REV_ABAB)
 // The two following macros are used for pretty logging of FW versions.
 #define _LT_FW_VER_FMT                              \
     "'"                                             \
@@ -2113,7 +2113,7 @@ lt_ret_t lt_do_mutable_fw_update(lt_handle_t *h, const uint8_t *cpu_fw_data,
         return ret;
     }
 
-#ifndef LT_SILICON_REV_ABAB
+#if !defined(LT_SILICON_REV_ABAB)
     // 7. Check the updated FW version was booted.
     uint8_t riscv_ver[TR01_L2_GET_INFO_RISCV_FW_SIZE];
     ret = lt_get_info_riscv_fw_ver(h, riscv_ver);
