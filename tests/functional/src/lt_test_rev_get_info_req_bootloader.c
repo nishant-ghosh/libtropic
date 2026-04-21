@@ -154,7 +154,7 @@ void lt_test_rev_get_info_req_bootloader(lt_handle_t *h)
     LT_LOG_INFO("----------------------------------------------");
 
     g_h = h;
-#ifdef LT_SILICON_REV_ACAB
+#if defined(LT_SILICON_REV_ACAB)
     uint8_t cert1[CERTS_BUF_LEN] = {0}, cert2[CERTS_BUF_LEN] = {0}, cert3[CERTS_BUF_LEN] = {0},
             cert4[CERTS_BUF_LEN] = {0};
     struct lt_cert_store_t store = {
@@ -172,7 +172,7 @@ void lt_test_rev_get_info_req_bootloader(lt_handle_t *h)
 
     lt_test_cleanup_function = &lt_test_rev_get_info_req_bootloader_cleanup;
 
-#ifdef LT_SILICON_REV_ACAB
+#if defined(LT_SILICON_REV_ACAB)
     LT_LOG_INFO("Reading X509 Certificate Store...");
     LT_TEST_ASSERT(LT_OK, lt_get_info_cert_store(h, &store));
     LT_LOG_INFO();
@@ -196,7 +196,7 @@ void lt_test_rev_get_info_req_bootloader(lt_handle_t *h)
         LT_LOG_INFO();
     }
     LT_LOG_LINE();
-#elif LT_SILICON_REV_ABAB
+#elif defined(LT_SILICON_REV_ABAB)
     LT_LOG_INFO("Bootloader v1.0.1 provided just 512B for device certificate only");
 #else
 #error "Undefined silicon revision! One of the LT_SILICON_REV_* macros must be defined."
