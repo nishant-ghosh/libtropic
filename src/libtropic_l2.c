@@ -106,15 +106,15 @@ lt_ret_t lt_l2_transfer(lt_l2_state_t *s2)
 
         // If CRC of incoming Response is invalid, try to get a new Reponse.
         if (ret == LT_L2_IN_CRC_ERR) {
+            s2->l2_in_crc_error_count++;
             while (total_retry_count < LT_CRC_ERR_RETRY_ATTEMPTS) {
-                s2->l2_in_crc_error_count++;
+                total_retry_count++;
 
                 ret = lt_l2_resend_response(s2);
                 if (ret == LT_OK || ret != LT_L2_IN_CRC_ERR) {
                     break;
                 }
-
-                total_retry_count++;
+                s2->l2_in_crc_error_count++;
             }
         }
 
