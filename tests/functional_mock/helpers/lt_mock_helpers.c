@@ -112,7 +112,7 @@ lt_ret_t mock_session_abort(lt_handle_t *h)
 }
 
 lt_ret_t mock_l3_result(lt_handle_t *h, const uint8_t *result_plaintext,
-                        const size_t result_plaintext_size)
+                        const size_t result_plaintext_size, bool corrupt_crc)
 {
     uint8_t l2_frame[TR01_L2_MAX_FRAME_SIZE];
 
@@ -154,6 +154,9 @@ lt_ret_t mock_l3_result(lt_handle_t *h, const uint8_t *result_plaintext,
 
     uint16_t crc = crc16(&l2_frame[TR01_L2_STATUS_OFFSET],
                          TR01_L2_STATUS_SIZE + TR01_L2_REQ_RSP_LEN_SIZE + packet_size);
+    if (corrupt_crc) {
+        crc = ~crc;
+    }
     size_t crc_offset = TR01_L2_RSP_DATA_RSP_CRC_OFFSET + packet_size;
     l2_frame[crc_offset] = crc >> 8;
     l2_frame[crc_offset + 1] = crc & 0x00FF;

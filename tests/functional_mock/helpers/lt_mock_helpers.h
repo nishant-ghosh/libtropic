@@ -93,11 +93,12 @@ lt_ret_t mock_session_abort(lt_handle_t *h);
  * @param h Pointer to an lt_handle_t to use (for encryption and enqueuing).
  * @param result_plaintext Plaintext of the L3 Result data to use.
  * @param result_plaintext_size Size of the result_plaintext.
+ * @param corrupt_crc If true, CRC will be intentionally corrupted (e.g., to test CRC handling).
  *
  * @return LT_OK on success, or an appropriate lt_ret_t error code on failure.
  */
 lt_ret_t mock_l3_result(lt_handle_t *h, const uint8_t *result_plaintext,
-                        const size_t result_plaintext_size);
+                        const size_t result_plaintext_size, bool corrupt_crc);
 
 /**
  * @brief Mock replies to a L3 Command.
