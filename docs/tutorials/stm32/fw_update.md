@@ -40,6 +40,6 @@
     After this, you should see a colored output in your serial monitor.
 
 !!! failure "FW update failed"
-    Checkout the dedicated section in [FAQ](../../faq.md#fw-update-failed).
+    Check out the dedicated section in [FAQ](../../faq.md#fw-update-failed).
 
 [Next example :material-arrow-right:](hello_world.md){ .md-button }
