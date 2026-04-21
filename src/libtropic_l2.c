@@ -176,7 +176,7 @@ lt_ret_t lt_l2_send_encrypted_cmd(lt_l2_state_t *s2, uint8_t *buff, uint16_t buf
 
     uint16_t buff_offset = 0;
 
-    // Count of attempts to resend the frame on LT_L2_CRC_ERR.
+    // Count of retries to resend the frame on LT_L2_CRC_ERR or LT_L2_IN_CRC_ERR.
     uint32_t frame_resend_counter = 0;
 
     // req->req_len gets overwritten, so we need to keep copy to increment
@@ -213,29 +213,23 @@ lt_ret_t lt_l2_send_encrypted_cmd(lt_l2_state_t *s2, uint8_t *buff, uint16_t buf
         // Check status byte of this frame
         ret = lt_l2_frame_check(s2->buff);
 
-        // In case of IN_CRC error, request to resend the last frame.
+        // In case of IN_CRC error, request to resend the last frame if there's still some retry
+        // attempts.
         if (ret == LT_L2_IN_CRC_ERR) {
-            for (int attempt = 0; attempt < LT_CRC_ERR_RETRY_ATTEMPTS; attempt++) {
-                s2->l2_in_crc_error_count++;
+            s2->l2_in_crc_error_count++;
+            while (frame_resend_counter < LT_CRC_ERR_RETRY_ATTEMPTS) {
+                frame_resend_counter++;
 
                 ret = lt_l2_resend_response(s2);
-                if (ret == LT_OK || ret == LT_L2_REQ_CONT) {
+                if (ret == LT_OK || ret == LT_L2_REQ_CONT || ret != LT_L2_IN_CRC_ERR) {
                     break;
                 }
-                // Return immediately on other errors.
-                else if (ret != LT_L2_IN_CRC_ERR) {
-                    return ret;
-                }
+                s2->l2_in_crc_error_count++;
             }
         }
 
-        // In case of CRC error, resend the last frame.
-        if (ret == LT_L2_CRC_ERR) {
-            if (frame_resend_counter > LT_CRC_ERR_RETRY_ATTEMPTS) {
-                LT_LOG_ERROR("Received LT_L2_CRC_ERR after reaching resend attempt limit of " PRIu32);
-                return ret;
-            }
-
+        // In case of CRC error, resend the last frame if there's still some retry attempts.
+        if (ret == LT_L2_CRC_ERR && frame_resend_counter < LT_CRC_ERR_RETRY_ATTEMPTS) {
             s2->l2_crc_error_count++;
             frame_resend_counter++;
             i--;
