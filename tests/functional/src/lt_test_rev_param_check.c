@@ -303,7 +303,7 @@ void lt_test_rev_param_check(lt_handle_t *h)
                        lt_mutable_fw_update_data(h, dummy_data, TR01_MUTABLE_FW_UPDATE_SIZE_MAX + 1));
     }
 #else
-#warning "Unknown silicon revision, no revision specific parameter checks implemented!"
+#error "Unknown silicon revision, no revision specific parameter checks implemented!"
 #endif
 
     // --------------------------------------------------------
