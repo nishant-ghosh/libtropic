@@ -46,7 +46,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - FW update: added necessary reboot into Maintenance Mode before updating the second FW bank pair. Without the reboot, only one FW bank pair was updated.
-- Compatibility table in main README.md: mention support of Bootloader FW 1.0.1-2.0.1 for all existing Libtropic releases.
 
 ## [3.2.0]
 
