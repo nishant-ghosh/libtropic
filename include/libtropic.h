@@ -215,7 +215,7 @@ lt_ret_t lt_sleep(lt_handle_t *h, const uint8_t sleep_kind);
  */
 lt_ret_t lt_reboot(lt_handle_t *h, const lt_startup_id_t startup_id);
 
-#ifdef ABAB
+#if defined(LT_SILICON_REV_ABAB)
 /** @brief Maximal size of update data */
 #define TR01_MUTABLE_FW_UPDATE_SIZE_MAX 25600
 /**
@@ -244,7 +244,7 @@ lt_ret_t lt_mutable_fw_erase(lt_handle_t *h, const lt_bank_id_t bank_id);
 lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const uint16_t fw_data_size,
                               lt_bank_id_t bank_id);
 
-#elif ACAB
+#elif defined(LT_SILICON_REV_ACAB)
 /** @brief Maximal size of update data */
 #define TR01_MUTABLE_FW_UPDATE_SIZE_MAX 30720
 

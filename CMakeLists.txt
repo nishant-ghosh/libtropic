@@ -258,9 +258,9 @@ endforeach()
 ###########################################################################
 
 if (LT_SILICON_REV STREQUAL "ABAB")
-    target_compile_definitions(tropic PUBLIC ABAB)
+    target_compile_definitions(tropic PUBLIC LT_SILICON_REV_ABAB)
 elseif (LT_SILICON_REV STREQUAL "ACAB")
-    target_compile_definitions(tropic PUBLIC ACAB)
+    target_compile_definitions(tropic PUBLIC LT_SILICON_REV_ACAB)
 endif()
 
 if(LT_PRINT_SPI_DATA)
