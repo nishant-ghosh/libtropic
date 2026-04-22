@@ -1981,6 +1981,62 @@ static lt_ret_t update_mutable_fw_bank(lt_handle_t *h, const uint8_t *fw_data,
     return LT_OK;
 }
 
+// The two following macros are used for pretty logging of FW versions in lt_do_mutable_fw_update() and
+// validate_fw_ver_in_bank().
+#define _LT_DO_MUTABLE_FW_UPDATE_FW_VER_FMT         \
+    "'"                                             \
+    "%" PRIu32 ".%" PRIu32 ".%" PRIu32 "(.%" PRIu32 \
+    ")"                                             \
+    "'"
+#define _LT_DO_MUTABLE_FW_UPDATE_FW_VER_ARG(v) \
+    (((v) >> 24) & 0xFF), (((v) >> 16) & 0xFF), (((v) >> 8) & 0xFF), ((v) & 0xFF)
+
+/**
+ * @brief Reads out firmware header from the given firmware bank and validates the firmware version
+ * against the expected one.
+ * @note This function is compatible with silicon revision ACAB and newer.
+ *
+ * @param h                Handle for communication with TROPIC01
+ * @param expected_fw_ver  Firmware version that is expected to be read from the bank
+ * @param bank_id          Mutable firmware bank ID
+ * @return                 LT_OK if success, otherwise returns other error code.
+ */
+static lt_ret_t validate_fw_ver_in_bank(lt_handle_t *h, const uint32_t expected_fw_ver,
+                                        const lt_bank_id_t bank_id)
+{
+    if (!h) {
+        // bank_id will be checked by lt_get_info_fw_bank().
+        return LT_PARAM_ERR;
+    }
+    lt_header_boot_v2_t fw_header;
+    uint16_t read_header_size;
+    lt_ret_t ret;
+
+    // Read FW header and validate read size.
+    ret = lt_get_info_fw_bank(h, bank_id, (uint8_t *)&fw_header, sizeof(fw_header), &read_header_size);
+    if (ret != LT_OK) {
+        LT_LOG_ERROR("Failed to read FW header from the bank.");
+        return ret;
+    }
+    if (read_header_size != sizeof(fw_header)) {
+        LT_LOG_ERROR("Read unexpected FW header size: expected=%zu, read=%" PRIu16, sizeof(fw_header),
+                     read_header_size);
+        return LT_FAIL;
+    }
+
+    // Validate the FW version.
+    if (expected_fw_ver != fw_header.ver) {
+        LT_LOG_ERROR(
+            "FW version read from the bank mismatch: expected "_LT_DO_MUTABLE_FW_UPDATE_FW_VER_FMT
+            ", read "_LT_DO_MUTABLE_FW_UPDATE_FW_VER_FMT,
+            _LT_DO_MUTABLE_FW_UPDATE_FW_VER_ARG(expected_fw_ver),
+            _LT_DO_MUTABLE_FW_UPDATE_FW_VER_ARG(fw_header.ver));
+        return LT_FAIL;
+    }
+
+    return LT_OK;
+}
+
 lt_ret_t lt_do_mutable_fw_update(lt_handle_t *h, const uint8_t *cpu_fw_data,
                                  const size_t cpu_fw_data_size, const uint8_t *spect_fw_data,
                                  const size_t spect_fw_data_size)
@@ -2035,75 +2091,33 @@ lt_ret_t lt_do_mutable_fw_update(lt_handle_t *h, const uint8_t *cpu_fw_data,
 // 5. Check both FW bank pairs contain the new FW versions. We do this only for ACAB revision and
 // newer, because FW update data for ABAB did not contain information about the FW version.
 #if !defined(LT_SILICON_REV_ABAB)
-// The two following macros are used for pretty logging of FW versions.
-#define _LT_FW_VER_FMT                              \
-    "'"                                             \
-    "%" PRIu32 ".%" PRIu32 ".%" PRIu32 "(.%" PRIu32 \
-    ")"                                             \
-    "'"
-#define _LT_FW_VER_ARG(v) (((v) >> 24) & 0xFF), (((v) >> 16) & 0xFF), (((v) >> 8) & 0xFF), ((v) & 0xFF)
+    const struct lt_mutable_fw_update_chunk_0_t *cpu_fw_chunk_0 =
+        (const struct lt_mutable_fw_update_chunk_0_t *)cpu_fw_data;
+    const struct lt_mutable_fw_update_chunk_0_t *spect_fw_chunk_0 =
+        (const struct lt_mutable_fw_update_chunk_0_t *)spect_fw_data;
 
-    lt_header_boot_v2_t fw_header;
-    uint16_t read_header_size;
-    const lt_mutable_fw_update_chunk_0_t *cpu_fw_chunk_0 =
-        (const lt_mutable_fw_update_chunk_0_t *)(cpu_fw_data);
-    const lt_mutable_fw_update_chunk_0_t *spect_fw_chunk_0 =
-        (const lt_mutable_fw_update_chunk_0_t *)(spect_fw_data);
-
-    ret = lt_get_info_fw_bank(h, TR01_FW_BANK_FW1, (uint8_t *)&fw_header, sizeof(fw_header),
-                              &read_header_size);
+    LT_LOG_INFO("Validating FW version in RISC-V FW bank 1.");
+    ret = validate_fw_ver_in_bank(h, cpu_fw_chunk_0->version, TR01_FW_BANK_FW1);
     if (ret != LT_OK) {
-        LT_LOG_ERROR("Failed to read FW header from RISC-V FW bank 1.");
         return ret;
     }
-    if (cpu_fw_chunk_0->version != fw_header.ver) {
-        LT_LOG_ERROR(
-            "RISC-V FW version from bank 1 mismatch: expected "_LT_FW_VER_FMT
-            ", read "_LT_FW_VER_FMT,
-            _LT_FW_VER_ARG(cpu_fw_chunk_0->version), _LT_FW_VER_ARG(fw_header.ver));
-        return LT_FAIL;
-    }
 
-    ret = lt_get_info_fw_bank(h, TR01_FW_BANK_SPECT1, (uint8_t *)&fw_header, sizeof(fw_header),
-                              &read_header_size);
+    LT_LOG_INFO("Validating FW version in SPECT FW bank 1.");
+    ret = validate_fw_ver_in_bank(h, spect_fw_chunk_0->version, TR01_FW_BANK_SPECT1);
     if (ret != LT_OK) {
-        LT_LOG_ERROR("Failed to read FW header from SPECT FW bank 1.");
         return ret;
     }
-    if (spect_fw_chunk_0->version != fw_header.ver) {
-        LT_LOG_ERROR(
-            "SPECT FW version from bank 1 mismatch: expected "_LT_FW_VER_FMT
-            ", read "_LT_FW_VER_FMT,
-            _LT_FW_VER_ARG(spect_fw_chunk_0->version), _LT_FW_VER_ARG(fw_header.ver));
-        return LT_FAIL;
-    }
 
-    ret = lt_get_info_fw_bank(h, TR01_FW_BANK_FW2, (uint8_t *)&fw_header, sizeof(fw_header),
-                              &read_header_size);
+    LT_LOG_INFO("Validating FW version in RISC-V FW bank 2.");
+    ret = validate_fw_ver_in_bank(h, cpu_fw_chunk_0->version, TR01_FW_BANK_FW2);
     if (ret != LT_OK) {
-        LT_LOG_ERROR("Failed to read FW header from RISC-V FW bank 2.");
         return ret;
     }
-    if (cpu_fw_chunk_0->version != fw_header.ver) {
-        LT_LOG_ERROR(
-            "RISC-V FW version from bank 2 mismatch: expected "_LT_FW_VER_FMT
-            ", read "_LT_FW_VER_FMT,
-            _LT_FW_VER_ARG(cpu_fw_chunk_0->version), _LT_FW_VER_ARG(fw_header.ver));
-        return LT_FAIL;
-    }
 
-    ret = lt_get_info_fw_bank(h, TR01_FW_BANK_SPECT2, (uint8_t *)&fw_header, sizeof(fw_header),
-                              &read_header_size);
+    LT_LOG_INFO("Validating FW version in SPECT FW bank 2.");
+    ret = validate_fw_ver_in_bank(h, spect_fw_chunk_0->version, TR01_FW_BANK_SPECT2);
     if (ret != LT_OK) {
-        LT_LOG_ERROR("Failed to read FW header from SPECT FW bank 2.");
         return ret;
-    }
-    if (spect_fw_chunk_0->version != fw_header.ver) {
-        LT_LOG_ERROR(
-            "SPECT FW version from bank 2 mismatch: expected "_LT_FW_VER_FMT
-            ", read "_LT_FW_VER_FMT,
-            _LT_FW_VER_ARG(spect_fw_chunk_0->version), _LT_FW_VER_ARG(fw_header.ver));
-        return LT_FAIL;
     }
 #endif
 
@@ -2117,17 +2131,21 @@ lt_ret_t lt_do_mutable_fw_update(lt_handle_t *h, const uint8_t *cpu_fw_data,
 #if !defined(LT_SILICON_REV_ABAB)
     // 7. Check the updated FW version was booted.
     uint8_t riscv_ver[TR01_L2_GET_INFO_RISCV_FW_SIZE];
+
     ret = lt_get_info_riscv_fw_ver(h, riscv_ver);
     if (ret != LT_OK) {
         LT_LOG_ERROR("Failed to read RISC-V FW version.");
         return ret;
     }
-    if (0 != memcmp(riscv_ver, (uint8_t *)&cpu_fw_chunk_0->version, sizeof(riscv_ver))) {
+    const uint32_t riscv_ver_read = ((uint32_t)riscv_ver[3] << 24) | ((uint32_t)riscv_ver[2] << 16) |
+                                    ((uint32_t)riscv_ver[1] << 8) | (uint32_t)riscv_ver[0];
+
+    if (riscv_ver_read != cpu_fw_chunk_0->version) {
         LT_LOG_ERROR(
-            "Unexpected RISC-V FW version was booted: expected "_LT_FW_VER_FMT
-            ", read "_LT_FW_VER_FMT,
-            _LT_FW_VER_ARG(cpu_fw_chunk_0->version), riscv_ver[3], riscv_ver[2], riscv_ver[1],
-            riscv_ver[0]);
+            "Unexpected RISC-V FW version was booted: expected "_LT_DO_MUTABLE_FW_UPDATE_FW_VER_FMT
+            ", read "_LT_DO_MUTABLE_FW_UPDATE_FW_VER_FMT,
+            _LT_DO_MUTABLE_FW_UPDATE_FW_VER_ARG(cpu_fw_chunk_0->version),
+            _LT_DO_MUTABLE_FW_UPDATE_FW_VER_ARG(riscv_ver_read));
         return LT_FAIL;
     }
 #endif
