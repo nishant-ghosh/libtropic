@@ -42,6 +42,10 @@ jobs:
           cmake ./ -B build -G Ninja
           cd build && ninja
 
+          cd ..
+          cmake ./ -B build_abab -G Ninja -DLT_SILICON_REV=ABAB
+          cd build_abab && ninja
+
       - name: Compile L432KC examples
         run: |
           cd examples/stm32/nucleo_l432kc/hello_world
@@ -55,3 +59,7 @@ jobs:
           cd ../../fw_update
           cmake ./ -B build -G Ninja
           cd build && ninja
+
+          cd ..
+          cmake ./ -B build_abab -G Ninja -DLT_SILICON_REV=ABAB
+          cd build_abab && ninja
