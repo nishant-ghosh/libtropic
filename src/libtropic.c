@@ -2045,9 +2045,10 @@ lt_ret_t lt_do_mutable_fw_update(lt_handle_t *h, const uint8_t *cpu_fw_data,
 
     lt_header_boot_v2_t fw_header;
     uint16_t read_header_size;
-    lt_mutable_fw_update_chunk_0_t *cpu_fw_chunk_0 = (lt_mutable_fw_update_chunk_0_t *)(cpu_fw_data);
-    lt_mutable_fw_update_chunk_0_t *spect_fw_chunk_0 =
-        (lt_mutable_fw_update_chunk_0_t *)(spect_fw_data);
+    const lt_mutable_fw_update_chunk_0_t *cpu_fw_chunk_0 =
+        (const lt_mutable_fw_update_chunk_0_t *)(cpu_fw_data);
+    const lt_mutable_fw_update_chunk_0_t *spect_fw_chunk_0 =
+        (const lt_mutable_fw_update_chunk_0_t *)(spect_fw_data);
 
     ret = lt_get_info_fw_bank(h, TR01_FW_BANK_FW1, (uint8_t *)&fw_header, sizeof(fw_header),
                               &read_header_size);
