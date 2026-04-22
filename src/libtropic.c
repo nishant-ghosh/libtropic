@@ -701,7 +701,8 @@ lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const size
 #elif defined(LT_SILICON_REV_ACAB)
 lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const size_t fw_data_size)
 {
-    if (!h || !fw_data || fw_data_size < sizeof(lt_mutable_fw_update_chunk_0_t)) {
+    if (!h || !fw_data || fw_data_size < sizeof(lt_mutable_fw_update_chunk_0_t) ||
+        fw_data_size > TR01_MUTABLE_FW_UPDATE_SIZE_MAX) {
         return LT_PARAM_ERR;
     }
 
