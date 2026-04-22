@@ -807,7 +807,7 @@ lt_ret_t lt_print_fw_header(lt_handle_t *h, const lt_bank_id_t bank_id,
  *  - There is a non-negligible security risk.
  *  - Libtropic was not reinitialized to be compatible with the updated Application FW - some
  *    functionalities may not be available or may produce undefined behavior.
- *  - **Solution**: call this function again and make sure it suceeds. If it continues to fail, refer
+ *  - **Solution**: call this function again and make sure it succeeds. If it continues to fail, refer
  *    to our [FAQ](https://tropicsquare.github.io/libtropic/latest/faq/) or contact us via our [support
  *    portal](https://support.desk.tropicsquare.com/servicedesk/customer/user/login?destination=portals).
  *
