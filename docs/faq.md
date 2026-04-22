@@ -71,6 +71,8 @@ You have two options:
 
 1. Read the product number (P/N) from the packaging you received your TROPIC01 product in. After that, refer to the [Available Parts](https://github.com/tropicsquare/tropic01?tab=readme-ov-file#available-parts) section (in the [TROPIC01 GitHub repository](https://github.com/tropicsquare/tropic01)) and read the linked Catalog list, which will help you decode the silicon revision based on your P/N.
 2. Run our example Identify Chip (see [Tutorials](tutorials/index.md)), which **does not** require the Secure Channel Session.
+    - You might see "N/A" instead of the actual silicon revision. This means that the silicon revision of your TROPIC01 is **ABAB**.
+    - The reason is that ABAB chips use CHIP_ID version 0.0.0.1, which does not include silicon revision information.
 
 ## What FW versions is my TROPIC01 running?
 Run our example Identify Chip (see [Tutorials](tutorials/index.md)), which **does not** require the Secure Channel Session.
