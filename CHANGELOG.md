@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `examples/model/mac_and_destroy/`: Log the correct number of wrong attempts and indexes of destroyed slots.
 - Target version reporting in Firmware Update examples for Linux.
 - Compatibility table in main README.md: mention support of Bootloader FW 1.0.1-2.0.1 for all existing Libtropic releases.
+- `lt_print_chip_id()`: Silicon revision field in CHIP_ID v0.0.0.1 is not interpreted as ASCII chars, as this version does not include silicon revision.
 
 ## [3.2.1]
 
