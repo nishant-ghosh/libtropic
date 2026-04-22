@@ -712,7 +712,7 @@ lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const size
     struct lt_l2_mutable_fw_update_rsp_t *p_l2_resp = (struct lt_l2_mutable_fw_update_rsp_t *)
                                                           h->l2.buff;
 
-    // Setup a pointer to incomming data
+    // Setup a pointer to incoming data
     const struct lt_mutable_fw_update_chunk_0_t *fw_chunk_0 =
         (const struct lt_mutable_fw_update_chunk_0_t *)(fw_data);
 
