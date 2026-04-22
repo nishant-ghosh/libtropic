@@ -41,7 +41,29 @@ We will go through our examples in the `examples/stm32/` directory. In this dire
         |  MOSI (SDI)   |  A6             |
         |  CS (CSN)     |  A3             |
         |  GPO          |  D10            |
-    
+
+    === "Nucleo U545RE-Q"
+        The Nucleo U545RE-Q board is compatible with our **TROPIC01 Arduino Shield**, which we recommend for this tutorial. You can get the shield [here](https://www.tropicsquare.com/order-devkit).
+
+        <figure style="text-align: center;">
+        <img src="../../img/arduino-shield-pinout.svg" alt="TROPIC01 Arduino Shield pinout" width="600"/>
+        <figcaption style="font-size: 0.9em; color: #555; margin-top: 0.5em;">
+            TROPIC01 Arduino Shield pinout
+        </figcaption>
+        </figure>
+
+        If you have any other shield which exposes SPI connections (or a custom PCB), you can use it as well, but you have to connect it manually e.g., using DuPont (jumper) wires. Refer to the table below for wiring:
+        
+        |  TROPIC01     | NUCLEO U545RE-Q  |
+        |---------------|------------------|
+        |  3V3          |  3V3             |
+        |  GND          |  GND             |
+        |  SCK          |  D13             |
+        |  MISO (SDO)   |  D12             |
+        |  MOSI (SDI)   |  D11             |
+        |  CS (CSN)     |  D10             |
+        |  GPO          |  D2              |
+
     ??? question "Advanced: How to Use Different Nucleo Pins?"
         The pin assignments above are used in our examples by default. The pins can be changed in the source code of each example. However, apart from changing assignment, you also have to initialize different peripherals, which is not documented here.
 
