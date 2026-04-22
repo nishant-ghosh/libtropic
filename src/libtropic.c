@@ -713,8 +713,8 @@ lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const size
                                                           h->l2.buff;
 
     // Setup a pointer to incomming data
-    struct lt_mutable_fw_update_chunk_0_t *fw_chunk_0 =
-        (struct lt_mutable_fw_update_chunk_0_t *)(fw_data);
+    const struct lt_mutable_fw_update_chunk_0_t *fw_chunk_0 =
+        (const struct lt_mutable_fw_update_chunk_0_t *)(fw_data);
 
     p_l2_req->req_id = TR01_L2_MUTABLE_FW_UPDATE_REQ_ID;
     p_l2_req->req_len = TR01_L2_MUTABLE_FW_UPDATE_REQ_LEN;
