@@ -654,7 +654,7 @@ typedef struct lt_mutable_fw_update_chunk_0_t {
     uint8_t padding;  /**< Padding, zero value. */
     uint8_t header_version; /**< Version of used header. */
     uint32_t version;       /**< Version of the mutable FW. */
-} __attribute__((__packed__)) lt_mutable_fw_update_chunk_0_t;
+} __attribute__((packed)) lt_mutable_fw_update_chunk_0_t;
 
 // clang-format off
 /** \cond */
