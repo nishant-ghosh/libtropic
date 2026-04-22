@@ -141,9 +141,8 @@ void app_main(void)
     // This helper function implements the recommended FW update process.
     ret = lt_do_mutable_fw_update(&lt_handle, fw_CPU, sizeof(fw_CPU), fw_SPECT, sizeof(fw_SPECT));
     if (ret != LT_OK) {
-        ESP_LOGE(TAG, "lt_do_mutable_fw_update() failed, ret=%s\n", lt_ret_verbose(ret));
-        ESP_LOGE(TAG,
-                 "Tip: turn logging on to see more information (compile with -DLT_LOG_LVL=Info)\n");
+        ESP_LOGE(TAG, "lt_do_mutable_fw_update() failed, ret=%s", lt_ret_verbose(ret));
+        ESP_LOGE(TAG, "Tip: turn logging on to see more information (compile with -DLT_LOG_LVL=Info)");
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
         return;
