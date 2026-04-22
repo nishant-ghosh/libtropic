@@ -802,7 +802,7 @@ lt_ret_t lt_print_fw_header(lt_handle_t *h, const lt_bank_id_t bank_id,
  * @brief Helper function to perform mutable firmware update on both firmware banks.
  * @note This helper function follows the recommended FW update process.
  * @note This helper function is compatible with all silicon revisions.
- * @important Even if this function fails, the Application FW might still be bootable (atleast one
+ * @important Even if this function fails, the Application FW might still be bootable (at least one
  * of the banks was updated successfully). However, ignoring this is strongly discouraged:
  *  - There is a non-negligible security risk.
  *  - Libtropic was not reinitialized to be compatible with the updated Application FW - some
