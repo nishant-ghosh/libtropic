@@ -312,6 +312,12 @@ int main(void)
     }
     printf("OK\n");
 
+    if (get_fw_versions(&lt_handle) != LT_OK) {
+        lt_deinit(&lt_handle);
+        mbedtls_psa_crypto_free();
+        return -1;
+    }
+
     printf("Deinitializing handle...");
     ret = lt_deinit(&lt_handle);
     if (LT_OK != ret) {
