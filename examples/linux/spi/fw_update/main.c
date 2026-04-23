@@ -27,12 +27,12 @@ lt_ret_t get_fw_versions(lt_handle_t *lt_handle)
     printf("Reading firmware versions from TROPIC01...");
     lt_ret_t ret = lt_get_info_riscv_fw_ver(lt_handle, cpu_fw_ver);
     if (ret != LT_OK) {
-        fprintf(stderr, "\nFailed to get RISC-V FW version, ret=%s", lt_ret_verbose(ret));
+        fprintf(stderr, "\nFailed to get RISC-V FW version, ret=%s\n", lt_ret_verbose(ret));
         return ret;
     }
     ret = lt_get_info_spect_fw_ver(lt_handle, spect_fw_ver);
     if (ret != LT_OK) {
-        fprintf(stderr, "\nFailed to get SPECT FW version, ret=%s", lt_ret_verbose(ret));
+        fprintf(stderr, "\nFailed to get SPECT FW version, ret=%s\n", lt_ret_verbose(ret));
         return ret;
     }
     printf("OK\n");
