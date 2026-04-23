@@ -2130,8 +2130,9 @@ lt_ret_t lt_do_mutable_fw_update(lt_handle_t *h, const uint8_t *cpu_fw_data,
     }
 
 #if !defined(LT_SILICON_REV_ABAB)
-    // 7. Check the updated FW version was booted.
+    // 7. Check the updated FW versions were booted.
     uint8_t riscv_ver[TR01_L2_GET_INFO_RISCV_FW_SIZE];
+    uint8_t spect_ver[TR01_L2_GET_INFO_SPECT_FW_SIZE];
 
     ret = lt_get_info_riscv_fw_ver(h, riscv_ver);
     if (ret != LT_OK) {
@@ -2147,6 +2148,23 @@ lt_ret_t lt_do_mutable_fw_update(lt_handle_t *h, const uint8_t *cpu_fw_data,
             ", read "_LT_DO_MUTABLE_FW_UPDATE_FW_VER_FMT,
             _LT_DO_MUTABLE_FW_UPDATE_FW_VER_ARG(cpu_fw_chunk_0->version),
             _LT_DO_MUTABLE_FW_UPDATE_FW_VER_ARG(riscv_ver_read));
+        return LT_FAIL;
+    }
+
+    ret = lt_get_info_spect_fw_ver(h, spect_ver);
+    if (ret != LT_OK) {
+        LT_LOG_ERROR("Failed to read SPECT FW version.");
+        return ret;
+    }
+    const uint32_t spect_ver_read = ((uint32_t)spect_ver[3] << 24) | ((uint32_t)spect_ver[2] << 16) |
+                                    ((uint32_t)spect_ver[1] << 8) | (uint32_t)spect_ver[0];
+
+    if (spect_ver_read != spect_fw_chunk_0->version) {
+        LT_LOG_ERROR(
+            "Unexpected SPECT FW version was booted: expected "_LT_DO_MUTABLE_FW_UPDATE_FW_VER_FMT
+            ", read "_LT_DO_MUTABLE_FW_UPDATE_FW_VER_FMT,
+            _LT_DO_MUTABLE_FW_UPDATE_FW_VER_ARG(spect_fw_chunk_0->version),
+            _LT_DO_MUTABLE_FW_UPDATE_FW_VER_ARG(spect_ver_read));
         return LT_FAIL;
     }
 #endif
