@@ -183,6 +183,22 @@ lt_ret_t lt_get_info_cert_store(lt_handle_t *h, struct lt_cert_store_t *store)
         return LT_PARAM_ERR;
     }
 
+    // Some older bootloader FWs may allow reading the X.509 Certificate Store in Start-up Mode, but
+    // libtropic intentionally disallows reads in Start-up (Maintenance) Mode on all devices.
+    lt_tr01_mode_t tr01_mode;
+    lt_ret_t ret;
+    ret = lt_get_tr01_mode(h, &tr01_mode);
+    if (ret != LT_OK) {
+        LT_LOG_ERROR("Failed to get current TROPIC01 mode.");
+        return ret;
+    }
+    if (tr01_mode == LT_TR01_MAINTENANCE) {
+        LT_LOG_INFO(
+            "X.509 Certificate Store cannot be read in Start-up Mode. Please, reboot into application "
+            "to read it.");
+        return LT_L1_CHIP_STARTUP_MODE;
+    }
+
     // Setup a request pointer to l2 buffer with request data
     struct lt_l2_get_info_req_t *p_l2_req = (struct lt_l2_get_info_req_t *)h->l2.buff;
 
@@ -200,7 +216,7 @@ lt_ret_t lt_get_info_cert_store(lt_handle_t *h, struct lt_cert_store_t *store)
         p_l2_req->object_id = TR01_L2_GET_INFO_REQ_OBJECT_ID_X509_CERTIFICATE;
         p_l2_req->block_index = i;
 
-        lt_ret_t ret = lt_l2_send(&h->l2);
+        ret = lt_l2_send(&h->l2);
         if (ret != LT_OK) {
             return ret;
         }

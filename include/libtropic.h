@@ -72,6 +72,7 @@ lt_ret_t lt_get_tr01_mode(lt_handle_t *h, lt_tr01_mode_t *mode);
 
 /**
  * @brief Read out PKI chain from TROPIC01's Certificate Store
+ * @warning Reading X.509 Certificate Store in the Start-up Mode will fail.
  *
  * @param h           Handle for communication with TROPIC01
  * @param store       Certificate store handle to be filled

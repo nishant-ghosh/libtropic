@@ -154,15 +154,9 @@ void lt_test_rev_get_info_req_bootloader(lt_handle_t *h)
     LT_LOG_INFO("----------------------------------------------");
 
     g_h = h;
-#if defined(LT_SILICON_REV_ACAB)
-    uint8_t cert1[CERTS_BUF_LEN] = {0}, cert2[CERTS_BUF_LEN] = {0}, cert3[CERTS_BUF_LEN] = {0},
-            cert4[CERTS_BUF_LEN] = {0};
-    struct lt_cert_store_t store = {
-        .certs = {cert1, cert2, cert3, cert4},
-        .buf_len = {CERTS_BUF_LEN, CERTS_BUF_LEN, CERTS_BUF_LEN, CERTS_BUF_LEN}};
-#endif
-    uint8_t riscv_ver[TR01_L2_GET_INFO_RISCV_FW_SIZE], spect_ver[TR01_L2_GET_INFO_SPECT_FW_SIZE];
+    struct lt_cert_store_t store = {0};
     struct lt_chip_id_t chip_id = {0};
+    uint8_t riscv_ver[TR01_L2_GET_INFO_RISCV_FW_SIZE], spect_ver[TR01_L2_GET_INFO_SPECT_FW_SIZE];
 
     LT_LOG_INFO("Initializing handle");
     LT_TEST_ASSERT(LT_OK, lt_init(h));
@@ -172,35 +166,9 @@ void lt_test_rev_get_info_req_bootloader(lt_handle_t *h)
 
     lt_test_cleanup_function = &lt_test_rev_get_info_req_bootloader_cleanup;
 
-#if defined(LT_SILICON_REV_ACAB)
-    LT_LOG_INFO("Reading X509 Certificate Store...");
-    LT_TEST_ASSERT(LT_OK, lt_get_info_cert_store(h, &store));
-    LT_LOG_INFO();
+    LT_LOG_INFO("Reading X509 Certificate Store (should fail)...");
+    LT_TEST_ASSERT(LT_FAIL, lt_get_info_cert_store(h, &store));
 
-    uint8_t *cert;
-    for (int i = 0; i < LT_NUM_CERTIFICATES; i++) {
-        cert = store.certs[i];
-        LT_LOG_INFO("Certificate number: %d", i);
-        LT_LOG_INFO("Checking if size of certificate is not zero");
-        LT_TEST_ASSERT(1, (store.cert_len[i] != 0));
-        LT_LOG_INFO("Size in bytes: %" PRIu16, store.cert_len[i]);
-
-        for (int j = 0; j < store.cert_len[i]; j += 16) {
-            LT_LOG_INFO("%02" PRIx8 "%02" PRIx8 "%02" PRIx8 "%02" PRIx8 "%02" PRIx8 "%02" PRIx8
-                        "%02" PRIx8 "%02" PRIx8 "%02" PRIx8 "%02" PRIx8 "%02" PRIx8 "%02" PRIx8
-                        "%02" PRIx8 "%02" PRIx8 "%02" PRIx8 "%02" PRIx8,
-                        cert[j], cert[j + 1], cert[j + 2], cert[j + 3], cert[j + 4], cert[j + 5],
-                        cert[j + 6], cert[j + 7], cert[j + 8], cert[j + 9], cert[j + 10], cert[j + 11],
-                        cert[j + 12], cert[j + 13], cert[j + 14], cert[j + 15]);
-        }
-        LT_LOG_INFO();
-    }
-    LT_LOG_LINE();
-#elif defined(LT_SILICON_REV_ABAB)
-    LT_LOG_INFO("Bootloader v1.0.1 provided just 512B for device certificate only");
-#else
-#error "Undefined silicon revision! One of the LT_SILICON_REV_* macros must be defined."
-#endif
     LT_LOG_INFO("Reading Chip ID...");
     LT_TEST_ASSERT(LT_OK, lt_get_info_chip_id(h, &chip_id));
     LT_TEST_ASSERT(LT_OK, lt_print_chip_id(&chip_id, chip_id_printf_wrapper));
