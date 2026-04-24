@@ -234,15 +234,23 @@ lt_ret_t lt_l2_send_encrypted_cmd(lt_l2_state_t *s2, uint8_t *buff, uint16_t buf
                 frame_resend_counter++;
 
                 ret = lt_l2_resend_response(s2);
-                if (ret == LT_OK || ret == LT_L2_REQ_CONT || ret != LT_L2_IN_CRC_ERR) {
+                if (ret == LT_L2_IN_CRC_ERR) {
+                    s2->l2_in_crc_error_count++;
+                }
+                // If we receive LT_L2_CRC_ERR to Resend_Req, we should not retry whole communication,
+                // rather the Resend_Req again, as we cannot be sure that the CRC error appeared in the
+                // original frame or only later in the Resend_Req frame.
+                else if (ret == LT_L2_CRC_ERR) {
+                    s2->l2_crc_error_count++;
+                }
+                // Do not retry on OK or other errors.
+                else {
                     break;
                 }
-                s2->l2_in_crc_error_count++;
             }
         }
-
-        // In case of CRC error, resend the last frame if there's still some retry attempts.
-        if (ret == LT_L2_CRC_ERR && frame_resend_counter < LT_CRC_ERR_RETRY_ATTEMPTS) {
+        // In case of CRC error, resend the last frame if there're still some retry attempts.
+        else if (ret == LT_L2_CRC_ERR && frame_resend_counter < LT_CRC_ERR_RETRY_ATTEMPTS) {
             s2->l2_crc_error_count++;
             frame_resend_counter++;
             i--;
@@ -253,9 +261,11 @@ lt_ret_t lt_l2_send_encrypted_cmd(lt_l2_state_t *s2, uint8_t *buff, uint16_t buf
         if (ret != LT_OK && ret != LT_L2_REQ_CONT) {
             return ret;
         }
-
-        buff_offset += req_len;    // Move offset for next chunk
-        frame_resend_counter = 0;  // Frame sent successfully, reset the counter.
+        // OK - we can move forward in buffer and reset retry counter.
+        else {
+            buff_offset += req_len;    // Move offset for next chunk
+            frame_resend_counter = 0;  // Frame sent successfully, reset the counter.
+        }
     }
 
     return LT_OK;
