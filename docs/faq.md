@@ -9,6 +9,7 @@ This list might help you resolve some issues.
     - [`LT_L2_HSK_ERR`](#lt_l2_hsk_err)
     - [`LT_L3_DATA_LEN_ERROR`](#lt_l3_data_len_error)
     - [`LT_L3_INVALID_CMD` or `LT_L2_UNKNOWN_REQ`](#lt_l3_invalid_cmd-or-lt_l2_unknown_req)
+    - [`LT_FAIL`](#lt_fail)
   - [I cannot establish a Secure Session](#i-cannot-establish-a-secure-session)
   - [FW update failed](#fw-update-failed)
   - [What is the part number (P/N) of my TROPIC01?](#what-is-the-part-number-pn-of-my-tropic01)
@@ -53,7 +54,7 @@ On Linux, a common cause is an error in the HAL due to insufficient permissions.
 ERROR   [ 101] Error opening serial at "/dev/ttyACM0".
 ```
 
-This is probably a permissions issue. Try adding your user account to groups that provide access to the device you are using (for example, `dialout` or `plugdev` for USB serial devices, and `spi` for SPI devices). Refer to documentation of your distribution for details.
+This is likely a permissions issue. Try adding your user account to the groups that provide access to the device you are using (for example, `dialout` or `plugdev` for USB serial devices, and `spi` for SPI devices). Refer to documentation of your distribution for details.
 
 ## I cannot establish a Secure Session
 There are two main causes:
