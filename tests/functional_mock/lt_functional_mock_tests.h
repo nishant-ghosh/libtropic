@@ -38,14 +38,22 @@ void lt_test_mock_attrs(lt_handle_t *h);
  *  1. Mock init sequence and initialize Libtropic handle.
  *  2. Test LT_L2_IN_CRC_ERR retry mechanism on L2: Deplete all retry attempts and check if
  *     LT_L2_IN_CRC_ERR was returned.
- *  3. Test LT_L2_IN_CRC_ERR retry mechanism on L2: Send random number of corrupted frames
- *     (in range [1, LT_CRC_ERR_RETRY_ATTEMPTS]) and then a correct one and check if LT_OK is returned.
+ *  3. Test LT_L2_IN_CRC_ERR retry mechanism on L2:  Send random number of corrupted frames (with
+ *     incorrect CRC) and then a correct one and check if LT_OK is returned.
  *  4. Start mocked Secure Session.
- *  5. Test LT_L2_IN_CRC_ERR retry mechanism on L3: Deplete all retry attempts and check if
- *     LT_L2_IN_CRC_ERR was returned.
- *  6. Test LT_L2_IN_CRC_ERR retry mechanism on L3: Send random number of corrupted frames
- *     (in range [1, LT_CRC_ERR_RETRY_ATTEMPTS]) and then a correct one and check if LT_OK is returned.
- *  7. Terminate the session and deinitialize the Libtropic handle.
+ *  5. Test LT_L2_IN_CRC_ERR retry mechanism on L3 in lt_l2_send_encrypted_cmd: send corrupted CRCs in
+ *     the reponses to commands. Deplete all retry attempts and check if LT_L2_IN_CRC_ERR was returned.
+ *     Use lt_ping as a dummy command.
+ *  6. Test LT_L2_IN_CRC_ERR retry mechanism on L3 in lt_l2_send_encrypted_cmd: send random number of
+ *     corrupted frames (with incorrect CRC) in the reponses to commands and then a correct one and
+ *     check if LT_OK is returned. Use lt_ping as a dummy command.
+ *  7. Test LT_L2_IN_CRC_ERR retry mechanism on L3 in lt_l2_recv_encrypted_res: send corrupted CRCs in
+ *     Results. Deplete all retry attempts and check if LT_L2_IN_CRC_ERR was returned. Use lt_ping as a
+ *     dummy command.
+ *  8. Test LT_L2_IN_CRC_ERR retry mechanism on L3 in lt_l2_recv_encrypted_res: send random number of
+ *     corrupted Results (with incorrect CRC) then a correct one and check if LT_OK is returned. Use
+ *     lt_ping as a dummy command.
+ *  9. Terminate the session and deinitialize the Libtropic handle.
  *
  * @param h Handle for communication with TROPIC01
  */
