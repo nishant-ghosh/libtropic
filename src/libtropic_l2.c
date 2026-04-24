@@ -108,20 +108,6 @@ lt_ret_t lt_l2_transfer(lt_l2_state_t *s2)
 
         ret = lt_l2_receive(s2);
 
-        // If CRC of incoming Response is invalid, try to get a new Reponse.
-        if (ret == LT_L2_IN_CRC_ERR) {
-            s2->l2_in_crc_error_count++;
-            while (total_retry_count < LT_CRC_ERR_RETRY_ATTEMPTS) {
-                total_retry_count++;
-
-                ret = lt_l2_resend_response(s2);
-                if (ret == LT_OK || ret != LT_L2_IN_CRC_ERR) {
-                    break;
-                }
-                s2->l2_in_crc_error_count++;
-            }
-        }
-
         // After receiving Response frame with correct CRC (or exceeded count of attempts),
         // check if TROPIC01 received our Request OK. If not, and total number
         // of retries was not exhausted yet, retry whole communication.
@@ -134,6 +120,28 @@ lt_ret_t lt_l2_transfer(lt_l2_state_t *s2)
                 retry_communication = true;
             }
         }
+        // If CRC of incoming Response is invalid, try to get a new Reponse.
+        else if (ret == LT_L2_IN_CRC_ERR) {
+            s2->l2_in_crc_error_count++;
+            while (total_retry_count < LT_CRC_ERR_RETRY_ATTEMPTS) {
+                total_retry_count++;
+
+                ret = lt_l2_resend_response(s2);
+                if (ret == LT_L2_IN_CRC_ERR) {
+                    s2->l2_in_crc_error_count++;
+                }
+                // If we receive LT_L2_CRC_ERR to Resend_Req, we should not retry
+                // whole communication, rather the Resend_Req again, as we cannot be sure that
+                // the CRC error appeared in the original frame or only later in the Resend_Req frame.
+                else if (ret == LT_L2_CRC_ERR) {
+                    s2->l2_crc_error_count++;
+                }
+                else {
+                    break;
+                }
+            }
+        }
+
     } while (retry_communication);
 
     return ret;
