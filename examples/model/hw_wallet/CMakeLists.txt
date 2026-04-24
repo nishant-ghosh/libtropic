@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.21.0)
 include (FetchContent)
 
+if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.24")
+    cmake_policy(SET CMP0135 NEW) # Timestamp extraction policy
+endif()
+
 ###########################################################################
 #                                                                         #
 #   Set up projects and paths                                             #
@@ -47,7 +51,6 @@ FetchContent_Declare(
     mbedtls_v4
     URL https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-4.0.0/mbedtls-4.0.0.tar.bz2
     URL_HASH SHA256=2f3a47f7b3a541ddef450e4867eeecb7ce2ef7776093f3a11d6d43ead6bf2827
-    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 FetchContent_MakeAvailable(mbedtls_v4)
 target_link_libraries(tropic PUBLIC mbedtls)
@@ -58,7 +61,6 @@ FetchContent_Declare(
     ed25519
     URL https://github.com/orlp/ed25519/archive/b1f19fab4aebe607805620d25a5e42566ce46a0e.zip
     URL_HASH SHA256=75f39e64f22ec7474e7881315a3f9135afe6c990737388fb16a6950911b55721
-    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 FetchContent_MakeAvailable(ed25519)
 
