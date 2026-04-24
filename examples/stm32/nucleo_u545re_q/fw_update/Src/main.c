@@ -181,7 +181,6 @@ int main(void)
     lt_ctx_mbedtls_v4_t crypto_ctx;
     lt_handle.l3.crypto_ctx = &crypto_ctx;
 
-
     printf("Initializing handle...");
     lt_ret_t ret = lt_init(&lt_handle);
     if (LT_OK != ret) {
