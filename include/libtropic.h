@@ -101,8 +101,8 @@ lt_ret_t lt_get_st_pub(const struct lt_cert_store_t *store, uint8_t *stpub);
 
 /**
  * @brief Read TROPIC01's CHIP ID
- * @note The read silicon revision field may not contain a valid ASCII-encoded string. This may
- * indicate CHIP_ID version 0.0.0.1, which did not include silicon revision information.
+ * @note The silicon revision field may be unavailable in CHIP_ID version 0.0.0.1. This CHIP_ID version
+ * was used only in ABAB silicon revisions.
  *
  * @param h           Handle for communication with TROPIC01
  * @param chip_id     Structure which holds all fields of CHIP ID
