@@ -42,6 +42,19 @@ A TROPIC01 will be in Maintenance Mode after a user-triggered reboot (calling `l
 
 However, a TROPIC01 can also enter Maintenance Mode automatically after an unsuccessful update or if firmware banks are empty or corrupted. In that case, a simple reboot will not help; you must run the firmware update again, either using the firmware update example (see [Tutorials](./tutorials/index.md)) or from your application code.
 
+### `LT_FAIL`
+This is a generic error code and can be caused by various issues. See below for the most common causes.
+
+#### Permissions issue on Linux
+
+On Linux, a common cause is an error in the HAL due to insufficient permissions. If you run any example and receive `LT_FAIL`, enable debug logging (see [Logging](reference/logging.md)). If you see an error similar to the following:
+
+```sh
+ERROR   [ 101] Error opening serial at "/dev/ttyACM0".
+```
+
+This is probably a permissions issue. Try adding your user account to groups that provide access to the device you are using (for example, `dialout` or `plugdev` for USB serial devices, and `spi` for SPI devices). Refer to documentation of your distribution for details.
+
 ## I cannot establish a Secure Session
 There are two main causes:
 
