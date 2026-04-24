@@ -130,9 +130,9 @@ lt_ret_t lt_l2_transfer(lt_l2_state_t *s2)
                 if (ret == LT_L2_IN_CRC_ERR) {
                     s2->l2_in_crc_error_count++;
                 }
-                // If we receive LT_L2_CRC_ERR to Resend_Req, we should not retry
-                // whole communication, rather the Resend_Req again, as we cannot be sure that
-                // the CRC error appeared in the original frame or only later in the Resend_Req frame.
+                // If we receive LT_L2_CRC_ERR to Resend_Req, we should not retry whole communication,
+                // rather the Resend_Req again, as we cannot be sure that the CRC error appeared in the
+                // original frame or only later in the Resend_Req frame.
                 else if (ret == LT_L2_CRC_ERR) {
                     s2->l2_crc_error_count++;
                 }
@@ -189,6 +189,7 @@ lt_ret_t lt_l2_send_encrypted_cmd(lt_l2_state_t *s2, uint8_t *buff, uint16_t buf
     uint16_t buff_offset = 0;
 
     // Count of retries to resend the frame on LT_L2_CRC_ERR or LT_L2_IN_CRC_ERR.
+    // This counter is reset on each successful chunk (frame).
     uint32_t frame_resend_counter = 0;
 
     // req->req_len gets overwritten, so we need to keep copy to increment
