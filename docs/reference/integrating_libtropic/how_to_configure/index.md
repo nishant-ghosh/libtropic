@@ -58,7 +58,7 @@ Log SPI communication using `printf`. Handy to debug low level communication.
 - string
 - default value: latest silicon revision available in the current Libtropic release
 
-Silicon version (e.g. `"ACAB"`) of the currently used TROPIC01 has to be set in this option. It is needed for TROPIC01's firmware update and functional tests, as some behavior differs between the TROPIC01 revisions.
+Silicon revision (e.g. `"ACAB"`) of the currently used TROPIC01 has to be set in this option. It is needed for TROPIC01's firmware update and functional tests, as some behavior differs between the TROPIC01 revisions.
 
 !!! question "What Is the Silicon Revision of My TROPIC01?"
     Refer to the dedicated section in the [FAQ](../../../faq.md#what-is-the-silicon-revision-of-my-tropic01).

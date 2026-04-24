@@ -1802,11 +1802,24 @@ lt_ret_t lt_print_chip_id(const struct lt_chip_id_t *chip_id,
         return LT_FAIL;
     }
 
+    // If CHIP_ID v0.0.0.1 is detected, we won't interpret silicon revision data, as this version does
+    // not include silicon revision.
+    bool chip_id_ver_is_0001 = (chip_id->chip_id_ver[0] == 0 && chip_id->chip_id_ver[1] == 0 &&
+                                chip_id->chip_id_ver[2] == 0 && chip_id->chip_id_ver[3] == 1);
+
     if (LT_OK != lt_print_bytes(chip_id->silicon_rev, sizeof(chip_id->silicon_rev), print_bytes_buff,
-                                sizeof(print_bytes_buff)) ||
-        0 > print_func("Silicon rev            = 0x%s (%c%c%c%c)\n", print_bytes_buff,
-                       chip_id->silicon_rev[0], chip_id->silicon_rev[1], chip_id->silicon_rev[2],
-                       chip_id->silicon_rev[3])) {
+                                sizeof(print_bytes_buff))) {
+        return LT_FAIL;
+    }
+
+    if (chip_id_ver_is_0001) {
+        if (0 > print_func("Silicon rev            = 0x%s (N/A)\n", print_bytes_buff)) {
+            return LT_FAIL;
+        }
+    }
+    else if (0 > print_func("Silicon rev            = 0x%s (%c%c%c%c)\n", print_bytes_buff,
+                            chip_id->silicon_rev[0], chip_id->silicon_rev[1], chip_id->silicon_rev[2],
+                            chip_id->silicon_rev[3])) {
         return LT_FAIL;
     }
 
@@ -1858,7 +1871,8 @@ lt_ret_t lt_print_chip_id(const struct lt_chip_id_t *chip_id,
             break;
 
         default:
-            if (0 > print_func("Fab ID         = 0x%03" PRIX16 " (%s)\n", parsed_fab_id, "N/A")) {
+            if (0 >
+                print_func("Fab ID                 = 0x%03" PRIX16 " (%s)\n", parsed_fab_id, "N/A")) {
                 return LT_FAIL;
             }
             break;

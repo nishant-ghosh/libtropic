@@ -101,6 +101,8 @@ lt_ret_t lt_get_st_pub(const struct lt_cert_store_t *store, uint8_t *stpub);
 
 /**
  * @brief Read TROPIC01's CHIP ID
+ * @note The silicon revision field may be unavailable in CHIP_ID version 0.0.0.1. This CHIP_ID version
+ * was used only in ABAB silicon revisions.
  *
  * @param h           Handle for communication with TROPIC01
  * @param chip_id     Structure which holds all fields of CHIP ID
@@ -768,6 +770,8 @@ lt_ret_t lt_print_bytes(const uint8_t *bytes, const size_t bytes_cnt, char *out_
 
 /**
  * @brief Interprets fields of CHIP_ID and prints them using the passed printf-like function.
+ * @note If the silicon revision field says "N/A", silicon revision of the TROPIC01 is ABAB. This is
+ * because CHIP_ID v0.0.0.1, used in ABAB chips, does not include the silicon revision field.
  *
  * @param  chip_id     CHIP_ID structure
  * @param  print_func  printf-like function to use for printing
