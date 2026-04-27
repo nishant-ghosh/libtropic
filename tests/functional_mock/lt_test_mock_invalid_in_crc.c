@@ -34,7 +34,7 @@ void lt_test_mock_invalid_in_crc(lt_handle_t *h)
 
     uint8_t random_byte;
 
-    // 1. Mock init sequence and initialize Libtropic handle
+    // 1. Mock init sequence and initialize Libtropic handle.
     // ---------------------------------------------------------------------------------------------
 
     lt_mock_hal_reset(&h->l2);
@@ -45,10 +45,10 @@ void lt_test_mock_invalid_in_crc(lt_handle_t *h)
     LT_LOG_INFO("Initializing handle");
     LT_TEST_ASSERT(LT_OK, lt_init(h));
 
-    // 2. Test LT_L2_IN_CRC_ERR retry mechanism on L2: Deplete all retry attempts and check if
-    // LT_L2_IN_CRC_ERR was returned.
+    // 2. L2 path: enqueue Get_Info responses that contain invalid CRCs repeatedly
+    //    until retry attempts are exhausted, then verify LT_L2_IN_CRC_ERR is returned.
     // ---------------------------------------------------------------------------------------------
-    LT_LOG_INFO("Mocking responses to Get_Info request with invalid CRC...");
+    LT_LOG_INFO("2. L2: enqueue Get_Info responses with invalid CRCs for retry tests");
 
     const uint8_t chip_ready = TR01_L1_CHIP_MODE_READY_bit;
     struct lt_l2_get_info_rsp_t get_info_resp_corrupted_crc = {
@@ -59,8 +59,8 @@ void lt_test_mock_invalid_in_crc(lt_handle_t *h)
     };
     uint8_t dummy_out[TR01_L2_GET_INFO_RISCV_FW_SIZE];
 
-    // Enqueue count of responses based on configured resend attempts.
-    // 1 + LT_CRC_ERR_RETRY_ATTEMPTS, because first is normal Request, remaining are retries.
+    // Enqueue the initial response plus the configured number of retry responses
+    // (1 initial + LT_CRC_ERR_RETRY_ATTEMPTS retries).
     for (int i = 0; i < 1 + LT_CRC_ERR_RETRY_ATTEMPTS; i++) {
         LT_TEST_ASSERT(LT_OK, lt_mock_hal_enqueue_response(&h->l2, &chip_ready, sizeof(chip_ready)));
         LT_TEST_ASSERT(
@@ -73,12 +73,12 @@ void lt_test_mock_invalid_in_crc(lt_handle_t *h)
     LT_TEST_ASSERT(1 + LT_CRC_ERR_RETRY_ATTEMPTS, h->l2.l2_in_crc_error_count);
     h->l2.l2_in_crc_error_count = 0;
 
-    // 3. Test LT_L2_IN_CRC_ERR retry mechanism on L2: Send random number of corrupted frames (with
-    // incorrect CRC) and then a correct one and check if LT_OK is returned.
+    // 3. L2 path: send a randomized number of Get_Info frames with invalid CRC,
+    //    then a correct frame, and verify the call succeeds (LT_OK).
     // ---------------------------------------------------------------------------------------------
-    LT_LOG_INFO("Mocking reponses to Get_Info request with random corrupted and one correct CRC...");
+    LT_LOG_INFO("3. L2: enqueue randomized invalid-CRC Get_Info responses, then a valid one");
 
-    // Generate random number of corrupted frames in range [1, LT_CRC_ERR_RETRY_ATTEMPTS]
+    // Generate a random count of corrupted frames in range [1, LT_CRC_ERR_RETRY_ATTEMPTS]
     LT_TEST_ASSERT(LT_OK, lt_random_bytes(h, &random_byte, sizeof(random_byte)));
     int num_corrupted_l2 = (random_byte % LT_CRC_ERR_RETRY_ATTEMPTS) + 1;
     LT_LOG_INFO("Sending %d corrupted frames before correct frame", num_corrupted_l2);
@@ -109,18 +109,17 @@ void lt_test_mock_invalid_in_crc(lt_handle_t *h)
 
     // 4. Start mocked Secure Session.
     // ---------------------------------------------------------------------------------------------
-    LT_LOG_INFO("Setting up session...");
+    LT_LOG_INFO("4. Start mocked Secure Session.");
     uint8_t kcmd[TR01_AES256_KEY_LEN];
     uint8_t kres[TR01_AES256_KEY_LEN];
     LT_TEST_ASSERT(LT_OK, lt_random_bytes(h, kcmd, sizeof(kcmd)));
     memcpy(kres, kcmd, TR01_AES256_KEY_LEN);
     LT_TEST_ASSERT(LT_OK, mock_session_start(h, kcmd, kres));
 
-    // 5. Test LT_L2_IN_CRC_ERR retry mechanism on L3 in lt_l2_send_encrypted_cmd: send corrupted CRCs
-    // in the reponses to commands. Deplete all retry attempts and check if LT_L2_IN_CRC_ERR was
-    // returned. Use lt_ping as a dummy command.
+    // 5. L3 command path: send command responses with invalid CRCs until retries
+    //    are depleted and verify lt_ping returns LT_L2_IN_CRC_ERR.
     // ---------------------------------------------------------------------------------------------
-    LT_LOG_INFO("Mocking responses to lt_ping with invalid CRC...");
+    LT_LOG_INFO("5. L3: enqueue command responses containing invalid CRCs for retry test");
 
     // Enqueue count of responses based on configured resend attempts.
     // 1 + LT_CRC_ERR_RETRY_ATTEMPTS, because first is normal Request, remaining are retries.
@@ -136,11 +135,10 @@ void lt_test_mock_invalid_in_crc(lt_handle_t *h)
     LT_TEST_ASSERT(1 + LT_CRC_ERR_RETRY_ATTEMPTS, h->l2.l2_in_crc_error_count);
     h->l2.l2_in_crc_error_count = 0;
 
-    // 6. Test LT_L2_IN_CRC_ERR retry mechanism on L3 in lt_l2_send_encrypted_cmd: send random number
-    // of corrupted frames (with incorrect CRC) in the reponses to commands and then a correct one and
-    // check if LT_OK is returned. Use lt_ping as a dummy command.
+    // 6. L3 command path: send a randomized number of invalid-CRC command responses,
+    //    then a correct response and verify lt_ping succeeds (LT_OK).
     // ---------------------------------------------------------------------------------------------
-    LT_LOG_INFO("Mocking responses to lt_ping with random corrupted and one correct CRC...");
+    LT_LOG_INFO("6. L3: enqueue randomized invalid-CRC command responses, then a valid one");
 
     // Generate random number of corrupted frames in range [1, LT_CRC_ERR_RETRY_ATTEMPTS]
     LT_TEST_ASSERT(LT_OK, lt_random_bytes(h, &random_byte, sizeof(random_byte)));
@@ -166,15 +164,15 @@ void lt_test_mock_invalid_in_crc(lt_handle_t *h)
     LT_TEST_ASSERT(num_corrupted_l3, h->l2.l2_in_crc_error_count);
     h->l2.l2_in_crc_error_count = 0;
 
-    // 7. Test LT_L2_IN_CRC_ERR retry mechanism on L3 in lt_l2_recv_encrypted_res: send corrupted
-    // CRCs in Results. Deplete all retry attempts and check if LT_L2_IN_CRC_ERR was returned. Use
-    // lt_ping as a dummy command.
+    // 7. L3 result path: return Results with corrupted CRCs so the receive path
+    //    triggers resend handling; deplete retries and expect LT_L2_IN_CRC_ERR.
     // ---------------------------------------------------------------------------------------------
+    LT_LOG_INFO("7. L3: sending Results with invalid CRC");
 
-    // Answer with correct Reponse frame to Command.
+    // Answer with a correct Response frame to the command.
     LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, false, NULL));
 
-    // Return Result with corrupted CRC.
+    // Return a Result payload that has an invalid CRC.
     LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext), true));
     // Libtropic will try to get correct frame using Resend_Req => enqueue responses to Resend_Req
     // and again a Result with corrupted CRC. Do this multiple times to deplete all attempts.
@@ -189,42 +187,40 @@ void lt_test_mock_invalid_in_crc(lt_handle_t *h)
     LT_TEST_ASSERT(1 + LT_CRC_ERR_RETRY_ATTEMPTS, h->l2.l2_in_crc_error_count);
     h->l2.l2_in_crc_error_count = 0;
 
-    // 8. Test LT_L2_IN_CRC_ERR retry mechanism on L3 in lt_l2_recv_encrypted_res: send random number
-    // of corrupted Results (with incorrect CRC) then a correct one and check if LT_OK is returned. Use
-    // lt_ping as a dummy command.
+    // 8. L3 result path: send a randomized number of corrupted Results (invalid CRC)
+    //    before sending a correct Result and verify lt_ping succeeds (LT_OK).
     // ---------------------------------------------------------------------------------------------
 
-    // Answer with correct Reponse frame to Command.
+    // Answer with a correct Response frame to the command.
     LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, false, NULL));
 
-    // Generate random number of corrupted Results in range [1, LT_CRC_ERR_RETRY_ATTEMPTS]
+    // Generate a random count of corrupted Results in range [1, LT_CRC_ERR_RETRY_ATTEMPTS].
     LT_TEST_ASSERT(LT_OK, lt_random_bytes(h, &random_byte, sizeof(random_byte)));
     num_corrupted_l3 = (random_byte % LT_CRC_ERR_RETRY_ATTEMPTS) + 1;
-    LT_LOG_INFO("Sending %d corrupted Results before correct one", num_corrupted_l3);
+    LT_LOG_INFO("8. L3: sending %d corrupted Results before a valid Result", num_corrupted_l3);
 
-    // Return Result with corrupted CRC.
+    // Send the first corrupted Result.
     LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext), true));
-    // Libtropic will try to get correct frame using Resend_Req => enqueue responses to Resend_Req
-    // and again a Result with corrupted CRC. Do this multiple times to deplete all attempts.
-    for (int i = 1; i < num_corrupted_l3;
-         i++) {  // i = 1, because one L3 Result was already sent above
+    // Enqueue additional corrupted Results (if any) to simulate resend cycles.
+    for (int i = 1; i < num_corrupted_l3; i++) {  // i = 1 because one corrupted Result already sent
         LT_TEST_ASSERT(LT_OK, lt_mock_hal_enqueue_response(&h->l2, &chip_ready, sizeof(chip_ready)));
         LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext), true));
     }
 
-    // The last Result will have correct CRC.
+    // Finally, enqueue a valid Result with correct CRC.
     LT_TEST_ASSERT(LT_OK, lt_mock_hal_enqueue_response(&h->l2, &chip_ready, sizeof(chip_ready)));
     LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext), false));
 
     LT_TEST_ASSERT(LT_OK, lt_ping(h, msg_out, msg_in, sizeof(msg_out)));
     LT_TEST_ASSERT(0, memcmp(msg_out, msg_in, sizeof(msg_out)));
 
-    // Check IN_CRC error counter and restart it.
+    // Verify IN_CRC error counter matches number of corrupted Results and reset it.
     LT_TEST_ASSERT(num_corrupted_l3, h->l2.l2_in_crc_error_count);
     h->l2.l2_in_crc_error_count = 0;
 
     // 9. Terminate the session and deinitialize the Libtropic handle
     // ---------------------------------------------------------------------------------------------
+    LT_LOG_INFO("9. Terminate Secure Session and deinitialize the Libtropic handle.");
 
     LT_LOG_INFO("Terminating the Secure Session...");
     LT_TEST_ASSERT(LT_OK, mock_session_abort(h));
