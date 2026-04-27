@@ -82,3 +82,30 @@ Defines the TROPIC01's RISC-V CPU FW version (e.g. `"1_0_1"`) to update to. It i
 
 !!! tip "See Current Configuration"
     Use `cmake -LAH | grep -B 1 LT_` to check current value of all Libtropic options.
+
+### `LT_CRC_ERR_RETRY_ATTEMPTS`
+- integer (non-negative)
+- default value: 3
+
+Defines a count of attempts to retry the communication after recieving a frame with `STATUS` field equal to `CRC_ERR` (`LT_L2_CRC_ERR`) or a frame with invalid CRC (`LT_L2_IN_CRC_ERR`).
+
+In the first case, Libtropic will try send the original Request again. In the second case, Libtropic will send the Resend Request (`Resend_Req`).
+
+Both errors share a counter.
+
+!!! example
+    If Libtropic receives a frame with `STATUS=CRC_ERR` followed by two frames with invalid CRC (during retry attempts), counter is depleted for that communication (single invocation of L2 API function or a single L3 chunk, see below).
+
+Error counter applies always to a single L2 frame and resets itself:
+
+- it starts at zero on each invocation of L2 API function (e.g., `lt_get_info_chip_id`),
+    
+    !!! example
+        Even if the first call `lt_get_info_chip_id` depletes all retry attempts, second call of `lt_get_info_chip_id` (or any other L2 API function) starts with all retry attempts available again.
+
+- it starts at zero on each chunk of L3 Command/Result in L3 API functions (e.g., `lt_ping`).
+
+    !!! example
+        Even if two errors occur during transmission of the first chunk, the second chunk starts with all retry attempts available again.
+
+You can disable this functionality by setting the parameter to zero.
