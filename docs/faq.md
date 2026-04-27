@@ -66,6 +66,18 @@ ERROR   [ 101] Error opening serial at "/dev/ttyACM0".
 
 This is likely a permissions issue. Try adding your user account to the groups that provide access to the device you are using (for example, `dialout` or `plugdev` for USB serial devices, and `spi` for SPI devices). Refer to documentation of your distribution for details.
 
+### `LT_L2_CRC_ERR` or `LT_L2_IN_CRC_ERR`
+This error means that either TROPIC01 received a corrupted frame (`LT_L2_CRC_ERR`) or the MCU received a corrupted frame (`LT_L2_IN_CRC_ERR`).
+
+Libtropic will try to retry the communication by default and return the error only after all retry attempts are depleted.
+
+It hints that the connection is unstable. You can try the following:
+
+- Use high-quality wiring and firm connectors.
+- Minimize the length of the connections as much as possible.
+- Try to lower the communication speed.
+- Increase the number of retries: see [`LT_CRC_ERR_RETRY_ATTEMPTS` parameter](reference/integrating_libtropic/how_to_configure/index.md#lt_crc_err_retry_attempts). This is not recommended, it is always better to find the cause of the connection instability.
+
 ## I cannot establish a Secure Session
 There are two main causes:
 
