@@ -30,6 +30,28 @@ extern "C" {
 void lt_test_mock_attrs(lt_handle_t *h);
 
 /**
+ * @brief Test for handling invalid CRC in requests sent to TROPIC01.
+ *
+ * @note Get_Info Request is used for testing on L2, and Ping is used on L3.
+ *
+ * Test steps:
+ *  1. Mock init sequence and initialize Libtropic handle.
+ *  2. Test LT_L2_CRC_ERR retry mechanism on L2 by returning STATUS=CRC_ERR until all retry
+ *     attempts are depleted and verify LT_L2_CRC_ERR is returned.
+ *  3. Test LT_L2_CRC_ERR retry mechanism on L2 with a random number of STATUS=CRC_ERR frames
+ *     followed by STATUS=OK and verify LT_OK is returned.
+ *  4. Start mocked Secure Session.
+ *  5. Test LT_L2_CRC_ERR retry mechanism on L3 in lt_l2_send_encrypted_cmd by returning
+ *     STATUS=CRC_ERR until all retry attempts are depleted and verify LT_L2_CRC_ERR is returned.
+ *  6. Test LT_L2_CRC_ERR retry mechanism on L3 in lt_l2_send_encrypted_cmd with a random number
+ *     of STATUS=CRC_ERR frames followed by STATUS=OK and verify LT_OK is returned.
+ *  7. Terminate Secure Session and deinitialize the Libtropic handle.
+ *
+ * @param h Handle for communication with TROPIC01
+ */
+void lt_test_mock_invalid_crc(lt_handle_t *h);
+
+/**
  * @brief Test for handling invalid CRC in TROPIC01 responses.
  *
  * @note Get_Info Request is used for testing on L2, and Ping is used on L3.
