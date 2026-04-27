@@ -1,5 +1,32 @@
 cmake_minimum_required(VERSION 3.16)
 
+# Select pairing keys written during manufacturing into your TROPIC01.
+# Note for users: if you are writing your own application, the following logic
+# with LT_SH0_KEYS is not necessary - use specific key pair, e.g. your own or 
+# the ones from libtropic_common.h.
+set(LT_SH0_KEYS "prod0" CACHE STRING "Choose which pairing keys in slot 0 will be used in this example")
+set_property(CACHE LT_SH0_KEYS PROPERTY STRINGS "eng_sample" "prod0")
+
+# These are internal macros for selecting SH0 keys.
+set(LT_USE_SH0_ENG_SAMPLE 0 CACHE INTERNAL "")
+set(LT_USE_SH0_PROD0      0 CACHE INTERNAL "")
+
+if(LT_SH0_KEYS STREQUAL "eng_sample")
+	set(LT_USE_SH0_ENG_SAMPLE 1)
+	set(LT_USE_SH0_PROD0      0)
+elseif(LT_SH0_KEYS STREQUAL "prod0")
+	set(LT_USE_SH0_ENG_SAMPLE 0)
+	set(LT_USE_SH0_PROD0      1)
+else()
+	get_property(lt_sh0_keys_choices CACHE LT_SH0_KEYS PROPERTY STRINGS)
+	message(FATAL_ERROR "Incorrect SH0 keys specified: '${LT_SH0_KEYS}'\nAvailable SH0 keys: ${lt_sh0_keys_choices}")
+endif()
+
+option(LT_DISABLE_MAINTENANCE_MODE "Disable Maintenance Mode in R-Config after successful FW update" ON)
+if (NOT LT_DISABLE_MAINTENANCE_MODE)
+    message(WARNING "Maintenance Mode will not be disabled in R-Config after successful FW update. This can increase the attack surface.")
+endif()
+
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 idf_build_set_property(MINIMAL_BUILD ON)
 project(fw_update)
