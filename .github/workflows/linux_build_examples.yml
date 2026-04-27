@@ -42,6 +42,10 @@ jobs:
           cmake ./ -B build -G Ninja
           cd build && ninja
 
+          cd ..
+          cmake ./ -B build_abab -G Ninja -DLT_SILICON_REV=ABAB
+          cd build_abab && ninja
+
           cd ../../full_chain_verification
           cmake ./ -B build -G Ninja
           cd build && ninja
@@ -59,6 +63,10 @@ jobs:
           cd ../../fw_update
           cmake ./ -B build -G Ninja
           cd build && ninja
+
+          cd ..
+          cmake ./ -B build_abab -G Ninja -DLT_SILICON_REV=ABAB
+          cd build_abab && ninja
 
           cd ../../full_chain_verification
           cmake ./ -B build -G Ninja

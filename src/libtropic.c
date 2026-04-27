@@ -635,8 +635,8 @@ lt_ret_t lt_mutable_fw_erase(lt_handle_t *h, const lt_bank_id_t bank_id)
     return LT_OK;
 }
 
-lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const uint16_t fw_data_size,
-                              lt_bank_id_t bank_id)
+lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const size_t fw_data_size,
+                              const lt_bank_id_t bank_id)
 {
     if (!h || !fw_data || fw_data_size > TR01_MUTABLE_FW_UPDATE_SIZE_MAX ||
         ((bank_id != TR01_FW_BANK_FW1) && (bank_id != TR01_FW_BANK_FW2) &&
@@ -699,23 +699,12 @@ lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const uint
     return LT_OK;
 }
 #elif defined(LT_SILICON_REV_ACAB)
-lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *update_request)
+lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const size_t fw_data_size)
 {
-    if (!h || !update_request) {
+    if (!h || !fw_data || fw_data_size < sizeof(lt_mutable_fw_update_chunk_0_t) ||
+        fw_data_size > TR01_MUTABLE_FW_UPDATE_SIZE_MAX) {
         return LT_PARAM_ERR;
     }
-
-    // This structure reflects incomming data and is used for passing those data into l2 frame
-    struct data_format_t {
-        uint8_t req_len;       /**< Length byte */
-        uint8_t signature[64]; /**< Signature of SHA256 hash of all following data in this packet */
-        uint8_t
-            hash[32];  /**< SHA256 HASH of first FW chunk of data sent using Mutable_FW_Update_Data */
-        uint16_t type; /**< FW type which is going to be updated */
-        uint8_t padding;        /**< Padding, zero value */
-        uint8_t header_version; /**< Version of used header */
-        uint32_t version;       /**< Version of FW */
-    } __attribute__((__packed__));
 
     // Setup a request pointer to l2 buffer, which is placed in handle
     struct lt_l2_mutable_fw_update_req_t *p_l2_req = (struct lt_l2_mutable_fw_update_req_t *)
@@ -724,19 +713,20 @@ lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *update_request)
     struct lt_l2_mutable_fw_update_rsp_t *p_l2_resp = (struct lt_l2_mutable_fw_update_rsp_t *)
                                                           h->l2.buff;
 
-    // Setup a pointer to incomming data
-    struct data_format_t *data_p = (struct data_format_t *)(update_request);
+    // Setup a pointer to incoming data
+    const struct lt_mutable_fw_update_chunk_0_t *fw_chunk_0 =
+        (const struct lt_mutable_fw_update_chunk_0_t *)(fw_data);
 
     p_l2_req->req_id = TR01_L2_MUTABLE_FW_UPDATE_REQ_ID;
     p_l2_req->req_len = TR01_L2_MUTABLE_FW_UPDATE_REQ_LEN;
 
-    memcpy(p_l2_req->signature, data_p->signature, sizeof(data_p->signature));
-    memcpy(p_l2_req->hash, data_p->hash, sizeof(data_p->hash));
+    memcpy(p_l2_req->signature, fw_chunk_0->signature, sizeof(fw_chunk_0->signature));
+    memcpy(p_l2_req->hash, fw_chunk_0->hash, sizeof(fw_chunk_0->hash));
 
-    p_l2_req->type = data_p->type;
-    p_l2_req->padding = data_p->padding;
-    p_l2_req->header_version = data_p->header_version;
-    p_l2_req->version = data_p->version;
+    p_l2_req->type = fw_chunk_0->type;
+    p_l2_req->padding = fw_chunk_0->padding;
+    p_l2_req->header_version = fw_chunk_0->header_version;
+    p_l2_req->version = fw_chunk_0->version;
 
     lt_ret_t ret = lt_l2_send(&h->l2);
     if (ret != LT_OK) {
@@ -754,11 +744,10 @@ lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *update_request)
     return LT_OK;
 }
 
-lt_ret_t lt_mutable_fw_update_data(lt_handle_t *h, const uint8_t *update_data,
-                                   const uint16_t update_data_size)
+lt_ret_t lt_mutable_fw_update_data(lt_handle_t *h, const uint8_t *fw_data, const size_t fw_data_size)
 {
-    if (!h || !update_data || update_data_size <= (TR01_L2_MUTABLE_FW_UPDATE_REQ_LEN + 1U) ||
-        update_data_size > TR01_MUTABLE_FW_UPDATE_SIZE_MAX) {
+    if (!h || !fw_data || fw_data_size <= (TR01_L2_MUTABLE_FW_UPDATE_REQ_LEN + 1U) ||
+        fw_data_size > TR01_MUTABLE_FW_UPDATE_SIZE_MAX) {
         return LT_PARAM_ERR;
     }
 
@@ -768,9 +757,6 @@ lt_ret_t lt_mutable_fw_update_data(lt_handle_t *h, const uint8_t *update_data,
     // Setup a request pointer to l2 buffer with response data
     struct lt_l2_mutable_fw_update_rsp_t *p_l2_resp = (struct lt_l2_mutable_fw_update_rsp_t *)
                                                           h->l2.buff;
-
-    // Normalized sizes for arithmetic.
-    size_t upd_size = (size_t)update_data_size;
     size_t copy_len;
 
     // Compute how many bytes are available in the `lt_l2_mutable_fw_update_data_req_t` struct starting
@@ -781,16 +767,16 @@ lt_ret_t lt_mutable_fw_update_data(lt_handle_t *h, const uint8_t *update_data,
 
     // Data consist of "request" and "data" parts,
     // 'data' byte chunks are taken starting from 'chunk_index'
-    for (size_t chunk_index = (size_t)TR01_L2_MUTABLE_FW_UPDATE_REQ_LEN + 1U; chunk_index < upd_size;
-         chunk_index += copy_len) {
-        copy_len = (size_t)update_data[chunk_index] + 1U;
+    for (size_t chunk_index = (size_t)TR01_L2_MUTABLE_FW_UPDATE_REQ_LEN + 1U;
+         chunk_index < fw_data_size; chunk_index += copy_len) {
+        copy_len = (size_t)fw_data[chunk_index] + 1U;
 
-        if (copy_len > upd_size - chunk_index || copy_len > dest_capacity) {
+        if (copy_len > fw_data_size - chunk_index || copy_len > dest_capacity) {
             return LT_PARAM_ERR;
         }
 
         p2_l2_req->req_id = TR01_L2_MUTABLE_FW_UPDATE_DATA_REQ;
-        memcpy((uint8_t *)&p2_l2_req->req_len, update_data + chunk_index, copy_len);
+        memcpy((uint8_t *)&p2_l2_req->req_len, fw_data + chunk_index, copy_len);
 
         lt_ret_t ret = lt_l2_send(&h->l2);
         if (ret != LT_OK) {
@@ -1954,11 +1940,23 @@ lt_ret_t lt_print_chip_id(const struct lt_chip_id_t *chip_id,
     return LT_OK;
 }
 
-lt_ret_t lt_do_mutable_fw_update(lt_handle_t *h, const uint8_t *update_data,
-                                 const uint16_t update_data_size, const lt_bank_id_t bank_id)
+/**
+ * @brief Performs mutable firmware update on a specific firmware bank.
+ * @note This function is compatible with all silicon revisions.
+ *
+ * @param h             Handle for communication with TROPIC01
+ * @param fw_data       Firmware update data
+ * @param fw_data_size  Size of firmware update data
+ * @param bank_id       ID of the firmware bank to update. This parameter is used only for ABAB
+ * silicon revision and unused for others (newer silicon revisions handle bank selection
+ * automatically).
+ * @return              LT_OK if success, otherwise returns other error code.
+ */
+static lt_ret_t update_mutable_fw_bank(lt_handle_t *h, const uint8_t *fw_data,
+                                       const size_t fw_data_size, const lt_bank_id_t bank_id)
 {
 #if defined(LT_SILICON_REV_ABAB)
-    if (!h || !update_data || update_data_size > TR01_MUTABLE_FW_UPDATE_SIZE_MAX ||
+    if (!h || !fw_data || fw_data_size > TR01_MUTABLE_FW_UPDATE_SIZE_MAX ||
         ((bank_id != TR01_FW_BANK_FW1) && (bank_id != TR01_FW_BANK_FW2) &&
          (bank_id != TR01_FW_BANK_SPECT1) && (bank_id != TR01_FW_BANK_SPECT2))) {
         return LT_PARAM_ERR;
@@ -1968,25 +1966,25 @@ lt_ret_t lt_do_mutable_fw_update(lt_handle_t *h, const uint8_t *update_data,
         return ret;
     }
 
-    ret = lt_mutable_fw_update(h, update_data, update_data_size, bank_id);
+    ret = lt_mutable_fw_update(h, fw_data, fw_data_size, bank_id);
     if (ret != LT_OK) {
         return ret;
     }
 
 #elif defined(LT_SILICON_REV_ACAB)
     LT_UNUSED(bank_id);  // bank_id is not used with ACAB, chip handles banks on its own
-    if (!h || !update_data || update_data_size > TR01_MUTABLE_FW_UPDATE_SIZE_MAX) {
+    if (!h || !fw_data || fw_data_size > TR01_MUTABLE_FW_UPDATE_SIZE_MAX) {
         return LT_PARAM_ERR;
     }
 
     // send the update 'request'
-    lt_ret_t ret = lt_mutable_fw_update(h, update_data);
+    lt_ret_t ret = lt_mutable_fw_update(h, fw_data, fw_data_size);
     if (ret != LT_OK) {
         return ret;
     }
 
     // send the rest - update 'data'
-    ret = lt_mutable_fw_update_data(h, update_data, update_data_size);
+    ret = lt_mutable_fw_update_data(h, fw_data, fw_data_size);
     if (ret != LT_OK) {
         return ret;
     }
@@ -1994,6 +1992,203 @@ lt_ret_t lt_do_mutable_fw_update(lt_handle_t *h, const uint8_t *update_data,
 #else
 #error "Undefined silicon revision! One of the LT_SILICON_REV_* macros must be defined."
 #endif
+
+    return LT_OK;
+}
+
+// The two following macros are used for pretty logging of FW versions in lt_do_mutable_fw_update() and
+// validate_fw_ver_in_bank().
+#define _LT_DO_MUTABLE_FW_UPDATE_FW_VER_FMT         \
+    "'"                                             \
+    "%" PRIu32 ".%" PRIu32 ".%" PRIu32 "(.%" PRIu32 \
+    ")"                                             \
+    "'"
+#define _LT_DO_MUTABLE_FW_UPDATE_FW_VER_ARG(v) \
+    (((v) >> 24) & 0xFF), (((v) >> 16) & 0xFF), (((v) >> 8) & 0xFF), ((v) & 0xFF)
+
+/**
+ * @brief Reads out firmware header from the given firmware bank and validates the firmware version
+ * against the expected one.
+ * @note This function is compatible with silicon revision ACAB and newer.
+ *
+ * @param h                Handle for communication with TROPIC01
+ * @param expected_fw_ver  Firmware version that is expected to be read from the bank
+ * @param bank_id          Mutable firmware bank ID
+ * @return                 LT_OK if success, otherwise returns other error code.
+ */
+static lt_ret_t validate_fw_ver_in_bank(lt_handle_t *h, const uint32_t expected_fw_ver,
+                                        const lt_bank_id_t bank_id)
+{
+    if (!h) {
+        // bank_id will be checked by lt_get_info_fw_bank().
+        return LT_PARAM_ERR;
+    }
+    lt_header_boot_v2_t fw_header;
+    uint16_t read_header_size;
+    lt_ret_t ret;
+
+    // Read FW header and validate read size.
+    ret = lt_get_info_fw_bank(h, bank_id, (uint8_t *)&fw_header, sizeof(fw_header), &read_header_size);
+    if (ret != LT_OK) {
+        LT_LOG_ERROR("Failed to read FW header from the bank.");
+        return ret;
+    }
+    if (read_header_size != sizeof(fw_header)) {
+        LT_LOG_ERROR("Read unexpected FW header size: expected=%zu, read=%" PRIu16, sizeof(fw_header),
+                     read_header_size);
+        return LT_FAIL;
+    }
+
+    // Validate the FW version.
+    if (expected_fw_ver != fw_header.ver) {
+        LT_LOG_ERROR(
+            "FW version read from the bank mismatch: expected "_LT_DO_MUTABLE_FW_UPDATE_FW_VER_FMT
+            ", read "_LT_DO_MUTABLE_FW_UPDATE_FW_VER_FMT,
+            _LT_DO_MUTABLE_FW_UPDATE_FW_VER_ARG(expected_fw_ver),
+            _LT_DO_MUTABLE_FW_UPDATE_FW_VER_ARG(fw_header.ver));
+        return LT_FAIL;
+    }
+
+    return LT_OK;
+}
+
+lt_ret_t lt_do_mutable_fw_update(lt_handle_t *h, const uint8_t *cpu_fw_data,
+                                 const size_t cpu_fw_data_size, const uint8_t *spect_fw_data,
+                                 const size_t spect_fw_data_size)
+{
+    if (!h || !cpu_fw_data || cpu_fw_data_size > TR01_MUTABLE_FW_UPDATE_SIZE_MAX || !spect_fw_data ||
+        spect_fw_data_size > TR01_MUTABLE_FW_UPDATE_SIZE_MAX) {
+        return LT_PARAM_ERR;
+    }
+    lt_ret_t ret;
+
+    // 1. To do FW update, we need to be in Maintenance Mode.
+    ret = lt_reboot(h, TR01_MAINTENANCE_REBOOT);
+    if (ret != LT_OK) {
+        LT_LOG_ERROR("Failed to reboot into Maintenance Mode before updating the first FW bank pair.");
+        return ret;
+    }
+
+    // 2. Update the first pair of FW banks with RISC-V and SPECT FW.
+    ret = update_mutable_fw_bank(h, cpu_fw_data, cpu_fw_data_size, TR01_FW_BANK_FW1);
+    if (ret != LT_OK) {
+        LT_LOG_ERROR("Failed to update RISC-V FW bank 1.");
+        return ret;
+    }
+    ret = update_mutable_fw_bank(h, spect_fw_data, spect_fw_data_size, TR01_FW_BANK_SPECT1);
+    if (ret != LT_OK) {
+        LT_LOG_ERROR("Failed to update SPECT FW bank 1.");
+        return ret;
+    }
+
+    // 3. Reboot into Maintenance Mode. This step is crucial if we want to update both FW banks pairs.
+    // If the reboot is not done, then in the case of ACAB silicon revision, the second FW bank pair
+    // will not be updated, which increases the possibility of a downgrade attack.
+    ret = lt_reboot(h, TR01_MAINTENANCE_REBOOT);
+    if (ret != LT_OK) {
+        LT_LOG_ERROR(
+            "Failed to reboot into Maintenance Mode before updating the second FW bank pair.");
+        return ret;
+    }
+
+    // 4. Update the second pair of FW banks with RISC-V and SPECT FW.
+    ret = update_mutable_fw_bank(h, cpu_fw_data, cpu_fw_data_size, TR01_FW_BANK_FW2);
+    if (ret != LT_OK) {
+        LT_LOG_ERROR("Failed to update RISC-V FW bank 2.");
+        return ret;
+    }
+    ret = update_mutable_fw_bank(h, spect_fw_data, spect_fw_data_size, TR01_FW_BANK_SPECT2);
+    if (ret != LT_OK) {
+        LT_LOG_ERROR("Failed to update SPECT FW bank 2.");
+        return ret;
+    }
+
+// 5. Check both FW bank pairs contain the new FW versions. We do this only for ACAB revision and
+// newer, because FW update data for ABAB did not contain information about the FW version.
+#if !defined(LT_SILICON_REV_ABAB)
+    const struct lt_mutable_fw_update_chunk_0_t *cpu_fw_chunk_0 =
+        (const struct lt_mutable_fw_update_chunk_0_t *)cpu_fw_data;
+    const struct lt_mutable_fw_update_chunk_0_t *spect_fw_chunk_0 =
+        (const struct lt_mutable_fw_update_chunk_0_t *)spect_fw_data;
+
+    LT_LOG_INFO("Validating FW version in RISC-V FW bank 1.");
+    ret = validate_fw_ver_in_bank(h, cpu_fw_chunk_0->version, TR01_FW_BANK_FW1);
+    if (ret != LT_OK) {
+        return ret;
+    }
+
+    LT_LOG_INFO("Validating FW version in SPECT FW bank 1.");
+    ret = validate_fw_ver_in_bank(h, spect_fw_chunk_0->version, TR01_FW_BANK_SPECT1);
+    if (ret != LT_OK) {
+        return ret;
+    }
+
+    LT_LOG_INFO("Validating FW version in RISC-V FW bank 2.");
+    ret = validate_fw_ver_in_bank(h, cpu_fw_chunk_0->version, TR01_FW_BANK_FW2);
+    if (ret != LT_OK) {
+        return ret;
+    }
+
+    LT_LOG_INFO("Validating FW version in SPECT FW bank 2.");
+    ret = validate_fw_ver_in_bank(h, spect_fw_chunk_0->version, TR01_FW_BANK_SPECT2);
+    if (ret != LT_OK) {
+        return ret;
+    }
+#endif
+
+    // 6. Perform regular reboot (Application FW should boot).
+    ret = lt_reboot(h, TR01_REBOOT);
+    if (ret != LT_OK) {
+        LT_LOG_ERROR("Failed to boot Application FW.");
+        return ret;
+    }
+
+#if !defined(LT_SILICON_REV_ABAB)
+    // 7. Check the updated FW versions were booted.
+    uint8_t riscv_ver[TR01_L2_GET_INFO_RISCV_FW_SIZE];
+    uint8_t spect_ver[TR01_L2_GET_INFO_SPECT_FW_SIZE];
+
+    ret = lt_get_info_riscv_fw_ver(h, riscv_ver);
+    if (ret != LT_OK) {
+        LT_LOG_ERROR("Failed to read RISC-V FW version.");
+        return ret;
+    }
+    const uint32_t riscv_ver_read = ((uint32_t)riscv_ver[3] << 24) | ((uint32_t)riscv_ver[2] << 16) |
+                                    ((uint32_t)riscv_ver[1] << 8) | (uint32_t)riscv_ver[0];
+
+    if (riscv_ver_read != cpu_fw_chunk_0->version) {
+        LT_LOG_ERROR(
+            "Unexpected RISC-V FW version was booted: expected "_LT_DO_MUTABLE_FW_UPDATE_FW_VER_FMT
+            ", read "_LT_DO_MUTABLE_FW_UPDATE_FW_VER_FMT,
+            _LT_DO_MUTABLE_FW_UPDATE_FW_VER_ARG(cpu_fw_chunk_0->version),
+            _LT_DO_MUTABLE_FW_UPDATE_FW_VER_ARG(riscv_ver_read));
+        return LT_FAIL;
+    }
+
+    ret = lt_get_info_spect_fw_ver(h, spect_ver);
+    if (ret != LT_OK) {
+        LT_LOG_ERROR("Failed to read SPECT FW version.");
+        return ret;
+    }
+    const uint32_t spect_ver_read = ((uint32_t)spect_ver[3] << 24) | ((uint32_t)spect_ver[2] << 16) |
+                                    ((uint32_t)spect_ver[1] << 8) | (uint32_t)spect_ver[0];
+
+    if (spect_ver_read != spect_fw_chunk_0->version) {
+        LT_LOG_ERROR(
+            "Unexpected SPECT FW version was booted: expected "_LT_DO_MUTABLE_FW_UPDATE_FW_VER_FMT
+            ", read "_LT_DO_MUTABLE_FW_UPDATE_FW_VER_FMT,
+            _LT_DO_MUTABLE_FW_UPDATE_FW_VER_ARG(spect_fw_chunk_0->version),
+            _LT_DO_MUTABLE_FW_UPDATE_FW_VER_ARG(spect_ver_read));
+        return LT_FAIL;
+    }
+#endif
+
+    // 8. Reinitialize TROPIC01 attributes based on its Application FW version.
+    ret = lt_init_tr01_attrs(h);
+    if (ret != LT_OK) {
+        LT_LOG_ERROR("lt_init_tr01_attrs() failed.");
+        return ret;
+    }
 
     return LT_OK;
 }
