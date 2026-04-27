@@ -250,11 +250,15 @@ lt_ret_t lt_l2_send_encrypted_cmd(lt_l2_state_t *s2, uint8_t *buff, uint16_t buf
             }
         }
         // In case of CRC error, resend the last frame if there're still some retry attempts.
-        else if (ret == LT_L2_CRC_ERR && frame_resend_counter < LT_CRC_ERR_RETRY_ATTEMPTS) {
-            s2->l2_crc_error_count++;
-            frame_resend_counter++;
-            i--;
-            continue;
+        else if (ret == LT_L2_CRC_ERR) {
+            s2->l2_crc_error_count++;  // Counter has to be increased even if retry attempts were
+                                       // depleted.
+
+            if (frame_resend_counter < LT_CRC_ERR_RETRY_ATTEMPTS) {
+                frame_resend_counter++;
+                i--;
+                continue;
+            }
         }
 
         // In other cases, return immediately.
