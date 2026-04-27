@@ -170,7 +170,8 @@ lt_ret_t mock_l3_result(lt_handle_t *h, const uint8_t *result_plaintext,
     return LT_OK;
 }
 
-lt_ret_t mock_l3_command_responses(lt_handle_t *h, const size_t chunk_count, bool corrupt_crc)
+lt_ret_t mock_l3_command_responses(lt_handle_t *h, const size_t chunk_count, bool corrupt_crc,
+                                   const uint8_t custom_resp_frame[5])
 {
     if (chunk_count > 1) {
         LT_LOG_ERROR("Only single chunk supported now!");
@@ -184,12 +185,15 @@ lt_ret_t mock_l3_command_responses(lt_handle_t *h, const size_t chunk_count, boo
         return ret;
     }
 
-    uint8_t req_ok_frame[5] = {
-        TR01_L1_CHIP_MODE_READY_bit, TR01_L2_STATUS_REQUEST_OK,
-        0x00,  // Zero RSP length
-        0x00,  // | Dummy CRC -- will be calculated later
-        0x00   // |
-    };
+    uint8_t req_ok_frame[5] = {0};
+    if (custom_resp_frame == NULL) {
+        req_ok_frame[TR01_L2_CHIP_STATUS_OFFSET] = TR01_L1_CHIP_MODE_READY_bit;
+        req_ok_frame[TR01_L2_STATUS_OFFSET] = TR01_L2_STATUS_REQUEST_OK;
+        req_ok_frame[TR01_L2_RSP_LEN_OFFSET] = 0x00;
+    }
+    else {
+        memcpy(req_ok_frame, custom_resp_frame, sizeof(req_ok_frame));
+    }
 
     uint16_t crc = crc16(req_ok_frame + 1, 2);
 

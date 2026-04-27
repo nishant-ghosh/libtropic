@@ -112,10 +112,13 @@ lt_ret_t mock_l3_result(lt_handle_t *h, const uint8_t *result_plaintext,
  * @param h Pointer to an lt_handle_t to use (for encryption and enqueuing).
  * @param chunk_count Count of the L3 Command chunks. Only single chunk supported now.
  * @param corrupt_crc If true, CRC will be intentionally corrupted (e.g., to test CRC handling).
+ * @param custom_resp_frame Optional custom 5-byte L2 response frame. If NULL, a default
+ * frame with STATUS=REQ_OK and zero response length is used.
  *
  * @return LT_OK on success, or an appropriate lt_ret_t error code on failure.
  */
-lt_ret_t mock_l3_command_responses(lt_handle_t *h, const size_t chunk_count, bool corrupt_crc);
+lt_ret_t mock_l3_command_responses(lt_handle_t *h, const size_t chunk_count, bool corrupt_crc,
+                                   const uint8_t custom_resp_frame[5]);
 
 #ifdef __cplusplus
 }

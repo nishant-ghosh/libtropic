@@ -125,7 +125,7 @@ void lt_test_mock_invalid_in_crc(lt_handle_t *h)
     // Enqueue count of responses based on configured resend attempts.
     // 1 + LT_CRC_ERR_RETRY_ATTEMPTS, because first is normal Request, remaining are retries.
     for (int i = 0; i < 1 + LT_CRC_ERR_RETRY_ATTEMPTS; i++) {
-        LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, true));
+        LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, true, NULL));
     }
 
     const uint8_t msg_out[] = {'H', 'E', 'L', 'L', 'O'};
@@ -149,11 +149,11 @@ void lt_test_mock_invalid_in_crc(lt_handle_t *h)
 
     // Enqueue random number of corrupted responses
     for (int i = 0; i < num_corrupted_l3; i++) {
-        LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, true));
+        LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, true, NULL));
     }
 
     // Enqueue one correct response
-    LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, false));
+    LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, false, NULL));
 
     // Mock command result itself.
     uint8_t lt_ping_plaintext[] = {TR01_L3_RESULT_OK, 'H', 'E', 'L', 'L', 'O'};
@@ -172,7 +172,7 @@ void lt_test_mock_invalid_in_crc(lt_handle_t *h)
     // ---------------------------------------------------------------------------------------------
 
     // Answer with correct Reponse frame to Command.
-    LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, false));
+    LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, false, NULL));
 
     // Return Result with corrupted CRC.
     LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext), true));
@@ -195,7 +195,7 @@ void lt_test_mock_invalid_in_crc(lt_handle_t *h)
     // ---------------------------------------------------------------------------------------------
 
     // Answer with correct Reponse frame to Command.
-    LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, false));
+    LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, false, NULL));
 
     // Generate random number of corrupted Results in range [1, LT_CRC_ERR_RETRY_ATTEMPTS]
     LT_TEST_ASSERT(LT_OK, lt_random_bytes(h, &random_byte, sizeof(random_byte)));
