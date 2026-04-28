@@ -64,10 +64,10 @@ void lt_test_mock_invalid_crc(lt_handle_t *h);
  *     incorrect CRC) and then a correct one and check if LT_OK is returned.
  *  4. Start mocked Secure Session.
  *  5. Test LT_L2_IN_CRC_ERR retry mechanism on L3 in lt_l2_send_encrypted_cmd: send corrupted CRCs in
- *     the reponses to commands. Deplete all retry attempts and check if LT_L2_IN_CRC_ERR was returned.
- *     Use lt_ping as a dummy command.
+ *     the responses to commands. Deplete all retry attempts and check if LT_L2_IN_CRC_ERR was
+ *     returned. Use lt_ping as a dummy command.
  *  6. Test LT_L2_IN_CRC_ERR retry mechanism on L3 in lt_l2_send_encrypted_cmd: send random number of
- *     corrupted frames (with incorrect CRC) in the reponses to commands and then a correct one and
+ *     corrupted frames (with incorrect CRC) in the responses to commands and then a correct one and
  *     check if LT_OK is returned. Use lt_ping as a dummy command.
  *  7. Test LT_L2_IN_CRC_ERR retry mechanism on L3 in lt_l2_recv_encrypted_res: send corrupted CRCs in
  *     Results. Deplete all retry attempts and check if LT_L2_IN_CRC_ERR was returned. Use lt_ping as a
