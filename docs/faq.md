@@ -10,6 +10,7 @@ This list might help you resolve some issues.
     - [`LT_L3_DATA_LEN_ERROR`](#lt_l3_data_len_error)
     - [`LT_L3_INVALID_CMD` or `LT_L2_UNKNOWN_REQ`](#lt_l3_invalid_cmd-or-lt_l2_unknown_req)
     - [`LT_FAIL`](#lt_fail)
+    - [`LT_L2_CRC_ERR` or `LT_L2_IN_CRC_ERR`](#lt_l2_crc_err-or-lt_l2_in_crc_err)
   - [I cannot establish a Secure Session](#i-cannot-establish-a-secure-session)
   - [FW update failed](#fw-update-failed)
   - [What is the part number (P/N) of my TROPIC01?](#what-is-the-part-number-pn-of-my-tropic01)
