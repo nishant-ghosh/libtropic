@@ -318,8 +318,10 @@ lt_ret_t lt_l2_recv_encrypted_res(lt_l2_state_t *s2, uint8_t *buff, uint16_t max
         }
 
         // Prevent receiving more data than is the size of the provided L3 buffer.
-        if (offset + resp->rsp_len > max_len) {
-            return LT_L2_RSP_LEN_ERROR;
+        if (ret == LT_OK || ret == LT_L2_RES_CONT) {
+            if (offset + resp->rsp_len > max_len) {
+                return LT_L2_RSP_LEN_ERROR;
+            }
         }
 
         switch (ret) {
