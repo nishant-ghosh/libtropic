@@ -87,25 +87,34 @@ Defines the TROPIC01's RISC-V CPU FW version (e.g. `"1_0_1"`) to update to. It i
 - integer (non-negative)
 - default value: 3
 
-Defines a count of attempts to retry the communication after recieving a frame with `STATUS` field equal to `CRC_ERR` (`LT_L2_CRC_ERR`) or a frame with invalid CRC (`LT_L2_IN_CRC_ERR`).
+Defines how many times Libtropic retries communication after one of the following CRC-related errors:
 
-In the first case, Libtropic will try send the original Request again. In the second case, Libtropic will send the Resend Request (`Resend_Req`).
+- A frame with `STATUS=CRC_ERR` (`LT_L2_CRC_ERR`).
+- A frame with an invalid incoming CRC (`LT_L2_IN_CRC_ERR`).
 
-Both errors share a counter.
+Retry behavior:
+
+- For `STATUS=CRC_ERR`, Libtropic resends the original Request.
+- For invalid incoming CRC, Libtropic sends a Resend Request (`Resend_Req`).
+
+Both error types use the same retry counter.
 
 !!! example
-    If Libtropic receives a frame with `STATUS=CRC_ERR` followed by two frames with invalid CRC (during retry attempts), counter is depleted for that communication (single invocation of L2 API function or a single L3 chunk, see below).
+    If Libtropic receives a frame with `STATUS=CRC_ERR` and then two frames with invalid CRC (during retries), the retry counter is exhausted for that communication (a single L2 API call or a single L3 chunk; see below).
 
-Error counter applies always to a single L2 frame and resets itself:
+!!! important
+    This retry counter is independent of CRC diagnostic counters (see [FAQ](../../../faq.md)). CRC diagnostic counters track the total number of CRC errors since initialization (`lt_init`).
 
-- it starts at zero on each invocation of L2 API function (e.g., `lt_get_info_chip_id`),
-    
-    !!! example
-        Even if the first call `lt_get_info_chip_id` depletes all retry attempts, second call of `lt_get_info_chip_id` (or any other L2 API function) starts with all retry attempts available again.
+The counter scope is always one L2 frame operation:
 
-- it starts at zero on each chunk of L3 Command/Result in L3 API functions (e.g., `lt_ping`).
+- It starts at zero for each invocation of an L2 API function (for example, `lt_get_info_chip_id`).
 
     !!! example
-        Even if two errors occur during transmission of the first chunk, the second chunk starts with all retry attempts available again.
+        Even if the first call to `lt_get_info_chip_id` exhausts all retry attempts, the next call to `lt_get_info_chip_id` (or any other L2 API function) starts with a fresh retry counter.
 
-You can disable this functionality by setting the parameter to zero.
+- It also starts at zero for each L3 Command/Result chunk in L3 API functions (for example, `lt_ping`).
+
+    !!! example
+        Even if two errors occur while transmitting the first chunk, the second chunk starts with a fresh retry counter.
+
+Set this parameter to zero to disable retrying.
