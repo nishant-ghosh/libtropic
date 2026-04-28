@@ -18,12 +18,12 @@
 #include "lt_l2_api_structs.h"
 #include "lt_l2_frame_check.h"
 
-/** Safety number - limit number of loops during l3 chunks reception. TROPIC01 divides data into 128B
+/** Safety number. Limit number of loops during L3 chunks reception. TROPIC01 divides data into 128B
  *  chunks, length of L3 buffer is (2 + 4096 + 16).
  *  Divided by typical chunk length: (2 + 4096 + 16) / 128 => 32,
- *  with a few added loops it is set to 42
+ *  with a few added loops it is set to 42.
  */
-#define LT_L2_RECV_ENC_RES_MAX_LOOPS 42
+#define LT_L2_RECV_ENC_RES_MAX_CHUNKS 42
 
 lt_ret_t lt_l2_send(lt_l2_state_t *s2)
 {
@@ -289,8 +289,10 @@ lt_ret_t lt_l2_recv_encrypted_res(lt_l2_state_t *s2, uint8_t *buff, uint16_t max
 
     // Position into L3 buffer where processed L2 chunk will be copied into
     uint16_t offset = 0;
-    // Tropic can respond with various lengths of chunks, this loop should be limited
-    uint16_t loops = 0;
+    // Tropic can respond with various counts and lengths of chunks.
+    // This counter tracks number of chunks received, so we can terminate the communication
+    // if it exceeds a certain amount.
+    uint16_t chunks_received = 0;
 
     // Count of attempts to resend the frame on LT_L2_IN_CRC_ERR.
     uint32_t frame_resend_counter = 0;
@@ -327,7 +329,7 @@ lt_ret_t lt_l2_recv_encrypted_res(lt_l2_state_t *s2, uint8_t *buff, uint16_t max
                 // Copy content of L2 into current offset of the L3 buffer
                 memcpy(buff + offset, (struct l2_encrypted_rsp_t *)resp->l3_chunk, resp->rsp_len);
                 offset += resp->rsp_len;
-                loops++;
+                chunks_received++;
                 break;
             case LT_L2_IN_CRC_ERR:
                 // Host received corrupted frame. Ask for resend.
@@ -349,7 +351,7 @@ lt_ret_t lt_l2_recv_encrypted_res(lt_l2_state_t *s2, uint8_t *buff, uint16_t max
                 return ret;
         }
 
-    } while (loops < LT_L2_RECV_ENC_RES_MAX_LOOPS);
+    } while (chunks_received < LT_L2_RECV_ENC_RES_MAX_CHUNKS);
 
     return LT_FAIL;
 }
