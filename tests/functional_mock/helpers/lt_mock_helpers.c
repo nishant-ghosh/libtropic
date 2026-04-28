@@ -112,7 +112,8 @@ lt_ret_t mock_session_abort(lt_handle_t *h)
 }
 
 lt_ret_t mock_l3_result(lt_handle_t *h, const uint8_t *result_plaintext,
-                        const size_t result_plaintext_size, const bool corrupt_crc)
+                        const size_t result_plaintext_size, const uint8_t status,
+                        const bool corrupt_crc)
 {
     uint8_t l2_frame[TR01_L2_MAX_FRAME_SIZE];
 
@@ -135,7 +136,7 @@ lt_ret_t mock_l3_result(lt_handle_t *h, const uint8_t *result_plaintext,
     }
 
     l2_frame[TR01_L2_CHIP_STATUS_OFFSET] = TR01_L1_CHIP_MODE_READY_bit;
-    l2_frame[TR01_L2_STATUS_OFFSET] = TR01_L2_STATUS_RESULT_OK;
+    l2_frame[TR01_L2_STATUS_OFFSET] = status;
     l2_frame[TR01_L2_RSP_LEN_OFFSET] = (uint8_t)packet_size;
 
     l2_frame[TR01_L2_RSP_DATA_RSP_CRC_OFFSET] = result_plaintext_size;

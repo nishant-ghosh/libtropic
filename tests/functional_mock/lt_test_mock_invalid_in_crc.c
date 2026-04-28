@@ -176,7 +176,8 @@ void lt_test_mock_invalid_in_crc(lt_handle_t *h)
 
         // Mock command result itself.
         uint8_t lt_ping_plaintext[] = {TR01_L3_RESULT_OK, 'H', 'E', 'L', 'L', 'O'};
-        LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext), false));
+        LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext),
+                                             TR01_L2_STATUS_REQUEST_OK, false));
 
         // Send the command, check the message.
         const uint8_t msg_out[] = {'H', 'E', 'L', 'L', 'O'};
@@ -200,7 +201,8 @@ void lt_test_mock_invalid_in_crc(lt_handle_t *h)
 
         // Return a Result payload that has an invalid CRC.
         uint8_t lt_ping_plaintext[] = {TR01_L3_RESULT_OK, 'H', 'E', 'L', 'L', 'O'};
-        LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext), true));
+        LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext),
+                                             TR01_L2_STATUS_REQUEST_OK, true));
 
         // Libtropic will try to get correct frame using Resend_Req => enqueue responses to Resend_Req
         // and again a Result with corrupted CRC. Do this multiple times to deplete all attempts.
@@ -208,8 +210,8 @@ void lt_test_mock_invalid_in_crc(lt_handle_t *h)
         for (int i = 0; i < LT_CRC_ERR_RETRY_ATTEMPTS; i++) {
             LT_TEST_ASSERT(LT_OK,
                            lt_mock_hal_enqueue_response(&h->l2, &chip_ready, sizeof(chip_ready)));
-            LT_TEST_ASSERT(LT_OK,
-                           mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext), true));
+            LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext),
+                                                 TR01_L2_STATUS_REQUEST_OK, true));
         }
 
         const uint8_t msg_out[] = {'H', 'E', 'L', 'L', 'O'};
@@ -235,7 +237,8 @@ void lt_test_mock_invalid_in_crc(lt_handle_t *h)
 
         // Send the first corrupted Result.
         uint8_t lt_ping_plaintext[] = {TR01_L3_RESULT_OK, 'H', 'E', 'L', 'L', 'O'};
-        LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext), true));
+        LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext),
+                                             TR01_L2_STATUS_REQUEST_OK, true));
 
         // Enqueue additional corrupted Results (if any) to simulate resend cycles.
         const uint8_t chip_ready = TR01_L1_CHIP_MODE_READY_bit;
@@ -243,13 +246,14 @@ void lt_test_mock_invalid_in_crc(lt_handle_t *h)
              i++) {  // i = 1 because one corrupted Result already sent
             LT_TEST_ASSERT(LT_OK,
                            lt_mock_hal_enqueue_response(&h->l2, &chip_ready, sizeof(chip_ready)));
-            LT_TEST_ASSERT(LT_OK,
-                           mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext), true));
+            LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext),
+                                                 TR01_L2_STATUS_REQUEST_OK, true));
         }
 
         // Finally, enqueue a valid Result with correct CRC.
         LT_TEST_ASSERT(LT_OK, lt_mock_hal_enqueue_response(&h->l2, &chip_ready, sizeof(chip_ready)));
-        LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext), false));
+        LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext),
+                                             TR01_L2_STATUS_REQUEST_OK, false));
 
         const uint8_t msg_out[] = {'H', 'E', 'L', 'L', 'O'};
         uint8_t msg_in[sizeof(msg_out)];
