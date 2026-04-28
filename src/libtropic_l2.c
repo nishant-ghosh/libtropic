@@ -344,6 +344,18 @@ lt_ret_t lt_l2_recv_encrypted_res(lt_l2_state_t *s2, uint8_t *buff, uint16_t max
                     resend_response = true;
                 }
                 break;
+            case LT_L2_CRC_ERR:
+                // CRC_ERR can be returned only as a response to Resend_Req.
+                // Ask for resend again.
+                s2->l2_crc_error_count++;
+                if (frame_resend_counter >= LT_CRC_ERR_RETRY_ATTEMPTS) {
+                    return ret;
+                }
+                else {
+                    frame_resend_counter++;
+                    resend_response = true;
+                }
+                break;
             case LT_OK:
                 // This was last L2 frame of L3 packet, copy it and return
                 memcpy(buff + offset, (struct l2_encrypted_rsp_t *)resp->l3_chunk, resp->rsp_len);
