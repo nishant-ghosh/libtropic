@@ -353,5 +353,6 @@ lt_ret_t lt_l2_recv_encrypted_res(lt_l2_state_t *s2, uint8_t *buff, uint16_t max
 
     } while (chunks_received < LT_L2_RECV_ENC_RES_MAX_CHUNKS);
 
-    return LT_FAIL;
+    LT_LOG_ERROR("Maximal number of received chunks (%d) exceeded!", LT_L2_RECV_ENC_RES_MAX_CHUNKS);
+    return LT_L3_DATA_LEN_ERROR;
 }
