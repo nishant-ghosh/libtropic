@@ -83,7 +83,7 @@ These counters are reset automatically on Libtropic initialization (in `lt_init`
 
 #### Possible causes and solutions
 
-CRC errors hints that the connection is unstable. You can try the following:
+CRC errors hint that the connection is unstable. You can try the following:
 
 - Use high-quality wiring and firm connectors. Poor DuPont (jump) wires combined with cheap breadboards are common causes of connection issues.
 - Minimize the length of the connections as much as possible.
