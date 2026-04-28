@@ -98,7 +98,7 @@ lt_ret_t mock_session_abort(lt_handle_t *h);
  * @return LT_OK on success, or an appropriate lt_ret_t error code on failure.
  */
 lt_ret_t mock_l3_result(lt_handle_t *h, const uint8_t *result_plaintext,
-                        const size_t result_plaintext_size, bool corrupt_crc);
+                        const size_t result_plaintext_size, const bool corrupt_crc);
 
 /**
  * @brief Mock replies to a L3 Command.
@@ -117,7 +117,7 @@ lt_ret_t mock_l3_result(lt_handle_t *h, const uint8_t *result_plaintext,
  *
  * @return LT_OK on success, or an appropriate lt_ret_t error code on failure.
  */
-lt_ret_t mock_l3_command_responses(lt_handle_t *h, const size_t chunk_count, bool corrupt_crc,
+lt_ret_t mock_l3_command_responses(lt_handle_t *h, const size_t chunk_count, const bool corrupt_crc,
                                    const uint8_t custom_resp_frame[5]);
 
 #ifdef __cplusplus

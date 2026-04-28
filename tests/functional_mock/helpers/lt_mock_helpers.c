@@ -112,7 +112,7 @@ lt_ret_t mock_session_abort(lt_handle_t *h)
 }
 
 lt_ret_t mock_l3_result(lt_handle_t *h, const uint8_t *result_plaintext,
-                        const size_t result_plaintext_size, bool corrupt_crc)
+                        const size_t result_plaintext_size, const bool corrupt_crc)
 {
     uint8_t l2_frame[TR01_L2_MAX_FRAME_SIZE];
 
@@ -170,7 +170,7 @@ lt_ret_t mock_l3_result(lt_handle_t *h, const uint8_t *result_plaintext,
     return LT_OK;
 }
 
-lt_ret_t mock_l3_command_responses(lt_handle_t *h, const size_t chunk_count, bool corrupt_crc,
+lt_ret_t mock_l3_command_responses(lt_handle_t *h, const size_t chunk_count, const bool corrupt_crc,
                                    const uint8_t custom_resp_frame[5])
 {
     if (chunk_count > 1) {
