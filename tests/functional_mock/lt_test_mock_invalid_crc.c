@@ -190,7 +190,8 @@ void lt_test_mock_invalid_crc(lt_handle_t *h)
 
         // Enqueue successful L3 result payload returned by lt_ping.
         uint8_t lt_ping_plaintext[] = {TR01_L3_RESULT_OK, 'H', 'E', 'L', 'L', 'O'};
-        LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext), false));
+        LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext),
+                                             TR01_L2_STATUS_REQUEST_OK, false));
 
         const uint8_t msg_out[] = {'H', 'E', 'L', 'L', 'O'};
         uint8_t msg_in[sizeof(msg_out)];
@@ -202,9 +203,90 @@ void lt_test_mock_invalid_crc(lt_handle_t *h)
         h->l2.l2_crc_error_count = 0;
     }
 
-    // 7. Terminate Secure Session and deinitialize the Libtropic handle.
+    // 7. L3 result path (lt_l2_recv_encrypted_res): return frames with STATUS=CRC_ERR until
+    // retries are depleted and verify LT_L2_CRC_ERR from lt_ping.
     // ---------------------------------------------------------------------------------------------
-    LT_LOG_INFO("7. Terminate Secure Session and deinitialize the Libtropic handle.");
+    {
+        LT_LOG_INFO(
+            "7. L3 result path (lt_l2_recv_encrypted_res): return frames with STATUS=CRC_ERR until "
+            "retries are depleted and verify LT_L2_CRC_ERR from lt_ping.");
+
+        // Mock a command response (STATUS=OK)
+        LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, false, NULL));
+
+        // Enqueue L3 result with STATUS=CRC_ERR.
+        uint8_t lt_ping_plaintext[] = {TR01_L3_RESULT_OK, 'H', 'E', 'L', 'L', 'O'};
+        LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext),
+                                             TR01_L2_STATUS_CRC_ERR, false));
+
+        // Enqueue responses to Resend_Req and L3 results with STATUS=CRC_ERR.
+        const uint8_t chip_ready = TR01_L1_CHIP_MODE_READY_bit;
+        for (int i = 0; i < LT_CRC_ERR_RETRY_ATTEMPTS; i++) {
+            // Response to Resend_Req.
+            LT_TEST_ASSERT(LT_OK,
+                           lt_mock_hal_enqueue_response(&h->l2, &chip_ready, sizeof(chip_ready)));
+            // Resent frame, again with STATUS=CRC_ERR.
+            LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext),
+                                                 TR01_L2_STATUS_CRC_ERR, false));
+        }
+
+        const uint8_t msg_out[] = {'H', 'E', 'L', 'L', 'O'};
+        uint8_t msg_in[sizeof(msg_out)];
+        LT_TEST_ASSERT(LT_L2_CRC_ERR, lt_ping(h, msg_out, msg_in, sizeof(msg_out)));
+
+        // Verify error counter and reset for next test step.
+        LT_TEST_ASSERT(0, h->l2.l2_in_crc_error_count);
+        LT_TEST_ASSERT(1 + LT_CRC_ERR_RETRY_ATTEMPTS, h->l2.l2_crc_error_count);
+        h->l2.l2_crc_error_count = 0;
+    }
+
+    // 8. L3 result path (lt_l2_recv_encrypted_res): return random number of frames with
+    // STATUS=CRC_ERR, then a correct frame, and verify LT_OK from lt_ping.
+    // ---------------------------------------------------------------------------------------------
+    {
+        LT_LOG_INFO(
+            "8. L3 result path (lt_l2_recv_encrypted_res): return random number of frames with "
+            "STATUS=CRC_ERR, then a correct frame, and verify LT_OK from lt_ping.");
+
+        // Generate number of CRC_ERR responses in range [1, LT_CRC_ERR_RETRY_ATTEMPTS].
+        uint8_t random_byte;
+        LT_TEST_ASSERT(LT_OK, lt_random_bytes(h, &random_byte, sizeof(random_byte)));
+        int num_corrupted_results = (random_byte % LT_CRC_ERR_RETRY_ATTEMPTS) + 1;
+        LT_LOG_INFO("Sending %d corrupted result frames before correct frame", num_corrupted_results);
+
+        // Mock a command response (STATUS=OK)
+        LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, false, NULL));
+
+        // Enqueue responses to Resend_Req and L3 results with STATUS=CRC_ERR.
+        const uint8_t chip_ready = TR01_L1_CHIP_MODE_READY_bit;
+        uint8_t lt_ping_plaintext[] = {TR01_L3_RESULT_OK, 'H', 'E', 'L', 'L', 'O'};
+        for (int i = 0; i < num_corrupted_results; i++) {
+            // Enqueue L3 result with STATUS=CRC_ERR.
+            LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext),
+                                                 TR01_L2_STATUS_CRC_ERR, false));
+
+            // Response to Resend_Req.
+            LT_TEST_ASSERT(LT_OK,
+                           lt_mock_hal_enqueue_response(&h->l2, &chip_ready, sizeof(chip_ready)));
+        }
+
+        // Enqueue successful L3 result payload returned by lt_ping.
+        LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext),
+                                             TR01_L2_STATUS_REQUEST_OK, false));
+
+        const uint8_t msg_out[] = {'H', 'E', 'L', 'L', 'O'};
+        uint8_t msg_in[sizeof(msg_out)];
+        LT_TEST_ASSERT(LT_OK, lt_ping(h, msg_out, msg_in, sizeof(msg_out)));
+
+        // Verify error counter and reset for next test step.
+        LT_TEST_ASSERT(0, h->l2.l2_in_crc_error_count);
+        LT_TEST_ASSERT(num_corrupted_results, h->l2.l2_crc_error_count);
+        h->l2.l2_crc_error_count = 0;
+    }
+
+    // 9. Terminate Secure Session and deinitialize the Libtropic handle.
+    // ---------------------------------------------------------------------------------------------
+    LT_LOG_INFO("9. Terminate Secure Session and deinitialize the Libtropic handle.");
 
     LT_LOG_INFO("Terminating the Secure Session...");
     LT_TEST_ASSERT(LT_OK, mock_session_abort(h));

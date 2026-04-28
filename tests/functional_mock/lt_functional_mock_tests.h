@@ -45,7 +45,11 @@ void lt_test_mock_attrs(lt_handle_t *h);
  *     STATUS=CRC_ERR until all retry attempts are depleted and verify LT_L2_CRC_ERR is returned.
  *  6. Test LT_L2_CRC_ERR retry mechanism on L3 in lt_l2_send_encrypted_cmd with a random number
  *     of STATUS=CRC_ERR frames followed by STATUS=OK and verify LT_OK is returned.
- *  7. Terminate Secure Session and deinitialize the Libtropic handle.
+ *  7. Test LT_L2_CRC_ERR retry mechanism on L3 in lt_l2_recv_encrypted_res by returning
+ *     STATUS=CRC_ERR until all retry attempts are depleted and verify LT_L2_CRC_ERR is returned.
+ *  8. Test LT_L2_CRC_ERR retry mechanism on L3 in lt_l2_recv_encrypted_res with a random number
+ *     of STATUS=CRC_ERR frames followed by STATUS=OK and verify LT_OK is returned.
+ *  9. Terminate Secure Session and deinitialize the Libtropic handle.
  *
  * @param h Handle for communication with TROPIC01
  */
