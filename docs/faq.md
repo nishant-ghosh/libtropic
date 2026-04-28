@@ -9,6 +9,7 @@ This list might help you resolve some issues.
     - [`LT_L2_HSK_ERR`](#lt_l2_hsk_err)
     - [`LT_L3_DATA_LEN_ERROR`](#lt_l3_data_len_error)
     - [`LT_L3_INVALID_CMD` or `LT_L2_UNKNOWN_REQ`](#lt_l3_invalid_cmd-or-lt_l2_unknown_req)
+    - [`LT_FAIL`](#lt_fail)
   - [I cannot establish a Secure Session](#i-cannot-establish-a-secure-session)
   - [FW update failed](#fw-update-failed)
   - [What is the part number (P/N) of my TROPIC01?](#what-is-the-part-number-pn-of-my-tropic01)
@@ -41,6 +42,19 @@ This error means that the TROPIC01 does not recognize the L3 command or L2 reque
 A TROPIC01 will be in Maintenance Mode after a user-triggered reboot (calling `lt_reboot` with `TR01_MAINTENANCE_REBOOT` as `startup_id`). In that case, reboot the chip back to Application Mode by calling `lt_reboot` with `TR01_REBOOT`.
 
 However, a TROPIC01 can also enter Maintenance Mode automatically after an unsuccessful update or if firmware banks are empty or corrupted. In that case, a simple reboot will not help; you must run the firmware update again, either using the firmware update example (see [Tutorials](./tutorials/index.md)) or from your application code.
+
+### `LT_FAIL`
+This is a generic error code and can be caused by various issues. See below for the most common causes.
+
+#### Permissions issue on Linux
+
+On Linux, a common cause is an error in the HAL due to insufficient permissions. If you run any example and receive `LT_FAIL`, enable debug logging (see [Logging](reference/logging.md)). If you see an error similar to the following:
+
+```sh
+ERROR   [ 101] Error opening serial at "/dev/ttyACM0".
+```
+
+This is likely a permissions issue. Try adding your user account to the groups that provide access to the device you are using (for example, `dialout` or `plugdev` for USB serial devices, and `spi` for SPI devices). Refer to documentation of your distribution for details.
 
 ## I cannot establish a Secure Session
 There are two main causes:
