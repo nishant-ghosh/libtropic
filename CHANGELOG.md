@@ -41,6 +41,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - STM32 L432KC examples: support for TROPIC01 GPO pin.
 - FW update examples: recommended handling of Maintenance Mode to reduce the attack surface.
 - Examples: Added examples for STM32 Nucleo U545RE-Q board: Hello World, FW Update, Chip Identification.
+- Diagnostic counters for tracking CRC errors to `lt_l2_state`: `l2_crc_error_count`, `l2_in_crc_error_count`.
+- Implemented retry mechanism on L2 Layer in the case of CRC errors:
+  - Count of retries can be configured using `LT_CRC_ERR_RETRY_ATTEMPTS` parameter/macro. Default value is 3 retries.
+  - See [`LT_CRC_ERR_RETRY_ATTEMPTS` section](https://tropicsquare.github.io/libtropic/latest/reference/integrating_libtropic/how_to_configure/#lt_crc_err_retry_attempts) in "How to Configure" page of the documentation to learn how the retry mechanism works.
+- FAQ section covering `LT_L2_CRC_ERR` and `LT_L2_IN_CRC_ERR`.
 
 ### Fixed
 - Change the type of `slot` parameter from `uint8_t` to `lt_pkey_index_t` in `lt_pairing_key_write()`, `lt_pairing_key_read()`, `lt_pairing_key_invalidate()`, `lt_out__pairing_key_write()`, `lt_out__pairing_key_read()`, `lt_out__pairing_key_invalidate()`.
