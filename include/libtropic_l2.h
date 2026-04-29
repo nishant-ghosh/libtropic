@@ -27,6 +27,9 @@ extern "C" {
  * @note Before calling this function, place request's data into handle's internal L2 buffer.
  * Structures defined in lt_l2_api_structs.h might help with encoding the data.
  *
+ * @warning This function does not handle retries on CRC errors. It is recommended to use
+ * lt_l2_transfer which combines send/receive functionality and implements retries.
+ *
  * @param s2          Structure holding l2 state
  *
  * @retval            LT_OK Function executed successfully
@@ -50,6 +53,9 @@ lt_ret_t lt_l2_resend_response(lt_l2_state_t *s2);
  *
  * After successful execution, handle's `l2_buff` will contain response.
  * @note Structures defined in lt_l2_api_structs.h migh help with decoding.
+ *
+ * @warning This function does not handle retries on CRC errors. It is recommended to use
+ * lt_l2_transfer which combines send/receive functionality and implements retries.
  *
  * @param s2          Structure holding l2 state
  *
