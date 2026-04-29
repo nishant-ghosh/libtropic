@@ -62,7 +62,9 @@ lt_ret_t lt_l2_receive(lt_l2_state_t *s2);
  * @brief Send L2 Request and receive L2 Response.
  *
  * This function combines lt_l2_send and lt_l2_receive with additional
- * handling of resending outgoing frames on LT_L2_CRC_ERR errors.
+ * handling of retrying the transfer: resending outgoing frames on
+ * LT_L2_CRC_ERR errors and sending Resend_Req on LT_L2_IN_CRC_ERR
+ * errors when an invalid incoming CRC is detected.
  *
  * @param s2          Structure holding l2 state
  *
