@@ -81,6 +81,9 @@ To diagnose CRC-related errors, we provide two counters in `lt_l2_state_t`:
 
 These counters are reset automatically on Libtropic initialization (in `lt_init`).
 
+!!! important "Counters and separate API"
+    If you use separate API, you need to use `lt_l2_transfer` for counters to be updated automatically, not `lt_l2_send` and `lt_l2_receive`.
+
 #### Possible causes and solutions
 
 CRC errors hint that the connection is unstable. You can try the following:

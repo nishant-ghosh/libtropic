@@ -42,4 +42,4 @@ Now, you can build and run the example:
 ## Notes
 While it is also possible to use `lt_l2_send` and `lt_l2_receive` pair for transferring L2 frames instead
 of `lt_l2_transfer`, it is not recommended, as those functions do not implement retry mechanism on CRC
-errors. Prefer using `lt_l2_transfer`.
+errors and do not increment CRC diagnostic counters. Prefer using `lt_l2_transfer`.
