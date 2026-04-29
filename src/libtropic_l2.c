@@ -120,7 +120,7 @@ lt_ret_t lt_l2_transfer(lt_l2_state_t *s2)
                 retry_communication = true;
             }
         }
-        // If CRC of incoming Response is invalid, try to get a new Reponse.
+        // If CRC of incoming Response is invalid, try to get a new Response.
         else if (ret == LT_L2_IN_CRC_ERR) {
             s2->l2_in_crc_error_count++;
             while (total_retry_count < LT_CRC_ERR_RETRY_ATTEMPTS) {
