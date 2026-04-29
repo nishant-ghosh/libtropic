@@ -191,7 +191,7 @@ void lt_test_mock_invalid_crc(lt_handle_t *h)
         // Enqueue successful L3 result payload returned by lt_ping.
         uint8_t lt_ping_plaintext[] = {TR01_L3_RESULT_OK, 'H', 'E', 'L', 'L', 'O'};
         LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext),
-                                             TR01_L2_STATUS_REQUEST_OK, false));
+                                             TR01_L2_STATUS_RESULT_OK, false));
 
         const uint8_t msg_out[] = {'H', 'E', 'L', 'L', 'O'};
         uint8_t msg_in[sizeof(msg_out)];
@@ -272,7 +272,7 @@ void lt_test_mock_invalid_crc(lt_handle_t *h)
 
         // Enqueue successful L3 result payload returned by lt_ping.
         LT_TEST_ASSERT(LT_OK, mock_l3_result(h, lt_ping_plaintext, sizeof(lt_ping_plaintext),
-                                             TR01_L2_STATUS_REQUEST_OK, false));
+                                             TR01_L2_STATUS_RESULT_OK, false));
 
         const uint8_t msg_out[] = {'H', 'E', 'L', 'L', 'O'};
         uint8_t msg_in[sizeof(msg_out)];
