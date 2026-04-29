@@ -2006,6 +2006,7 @@ static lt_ret_t update_mutable_fw_bank(lt_handle_t *h, const uint8_t *fw_data,
 #define _LT_DO_MUTABLE_FW_UPDATE_FW_VER_ARG(v) \
     (((v) >> 24) & 0xFF), (((v) >> 16) & 0xFF), (((v) >> 8) & 0xFF), ((v) & 0xFF)
 
+#if !defined(LT_SILICON_REV_ABAB)
 /**
  * @brief Reads out firmware header from the given firmware bank and validates the firmware version
  * against the expected one.
@@ -2051,6 +2052,7 @@ static lt_ret_t validate_fw_ver_in_bank(lt_handle_t *h, const uint32_t expected_
 
     return LT_OK;
 }
+#endif
 
 lt_ret_t lt_do_mutable_fw_update(lt_handle_t *h, const uint8_t *cpu_fw_data,
                                  const size_t cpu_fw_data_size, const uint8_t *spect_fw_data,
