@@ -67,7 +67,7 @@ lt_ret_t lt_l2_receive(lt_l2_state_t *s2);
  * @param s2          Structure holding l2 state
  *
  * @retval            LT_OK Function executed successfully
- * @retval            other Function did not execute successully
+ * @retval            other Function did not execute successfully
  */
 lt_ret_t lt_l2_transfer(lt_l2_state_t *s2);
 
