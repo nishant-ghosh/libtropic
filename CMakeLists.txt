@@ -103,8 +103,8 @@ endif()
 # Must be non-negative. Set to 0 to disable automatic resending.
 set(LT_CRC_ERR_RETRY_ATTEMPTS "3" CACHE STRING "Count of attempts to resend request/response on CRC or IN_CRC error.")
 
-if(NOT LT_CRC_ERR_RETRY_ATTEMPTS MATCHES "^[0-9]+$")
-    message(FATAL_ERROR "LT_CRC_ERR_RETRY_ATTEMPTS must be a non-negative integer, got '${LT_CRC_ERR_RETRY_ATTEMPTS}'")
+if(NOT LT_CRC_ERR_RETRY_ATTEMPTS MATCHES "^(0|[1-9][0-9]*)$")
+    message(FATAL_ERROR "LT_CRC_ERR_RETRY_ATTEMPTS must be a non-negative integer without leading zeros unless the value is exactly '0', got '${LT_CRC_ERR_RETRY_ATTEMPTS}'")
 endif()
 
 # Check whether compiling standalone (e.g. as a library) or as a child project (= has parent scope)
