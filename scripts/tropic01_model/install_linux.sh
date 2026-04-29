@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-URL="https://github.com/tropicsquare/ts-tvl/releases/download/2.3/tvl-2.3-py3-none-any.whl"
+URL="https://github.com/tropicsquare/ts-tvl/releases/download/2.4/tvl-2.4-py3-none-any.whl"
 
 # Resolve script directory and venv path
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
