@@ -315,6 +315,7 @@ lt_ret_t lt_l2_recv_encrypted_res(lt_l2_state_t *s2, uint8_t *buff, uint16_t max
         }
         else {
             ret = lt_l2_resend_response(s2);
+            resend_response = false;
         }
 
         // Prevent receiving more data than is the size of the provided L3 buffer.
