@@ -7,8 +7,7 @@ This example showcases the Libtropic's Separate API. It is functionally similar 
 You will learn about some of the low-level API functions used to process outgoing and incoming data. For example:
 
 - `lt_out__session_start()`: prepare Handshake_Req L2 request (for Secure Session establishment),
-- `lt_l2_send()`: send L2 request,
-- `lt_l2_receive()`: receive L2 response,
+- `lt_l2_transfer()`: send L2 request and receive L2 response,
 - `lt_in__session_start()`: process L2 response to the Handshake_Req.
 
 ## Build and Run
@@ -39,3 +38,8 @@ Now, you can build and run the example:
 
     === ":fontawesome-brands-windows: Windows"
         TBA
+
+## Notes
+While it is also possible to use `lt_l2_send` and `lt_l2_receive` pair for transferring L2 frames instead
+of `lt_l2_transfer`, it is not recommended, as those functions do not implement retry mechanism on CRC
+errors. Prefer using `lt_l2_transfer`.
