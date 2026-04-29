@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - STM32 L432KC examples: support for TROPIC01 GPO pin.
 - FW update examples: recommended handling of Maintenance Mode to reduce the attack surface.
 - Examples: Added examples for STM32 Nucleo U545RE-Q board: Hello World, FW Update, Chip Identification.
+- `lt_l2_transfer`: this function combines `lt_l2_send`, `lt_l2_receive` and implements retry mechanism on CRC errors. If using separate API functionality, it is recommended to use `lt_l2_transfer`.
 - Diagnostic counters for tracking CRC errors to `lt_l2_state`: `l2_crc_error_count`, `l2_in_crc_error_count`.
 - Implemented retry mechanism on L2 Layer in the case of CRC errors:
   - Count of retries can be configured using `LT_CRC_ERR_RETRY_ATTEMPTS` parameter/macro. Default value is 3 retries.
