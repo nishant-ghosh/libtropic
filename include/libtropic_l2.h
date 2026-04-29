@@ -52,7 +52,7 @@ lt_ret_t lt_l2_resend_response(lt_l2_state_t *s2);
  * @brief Receives L2 response.
  *
  * After successful execution, handle's `l2_buff` will contain response.
- * @note Structures defined in lt_l2_api_structs.h migh help with decoding.
+ * @note Structures defined in lt_l2_api_structs.h might help with decoding.
  *
  * @warning This function does not handle retries on CRC errors. It is recommended to use
  * lt_l2_transfer which combines send/receive functionality and implements retries.
