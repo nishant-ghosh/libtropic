@@ -151,7 +151,7 @@ int main(void)
     // handle's buffer (lt_handle.l2_buff) now contains data which must be transferred over a tunnel to
     // TROPIC01.
 
-    // Following L2 functions are called on a remote host.
+    // Following L2 function is called on a remote host.
     printf("Executing lt_l2_transfer()...");
     ret = lt_l2_transfer(&lt_handle.l2);
     if (LT_OK != ret) {
