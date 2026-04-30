@@ -294,7 +294,8 @@ lt_ret_t lt_l2_recv_encrypted_res(lt_l2_state_t *s2, uint8_t *buff, uint16_t max
     // if it exceeds a certain amount.
     uint16_t chunks_received = 0;
 
-    // Count of attempts to resend the frame on LT_L2_IN_CRC_ERR.
+    // Count of retries to resend the frame on LT_L2_CRC_ERR or LT_L2_IN_CRC_ERR.
+    // This counter is reset on each successful chunk (frame).
     uint32_t frame_resend_counter = 0;
 
     // Whether to resend previous chunk or continue with the next one.
