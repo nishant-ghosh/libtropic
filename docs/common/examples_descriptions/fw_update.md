@@ -2,6 +2,7 @@ This example explains the firmware update process for both ABAB and ACAB silicon
 
 - How to read the current firmware versions.
 - How to update the firmware using `lt_do_mutable_fw_update()`, which performs the recommended FW update procedure.
+- How to handle TROPIC01 Maintenance Mode to **reduce the attack surface**.
 
 !!! info "TROPIC01 Firmware"
     For more information about the firmware itself, refer to the [TROPIC01 Firmware](/reference/tropic01_fw.md) section.

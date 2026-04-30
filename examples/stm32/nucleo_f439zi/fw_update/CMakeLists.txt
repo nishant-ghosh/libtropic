@@ -68,6 +68,10 @@ else()
     message(FATAL_ERROR "Incorrect SH0 keys specified: '${LT_SH0_KEYS}'\nAvailable SH0 keys: ${lt_sh0_keys_choices}")
 endif()
 
+option(LT_DISABLE_MAINTENANCE_MODE "Disable Maintenance Mode in R-Config after successful FW update" ON)
+if (NOT LT_DISABLE_MAINTENANCE_MODE)
+    message(WARNING "Maintenance Mode will not be disabled in R-Config after successful FW update. This can increase the attack surface.")
+endif()
 
 ###########################################################################
 #                                                                         #
@@ -175,6 +179,7 @@ set(EXE_NAME ${CMAKE_PROJECT_NAME}.elf)
 add_executable(${EXE_NAME} ${SOURCES})
 target_compile_definitions(${EXE_NAME} PRIVATE LT_USE_SH0_ENG_SAMPLE=${LT_USE_SH0_ENG_SAMPLE})
 target_compile_definitions(${EXE_NAME} PRIVATE LT_USE_SH0_PROD0=${LT_USE_SH0_PROD0})
+target_compile_definitions(${EXE_NAME} PRIVATE LT_DISABLE_MAINTENANCE_MODE=$<BOOL:${LT_DISABLE_MAINTENANCE_MODE}>)
 target_compile_definitions(${EXE_NAME} PRIVATE -D${STM32_DEVICE}) # Configure target MCU (used by STM32 HAL)
 target_include_directories(${EXE_NAME} PRIVATE ${INCLUDE_DIRS})
 target_link_libraries(${EXE_NAME} PRIVATE tropic)

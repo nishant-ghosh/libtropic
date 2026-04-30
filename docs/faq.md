@@ -66,7 +66,7 @@ There are two main causes:
    Reboot to Application Mode by calling `lt_reboot` with `TR01_REBOOT`.
 
 ## FW update failed
-If our firmware update example program in the tutorial failed:
+If one of our firmware update API functions or the `lt_do_mutable_fw_update()` helper function failed:
 
 1. Try the suggestions in [I received an error](#i-received-an-error).
 2. Make sure you have correct values set in the following CMake options:
