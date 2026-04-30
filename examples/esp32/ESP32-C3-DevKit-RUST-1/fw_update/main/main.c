@@ -7,6 +7,7 @@
  * @license For the license see LICENSE.md in the root directory of this source tree.
  */
 
+#include <inttypes.h>
 #include <stdio.h>
 #include <string.h>
 
