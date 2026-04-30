@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `lt_do_mutable_fw_update()`: changed parameters, reworked to do the recommended FW update procedure.
 - Updated all FW update examples to use the reworked `lt_do_mutable_fw_update()` helper function.
 - `lt_get_info_cert_store()`: X.509 Certificate Store can be read only in Application Mode.
+- [TROPIC01 Model installation script](scripts/tropic01_model/install_linux.sh) now downloads ts-tvl version 2.4, which fixes compatibility with Python 3.14.
 
 ### Added
 - ECC + EdDSA example for USB DevKit.
