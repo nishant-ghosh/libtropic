@@ -167,7 +167,7 @@ void lt_test_rev_get_info_req_bootloader(lt_handle_t *h)
     lt_test_cleanup_function = &lt_test_rev_get_info_req_bootloader_cleanup;
 
     LT_LOG_INFO("Reading X509 Certificate Store (should fail)...");
-    LT_TEST_ASSERT(LT_FAIL, lt_get_info_cert_store(h, &store));
+    LT_TEST_ASSERT(LT_L1_CHIP_STARTUP_MODE, lt_get_info_cert_store(h, &store));
 
     LT_LOG_INFO("Reading Chip ID...");
     LT_TEST_ASSERT(LT_OK, lt_get_info_chip_id(h, &chip_id));
