@@ -65,6 +65,14 @@ else
     wget -O "$TMP_WHEEL" "$URL"
 fi
 
+echo "Verifying wheel checksum..."
+EXPECTED_CHECKSUM="aaceecc3cdf408b94784ae6b5229bedda974d74530267ad25e0e0a61ad2e526c"
+ACTUAL_CHECKSUM=$(sha256sum "$TMP_WHEEL" | awk '{print $1}')
+if [ "$EXPECTED_CHECKSUM" != "$ACTUAL_CHECKSUM" ]; then
+  echo "Checksum mismatch: expected $EXPECTED_CHECKSUM, got $ACTUAL_CHECKSUM" >&2
+  exit 1
+fi
+
 echo "Installing wheel into virtualenv..."
 pip install "$TMP_WHEEL"
 
