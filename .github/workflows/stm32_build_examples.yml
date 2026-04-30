@@ -91,7 +91,7 @@ jobs:
           cd build && ninja
 
           cd ../../fw_update
-          cmake ./ -B build -G Ninja
+          cmake ./ -B build -G Ninja -DLT_DISABLE_MAINTENANCE_MODE=OFF
           cd build && ninja
 
           cd ..
