@@ -25,7 +25,17 @@ Normally, this means that the chip is busy processing an operation and is unable
 The reason is that we detect the status of the TROPIC01 using a single flag; if all data are zero, we cannot distinguish between the TROPIC01 being truly busy and the host receiving only zeroes.
 
 ### `LT_L1_CHIP_ALARM_MODE`
-Normally, this means the TROPIC01 entered Alarm Mode. However, it can also mean — similarly to `LT_L1_CHIP_BUSY` — that all ones are received on `MISO`. Check your connections.
+Normally, this means the TROPIC01 has entered the Alarm Mode. The alarm can be caused by a variety of factors:
+
+- sensors detected an attack,
+- TROPIC01 is operating outside of the standard range (voltage, temperature...),
+- incorrect or corrupted firmware update data was used,
+- hardware failure,
+- and more.
+
+Refer to the TROPIC01 Datasheet for more information about the Alarm Mode.
+
+However, `LT_L1_CHIP_ALARM_MODE` can also be returned if all bits received on `MISO` are `1` (`0xFF`...). This happens due to how the Alarm Mode flag is defined, similarly to `LT_L1_CHIP_BUSY`. In that case, check connections between the host and TROPIC01.
 
 ### `LT_L2_HSK_ERR`
 This error is caused by a problem during Secure Session establishment. See [I cannot establish a Secure Session](#i-cannot-establish-a-secure-session).
