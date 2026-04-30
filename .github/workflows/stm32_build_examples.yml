@@ -93,3 +93,15 @@ jobs:
           cd ../../fw_update
           cmake ./ -B build -G Ninja
           cd build && ninja
+
+          cd ..
+          cmake ./ -B build_dis_mm -G Ninja -DLT_DISABLE_MAINTENANCE_MODE=ON
+          cd build_dis_mm && ninja
+
+          cd ..
+          cmake ./ -B build_abab -G Ninja -DLT_SILICON_REV=ABAB -DLT_DISABLE_MAINTENANCE_MODE=OFF
+          cd build_abab && ninja
+
+          cd ..
+          cmake ./ -B build_abab_dis_mm -G Ninja -DLT_SILICON_REV=ABAB -DLT_DISABLE_MAINTENANCE_MODE=ON
+          cd build_abab_dis_mm && ninja
