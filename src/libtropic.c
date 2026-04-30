@@ -220,7 +220,7 @@ lt_ret_t lt_get_info_cert_store(lt_handle_t *h, struct lt_cert_store_t *store)
         p_l2_req->object_id = TR01_L2_GET_INFO_REQ_OBJECT_ID_X509_CERTIFICATE;
         p_l2_req->block_index = i;
 
-        lt_ret_t ret = lt_l2_transfer(&h->l2);
+        ret = lt_l2_transfer(&h->l2);
         if (ret != LT_OK) {
             return ret;
         }
