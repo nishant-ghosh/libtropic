@@ -33,8 +33,8 @@ if(NOT DEFINED PATH_LIBTROPIC)
 endif()
 
 project(
-    libtropic_hello_world
-    DESCRIPTION "Libtropic Hello World example on STM32 Nucleo U545RE-Q board"
+    libtropic_fw_update
+    DESCRIPTION "Libtropic firmware update example on STM32 Nucleo L432KC board"
     LANGUAGES C ASM)
 
 ###########################################################################
