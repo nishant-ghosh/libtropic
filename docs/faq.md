@@ -35,7 +35,7 @@ Normally, this means the TROPIC01 has entered the Alarm Mode. The alarm can be c
 
 Refer to the TROPIC01 Datasheet for more information about the Alarm Mode.
 
-However, `LT_L1_CHIP_ALARM_MODE` can be also returned if all bits received on `MISO` are `1` (`0xFF`...). This happens due to how the Alarm Mode flag is defined, similarly to `LT_L1_CHIP_BUSY`. In that case, check connections between the host and TROPIC01.
+However, `LT_L1_CHIP_ALARM_MODE` can also be returned if all bits received on `MISO` are `1` (`0xFF`...). This happens due to how the Alarm Mode flag is defined, similarly to `LT_L1_CHIP_BUSY`. In that case, check connections between the host and TROPIC01.
 
 ### `LT_L2_HSK_ERR`
 This error is caused by a problem during Secure Session establishment. See [I cannot establish a Secure Session](#i-cannot-establish-a-secure-session).
