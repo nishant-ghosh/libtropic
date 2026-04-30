@@ -19,6 +19,11 @@ else
     exit 1
 fi
 
+if ! command -v sha256sum >/dev/null 2>&1; then
+    echo "Error: sha256sum is not installed. Please install and retry." >&2
+    exit 1
+fi
+
 echo "Selecting Python interpreter (prefer python3.8)..."
 if command -v python3.8 >/dev/null 2>&1; then
     PYTHON=python3.8
