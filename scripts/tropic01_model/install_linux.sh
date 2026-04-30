@@ -24,6 +24,11 @@ if ! command -v sha256sum >/dev/null 2>&1; then
     exit 1
 fi
 
+if ! command -v awk >/dev/null 2>&1; then
+    echo "Error: awk is not installed. Please install and retry." >&2
+    exit 1
+fi
+
 echo "Selecting Python interpreter (prefer python3.8)..."
 if command -v python3.8 >/dev/null 2>&1; then
     PYTHON=python3.8
