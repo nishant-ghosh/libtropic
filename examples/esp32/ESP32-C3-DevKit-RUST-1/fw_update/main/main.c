@@ -32,6 +32,7 @@
 #define LT_EX_SH0_PUB lt_sh0pub_prod0
 #endif
 
+#if LT_DISABLE_MAINTENANCE_MODE
 // Tracks whether the Maintenance Mode had to be enabled before starting the FW update.
 bool g_maintenance_mode_was_enabled = false;
 
@@ -208,6 +209,7 @@ lt_ret_t disable_maintenance_mode(lt_handle_t *lt_handle)
 
     return LT_OK;
 }
+#endif
 
 lt_ret_t get_fw_versions(lt_handle_t *lt_handle)
 {

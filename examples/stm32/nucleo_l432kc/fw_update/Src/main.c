@@ -68,8 +68,10 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
+#if LT_DISABLE_MAINTENANCE_MODE
 /* Tracks whether the Maintenance Mode had to be enabled before starting the FW update. */
 bool g_maintenance_mode_was_enabled = false;
+#endif
 
 /* Private function prototypes -----------------------------------------------*/
 #ifdef __GNUC__
@@ -174,6 +176,7 @@ PUTCHAR_PROTOTYPE
     return ch;
 }
 
+#if LT_DISABLE_MAINTENANCE_MODE
 /**
  * @brief  Checks if Maintenance Mode is enabled and if not, enables it in R-Config.
  * @param  lt_handle_t Device handle
@@ -356,6 +359,7 @@ lt_ret_t disable_maintenance_mode(lt_handle_t *lt_handle)
 
     return LT_OK;
 }
+#endif
 
 /**
  * @brief  Retrieve and print versions of TROPIC01 firmware
