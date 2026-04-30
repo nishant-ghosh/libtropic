@@ -69,7 +69,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* Tracks whether the Maintenance Mode had to be enabled before starting the FW update. */
-bool g_mtnc_mode_was_enabled = false;
+bool g_maintenance_mode_was_enabled = false;
 
 /* Private function prototypes -----------------------------------------------*/
 #ifdef __GNUC__
@@ -225,7 +225,7 @@ lt_ret_t check_and_enable_maintenance_mode(lt_handle_t *lt_handle)
             return ret;
         }
         printf("OK\n");
-        g_mtnc_mode_was_enabled = true;
+        g_maintenance_mode_was_enabled = true;
 
         printf("    - Rebooting TROPIC01 to apply R-Config changes...");
         ret = lt_reboot(lt_handle, TR01_REBOOT);
@@ -502,7 +502,7 @@ int main(void)
         fprintf(stderr,
                 "Tip: turn logging on to see more information (compile with -DLT_LOG_LVL=Info)\n");
 #if LT_DISABLE_MAINTENANCE_MODE
-        if (g_mtnc_mode_was_enabled) {
+        if (g_maintenance_mode_was_enabled) {
             fprintf(stderr,
                     "WARNING: Due to the error, Maintenance Mode was kept enabled in R-Config!\n");
         }

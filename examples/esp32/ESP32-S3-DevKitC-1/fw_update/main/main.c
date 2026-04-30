@@ -33,7 +33,7 @@
 #endif
 
 // Tracks whether the Maintenance Mode had to be enabled before starting the FW update.
-bool g_mtnc_mode_was_enabled = false;
+bool g_maintenance_mode_was_enabled = false;
 
 lt_ret_t check_and_enable_maintenance_mode(lt_handle_t *lt_handle)
 {
@@ -114,7 +114,7 @@ lt_ret_t check_and_enable_maintenance_mode(lt_handle_t *lt_handle)
             return ret;
         }
         ESP_LOGI(TAG, "    OK");
-        g_mtnc_mode_was_enabled = true;
+        g_maintenance_mode_was_enabled = true;
 
         ESP_LOGI(TAG, "    - Rebooting TROPIC01 to apply R-Config changes...");
         ret = lt_reboot(lt_handle, TR01_REBOOT);
@@ -339,7 +339,7 @@ void app_main(void)
         ESP_LOGE(TAG, "lt_do_mutable_fw_update() failed, ret=%s", lt_ret_verbose(ret));
         ESP_LOGE(TAG, "Tip: turn logging on to see more information (compile with -DLT_LOG_LVL=Info)");
 #if LT_DISABLE_MAINTENANCE_MODE
-        if (g_mtnc_mode_was_enabled) {
+        if (g_maintenance_mode_was_enabled) {
             ESP_LOGW(TAG, "Due to the error, Maintenance Mode was kept enabled in R-Config!");
         }
 #endif
