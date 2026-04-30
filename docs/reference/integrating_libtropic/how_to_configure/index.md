@@ -87,10 +87,10 @@ Defines the TROPIC01's RISC-V CPU FW version (e.g. `"1_0_1"`) to update to. It i
 - integer (non-negative)
 - default value: 3
 
-Defines how many times Libtropic retries communication after one of the following CRC-related errors:
+Defines how many times Libtropic retries communication after either of the following CRC-related errors:
 
 - An L2 Response frame with `STATUS=CRC_ERR` (`LT_L2_CRC_ERR`).
-- An L2 Response frame with an invalid CRC in `RSP_CRC` field (`LT_L2_IN_CRC_ERR`).
+- An L2 Response frame with an invalid CRC in the `RSP_CRC` field (`LT_L2_IN_CRC_ERR`).
 
 Retry behavior:
 
@@ -100,7 +100,7 @@ Retry behavior:
 Both error types use the same retry counter.
 
 !!! example
-    If Libtropic receives a frame with `STATUS=CRC_ERR` and then two L2 Response frames with invalid CRC (during retries), the retry counter is exhausted for that communication (a single L2 API call or a single L3 chunk; see below).
+    If Libtropic receives a frame with `STATUS=CRC_ERR` and then two L2 Response frames with invalid CRC during retries, the retry counter is exhausted for that communication (a single L2 API call or a single L3 chunk; see below).
 
 !!! important
     This retry counter is independent of CRC diagnostic counters (see [FAQ](../../../faq.md)). CRC diagnostic counters track the total number of CRC errors since initialization (`lt_init`).
@@ -117,4 +117,4 @@ The counter scope is always one L2 frame operation:
     !!! example
         Even if two errors occur while transmitting the first chunk, the second chunk starts with a fresh retry counter.
 
-Set this parameter to zero to disable retrying.
+Set this parameter to zero to disable retries.
