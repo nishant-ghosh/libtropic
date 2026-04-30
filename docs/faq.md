@@ -29,7 +29,7 @@ Normally, this means the TROPIC01 has entered the Alarm Mode. The alarm can be c
 
 - sensors detected an attack,
 - TROPIC01 is operating outside of the standard range (voltage, temperature...),
-- incorrect or corrupted firmware update data used,
+- incorrect or corrupted firmware update data was used,
 - hardware failure,
 - and more.
 
