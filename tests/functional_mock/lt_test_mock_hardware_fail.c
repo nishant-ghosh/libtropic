@@ -53,14 +53,15 @@ void lt_test_mock_hardware_fail(lt_handle_t *h)
     for (int slot = TR01_PAIRING_KEY_SLOT_INDEX_0; slot <= TR01_PAIRING_KEY_SLOT_INDEX_3; slot++) {
         LT_LOG_INFO("Mocking for slot %d...", slot);
         // Mock replies to the command.
-        LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1));
+        LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, false, NULL));
 
         // Mock command result itself.
         uint8_t pairing_key_write_plaintext[] = {
             TR01_L3_RESULT_HARDWARE_FAIL,
         };
-        LT_TEST_ASSERT(LT_OK, mock_l3_result(h, pairing_key_write_plaintext,
-                                             sizeof(pairing_key_write_plaintext)));
+        LT_TEST_ASSERT(
+            LT_OK, mock_l3_result(h, pairing_key_write_plaintext, sizeof(pairing_key_write_plaintext),
+                                  TR01_L2_STATUS_RESULT_OK, false));
 
         LT_TEST_ASSERT(LT_OK, lt_random_bytes(h, dummy_key, sizeof(dummy_key)));
         LT_TEST_ASSERT(LT_L3_HARDWARE_FAIL, lt_pairing_key_write(h, dummy_key, slot));
@@ -72,14 +73,15 @@ void lt_test_mock_hardware_fail(lt_handle_t *h)
     for (int slot = TR01_PAIRING_KEY_SLOT_INDEX_0; slot <= TR01_PAIRING_KEY_SLOT_INDEX_3; slot++) {
         LT_LOG_INFO("Mocking for slot %d...", slot);
         // Mock replies to the command.
-        LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1));
+        LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, false, NULL));
 
         // Mock command result itself.
         uint8_t pairing_key_invalidate_plaintext[] = {
             TR01_L3_RESULT_HARDWARE_FAIL,
         };
         LT_TEST_ASSERT(LT_OK, mock_l3_result(h, pairing_key_invalidate_plaintext,
-                                             sizeof(pairing_key_invalidate_plaintext)));
+                                             sizeof(pairing_key_invalidate_plaintext),
+                                             TR01_L2_STATUS_RESULT_OK, false));
         LT_TEST_ASSERT(LT_L3_HARDWARE_FAIL, lt_pairing_key_invalidate(h, slot));
     }
 
@@ -87,14 +89,14 @@ void lt_test_mock_hardware_fail(lt_handle_t *h)
 
     LT_LOG_INFO("Mocking HARDWARE_FAIL in R_Config_Write reply...");
     // Mock replies to the command.
-    LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1));
+    LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, false, NULL));
 
     // Mock command result itself.
     uint8_t r_config_write_plaintext[] = {
         TR01_L3_RESULT_HARDWARE_FAIL,
     };
-    LT_TEST_ASSERT(LT_OK,
-                   mock_l3_result(h, r_config_write_plaintext, sizeof(r_config_write_plaintext)));
+    LT_TEST_ASSERT(LT_OK, mock_l3_result(h, r_config_write_plaintext, sizeof(r_config_write_plaintext),
+                                         TR01_L2_STATUS_RESULT_OK, false));
     LT_TEST_ASSERT(LT_L3_HARDWARE_FAIL,
                    lt_r_config_write(h, TR01_CFG_START_UP_ADDR, 0x00));  // Dummy object
 
@@ -102,14 +104,14 @@ void lt_test_mock_hardware_fail(lt_handle_t *h)
 
     LT_LOG_INFO("Mocking HARDWARE_FAIL in I_Config_Write reply...");
     // Mock replies to the command.
-    LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1));
+    LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, false, NULL));
 
     // Mock command result itself.
     uint8_t i_config_write_plaintext[] = {
         TR01_L3_RESULT_HARDWARE_FAIL,
     };
-    LT_TEST_ASSERT(LT_OK,
-                   mock_l3_result(h, i_config_write_plaintext, sizeof(i_config_write_plaintext)));
+    LT_TEST_ASSERT(LT_OK, mock_l3_result(h, i_config_write_plaintext, sizeof(i_config_write_plaintext),
+                                         TR01_L2_STATUS_RESULT_OK, false));
     LT_TEST_ASSERT(LT_L3_HARDWARE_FAIL,
                    lt_i_config_write(h, TR01_CFG_START_UP_ADDR, 0x00));  // Dummy object
 
@@ -117,14 +119,15 @@ void lt_test_mock_hardware_fail(lt_handle_t *h)
 
     LT_LOG_INFO("Mocking HARDWARE_FAIL in R_Mem_Data_Write reply...");
     // Mock replies to the command.
-    LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1));
+    LT_TEST_ASSERT(LT_OK, mock_l3_command_responses(h, 1, false, NULL));
 
     // Mock command result itself.
     uint8_t r_mem_data_write_plaintext[] = {
         TR01_L3_RESULT_HARDWARE_FAIL,
     };
     LT_TEST_ASSERT(LT_OK,
-                   mock_l3_result(h, r_mem_data_write_plaintext, sizeof(r_mem_data_write_plaintext)));
+                   mock_l3_result(h, r_mem_data_write_plaintext, sizeof(r_mem_data_write_plaintext),
+                                  TR01_L2_STATUS_RESULT_OK, false));
 
     uint16_t random_r_mem_slot;
     LT_TEST_ASSERT(LT_OK, lt_random_bytes(h, &random_r_mem_slot, sizeof(random_r_mem_slot)));

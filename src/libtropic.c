@@ -57,6 +57,10 @@ lt_ret_t lt_init(lt_handle_t *h)
         return ret;
     }
 
+    // Init CRC error counters
+    h->l2.l2_crc_error_count = 0;
+    h->l2.l2_in_crc_error_count = 0;
+
     ret = lt_crypto_ctx_init(h->l3.crypto_ctx);
     if (ret != LT_OK) {
         goto l1_cleanup;
@@ -216,12 +220,7 @@ lt_ret_t lt_get_info_cert_store(lt_handle_t *h, struct lt_cert_store_t *store)
         p_l2_req->object_id = TR01_L2_GET_INFO_REQ_OBJECT_ID_X509_CERTIFICATE;
         p_l2_req->block_index = i;
 
-        ret = lt_l2_send(&h->l2);
-        if (ret != LT_OK) {
-            return ret;
-        }
-
-        ret = lt_l2_receive(&h->l2);
+        ret = lt_l2_transfer(&h->l2);
         if (ret != LT_OK) {
             return ret;
         }
@@ -326,11 +325,7 @@ lt_ret_t lt_get_info_chip_id(lt_handle_t *h, struct lt_chip_id_t *chip_id)
     p_l2_req->object_id = TR01_L2_GET_INFO_REQ_OBJECT_ID_CHIP_ID;
     p_l2_req->block_index = TR01_L2_GET_INFO_REQ_BLOCK_INDEX_DATA_CHUNK_0_127;
 
-    lt_ret_t ret = lt_l2_send(&h->l2);
-    if (ret != LT_OK) {
-        return ret;
-    }
-    ret = lt_l2_receive(&h->l2);
+    lt_ret_t ret = lt_l2_transfer(&h->l2);
     if (ret != LT_OK) {
         return ret;
     }
@@ -361,11 +356,7 @@ lt_ret_t lt_get_info_riscv_fw_ver(lt_handle_t *h, uint8_t *ver)
     p_l2_req->object_id = TR01_L2_GET_INFO_REQ_OBJECT_ID_RISCV_FW_VERSION;
     p_l2_req->block_index = TR01_L2_GET_INFO_REQ_BLOCK_INDEX_DATA_CHUNK_0_127;
 
-    lt_ret_t ret = lt_l2_send(&h->l2);
-    if (ret != LT_OK) {
-        return ret;
-    }
-    ret = lt_l2_receive(&h->l2);
+    lt_ret_t ret = lt_l2_transfer(&h->l2);
     if (ret != LT_OK) {
         return ret;
     }
@@ -395,11 +386,7 @@ lt_ret_t lt_get_info_spect_fw_ver(lt_handle_t *h, uint8_t *ver)
     p_l2_req->object_id = TR01_L2_GET_INFO_REQ_OBJECT_ID_SPECT_FW_VERSION;
     p_l2_req->block_index = TR01_L2_GET_INFO_REQ_BLOCK_INDEX_DATA_CHUNK_0_127;
 
-    lt_ret_t ret = lt_l2_send(&h->l2);
-    if (ret != LT_OK) {
-        return ret;
-    }
-    ret = lt_l2_receive(&h->l2);
+    lt_ret_t ret = lt_l2_transfer(&h->l2);
     if (ret != LT_OK) {
         return ret;
     }
@@ -432,11 +419,7 @@ lt_ret_t lt_get_info_fw_bank(lt_handle_t *h, const lt_bank_id_t bank_id, uint8_t
     p_l2_req->object_id = TR01_L2_GET_INFO_REQ_OBJECT_ID_FW_BANK;
     p_l2_req->block_index = bank_id;
 
-    lt_ret_t ret = lt_l2_send(&h->l2);
-    if (ret != LT_OK) {
-        return ret;
-    }
-    ret = lt_l2_receive(&h->l2);
+    lt_ret_t ret = lt_l2_transfer(&h->l2);
     if (ret != LT_OK) {
         return ret;
     }
@@ -473,11 +456,7 @@ lt_ret_t lt_session_start(lt_handle_t *h, const uint8_t *stpub, const lt_pkey_in
         goto cleanup;
     }
 
-    ret = lt_l2_send(&h->l2);
-    if (ret != LT_OK) {
-        goto cleanup;
-    }
-    ret = lt_l2_receive(&h->l2);
+    ret = lt_l2_transfer(&h->l2);
     if (ret != LT_OK) {
         goto cleanup;
     }
@@ -515,11 +494,7 @@ lt_ret_t lt_session_abort(lt_handle_t *h)
     p_l2_req->req_id = TR01_L2_ENCRYPTED_SESSION_ABT_ID;
     p_l2_req->req_len = TR01_L2_ENCRYPTED_SESSION_ABT_LEN;
 
-    lt_ret_t ret = lt_l2_send(&h->l2);
-    if (ret != LT_OK) {
-        return ret;
-    }
-    ret = lt_l2_receive(&h->l2);
+    lt_ret_t ret = lt_l2_transfer(&h->l2);
     if (ret != LT_OK) {
         return ret;
     }
@@ -546,11 +521,7 @@ lt_ret_t lt_sleep(lt_handle_t *h, const uint8_t sleep_kind)
     p_l2_req->req_len = TR01_L2_SLEEP_REQ_LEN;
     p_l2_req->startup_id = sleep_kind;
 
-    lt_ret_t ret = lt_l2_send(&h->l2);
-    if (ret != LT_OK) {
-        return ret;
-    }
-    ret = lt_l2_receive(&h->l2);
+    lt_ret_t ret = lt_l2_transfer(&h->l2);
     if (ret != LT_OK) {
         return ret;
     }
@@ -577,13 +548,8 @@ lt_ret_t lt_reboot(lt_handle_t *h, const lt_startup_id_t startup_id)
     p_l2_req->req_len = TR01_L2_STARTUP_REQ_LEN;
     p_l2_req->startup_id = startup_id;
 
-    lt_ret_t ret = lt_l2_send(&h->l2);
     h->l2.startup_req_sent = true;
-    if (ret != LT_OK) {
-        h->l2.startup_req_sent = false;
-        return ret;
-    }
-    ret = lt_l2_receive(&h->l2);
+    lt_ret_t ret = lt_l2_transfer(&h->l2);
     h->l2.startup_req_sent = false;
     if (ret != LT_OK) {
         return ret;
@@ -635,11 +601,7 @@ lt_ret_t lt_mutable_fw_erase(lt_handle_t *h, const lt_bank_id_t bank_id)
     p_l2_req->req_len = TR01_L2_MUTABLE_FW_ERASE_REQ_LEN;
     p_l2_req->bank_id = bank_id;
 
-    lt_ret_t ret = lt_l2_send(&h->l2);
-    if (ret != LT_OK) {
-        return ret;
-    }
-    ret = lt_l2_receive(&h->l2);
+    lt_ret_t ret = lt_l2_transfer(&h->l2);
     if (ret != LT_OK) {
         return ret;
     }
@@ -677,11 +639,7 @@ lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const size
         p_l2_req->offset = i * 128;
         memcpy(p_l2_req->data, fw_data + (i * 128), 128);
 
-        lt_ret_t ret = lt_l2_send(&h->l2);
-        if (ret != LT_OK) {
-            return ret;
-        }
-        ret = lt_l2_receive(&h->l2);
+        lt_ret_t ret = lt_l2_transfer(&h->l2);
         if (ret != LT_OK) {
             return ret;
         }
@@ -698,11 +656,7 @@ lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const size
         p_l2_req->offset = loops * 128;
         memcpy(p_l2_req->data, fw_data + (loops * 128), rest);
 
-        lt_ret_t ret = lt_l2_send(&h->l2);
-        if (ret != LT_OK) {
-            return ret;
-        }
-        ret = lt_l2_receive(&h->l2);
+        lt_ret_t ret = lt_l2_transfer(&h->l2);
         if (ret != LT_OK) {
             return ret;
         }
@@ -744,11 +698,7 @@ lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const size
     p_l2_req->header_version = fw_chunk_0->header_version;
     p_l2_req->version = fw_chunk_0->version;
 
-    lt_ret_t ret = lt_l2_send(&h->l2);
-    if (ret != LT_OK) {
-        return ret;
-    }
-    ret = lt_l2_receive(&h->l2);
+    lt_ret_t ret = lt_l2_transfer(&h->l2);
     if (ret != LT_OK) {
         return ret;
     }
@@ -794,11 +744,7 @@ lt_ret_t lt_mutable_fw_update_data(lt_handle_t *h, const uint8_t *fw_data, const
         p2_l2_req->req_id = TR01_L2_MUTABLE_FW_UPDATE_DATA_REQ;
         memcpy((uint8_t *)&p2_l2_req->req_len, fw_data + chunk_index, copy_len);
 
-        lt_ret_t ret = lt_l2_send(&h->l2);
-        if (ret != LT_OK) {
-            return ret;
-        }
-        ret = lt_l2_receive(&h->l2);
+        lt_ret_t ret = lt_l2_transfer(&h->l2);
         if (ret != LT_OK) {
             return ret;
         }
@@ -829,11 +775,7 @@ lt_ret_t lt_get_log_req(lt_handle_t *h, uint8_t *log_msg, const uint16_t log_msg
     p_l2_req->req_id = TR01_L2_GET_LOG_REQ_ID;
     p_l2_req->req_len = TR01_L2_GET_LOG_REQ_LEN;
 
-    lt_ret_t ret = lt_l2_send(&h->l2);
-    if (ret != LT_OK) {
-        return ret;
-    }
-    ret = lt_l2_receive(&h->l2);
+    lt_ret_t ret = lt_l2_transfer(&h->l2);
     if (ret != LT_OK) {
         return ret;
     }

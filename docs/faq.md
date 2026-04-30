@@ -10,6 +10,7 @@ This list might help you resolve some issues.
     - [`LT_L3_DATA_LEN_ERROR`](#lt_l3_data_len_error)
     - [`LT_L3_INVALID_CMD` or `LT_L2_UNKNOWN_REQ`](#lt_l3_invalid_cmd-or-lt_l2_unknown_req)
     - [`LT_FAIL`](#lt_fail)
+    - [`LT_L2_CRC_ERR` or `LT_L2_IN_CRC_ERR`](#lt_l2_crc_err-or-lt_l2_in_crc_err)
   - [I cannot establish a Secure Session](#i-cannot-establish-a-secure-session)
   - [FW update failed](#fw-update-failed)
   - [What is the part number (P/N) of my TROPIC01?](#what-is-the-part-number-pn-of-my-tropic01)
@@ -65,6 +66,32 @@ ERROR   [ 101] Error opening serial at "/dev/ttyACM0".
 ```
 
 This is likely a permissions issue. Try adding your user account to the groups that provide access to the device you are using (for example, `dialout` or `plugdev` for USB serial devices, and `spi` for SPI devices). Refer to documentation of your distribution for details.
+
+### `LT_L2_CRC_ERR` or `LT_L2_IN_CRC_ERR`
+This error means that either TROPIC01 received a corrupted frame (`LT_L2_CRC_ERR`) or the host received a corrupted frame (`LT_L2_IN_CRC_ERR`).
+
+Libtropic will try to retry the communication by default and return the error only after all retry attempts are depleted.
+
+#### Diagnostics
+
+To diagnose CRC-related errors, we provide two counters in `lt_l2_state_t`: 
+
+- `l2_in_crc_error_count` tracks number of corrupted frames received by the host.
+- `l2_crc_error_count` tracks number of corrupted frames received by the TROPIC01.
+
+These counters are reset automatically on Libtropic initialization (in `lt_init`).
+
+!!! important "Counters and separate API"
+    If you use separate API, you need to use `lt_l2_transfer` for counters to be updated automatically, not `lt_l2_send` and `lt_l2_receive`.
+
+#### Possible causes and solutions
+
+CRC errors hint that the connection is unstable. You can try the following:
+
+- Use high-quality wiring and firm connectors. Poor DuPont (jump) wires combined with cheap breadboards are common causes of connection issues.
+- Minimize the length of the connections as much as possible.
+- Try to lower the communication speed.
+- Increase the number of retries: see [`LT_CRC_ERR_RETRY_ATTEMPTS` parameter](reference/integrating_libtropic/how_to_configure/index.md#lt_crc_err_retry_attempts). This is not recommended, it is always better to find the cause of the connection instability.
 
 ## I cannot establish a Secure Session
 There are two main causes:
