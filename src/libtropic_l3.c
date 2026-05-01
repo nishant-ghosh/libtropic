@@ -1148,6 +1148,7 @@ lt_ret_t lt_in__ecc_key_read(lt_handle_t *h, uint8_t *key, const uint8_t key_max
     }
     else {
         // Unknown curve type.
+        LT_LOG_ERROR("Unknown curve type in ECC_Key_Read Result!");
         return LT_FAIL;
     }
 
