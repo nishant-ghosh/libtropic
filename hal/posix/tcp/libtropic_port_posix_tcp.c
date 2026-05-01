@@ -39,7 +39,7 @@
  * @param socket_fd   Socket file descriptor
  * @param buffer      Buffer to send
  * @param buffer_len  Length of the buffer
- * @return            LT_OK on success, LT_FAIL on failure if not all data is sent
+ * @return            LT_OK on success, LT_HAL_ERROR on failure if not all data is sent
  *                    after LT_TCP_TX_ATTEMPTS attempts
  */
 static lt_ret_t send_all(const int socket_fd, const uint8_t *buffer, const size_t buffer_len)
@@ -55,7 +55,7 @@ static lt_ret_t send_all(const int socket_fd, const uint8_t *buffer, const size_
         nb_bytes_sent = send(socket_fd, ptr, nb_bytes_to_send, 0);
         if (nb_bytes_sent <= 0) {
             LT_LOG_ERROR("Send failed: %s (%d).", strerror(errno), errno);
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
 
         nb_bytes_to_send -= nb_bytes_sent;
@@ -72,7 +72,7 @@ static lt_ret_t send_all(const int socket_fd, const uint8_t *buffer, const size_
     LT_LOG_ERROR("%d bytes sent instead of expected %zu ", nb_bytes_sent_total, buffer_len);
     LT_LOG_ERROR("after %d attempts.", LT_TCP_TX_ATTEMPTS);
 
-    return LT_FAIL;
+    return LT_HAL_ERROR;
 }
 
 /**
@@ -83,7 +83,7 @@ static lt_ret_t send_all(const int socket_fd, const uint8_t *buffer, const size_
  * fields)
  * @param rx_payload_length_ptr Pointer to the length of the payload to receive (excluding tag and
  * length fields)
- * @return LT_OK on success, LT_FAIL otherwise
+ * @return LT_OK on success, LT_HAL_ERROR otherwise
  */
 static lt_ret_t communicate(lt_dev_posix_tcp_t *dev, int *tx_payload_length_ptr,
                             int *rx_payload_length_ptr)
@@ -103,7 +103,7 @@ static lt_ret_t communicate(lt_dev_posix_tcp_t *dev, int *tx_payload_length_ptr,
     dev->tx_buffer.len = nb_bytes_to_send - LT_TCP_TAG_AND_LENGTH_SIZE;
 
     if (send_all(dev->socket_fd, dev->tx_buffer.buff, nb_bytes_to_send) != LT_OK) {
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     // receive data
@@ -112,11 +112,11 @@ static lt_ret_t communicate(lt_dev_posix_tcp_t *dev, int *tx_payload_length_ptr,
 
     if (nb_bytes_received < 0) {
         LT_LOG_ERROR("Receive failed: %s (%d).", strerror(errno), errno);
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
     else if (nb_bytes_received < nb_bytes_to_receive) {
         LT_LOG_ERROR("At least %d bytes are expected: %d.", nb_bytes_to_receive, nb_bytes_received);
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     LT_LOG_DEBUG("Length field: %" PRIu16 ".", dev->rx_buffer.len);
@@ -134,7 +134,7 @@ static lt_ret_t communicate(lt_dev_posix_tcp_t *dev, int *tx_payload_length_ptr,
 
             if (nb_bytes_received < 0) {
                 LT_LOG_ERROR("Receive failed: %s (%d).", strerror(errno), errno);
-                return LT_FAIL;
+                return LT_HAL_ERROR;
             }
 
             nb_bytes_received_total += nb_bytes_received;
@@ -149,24 +149,24 @@ static lt_ret_t communicate(lt_dev_posix_tcp_t *dev, int *tx_payload_length_ptr,
     if (nb_bytes_received_total != nb_bytes_to_receive) {
         LT_LOG_ERROR("Received %d bytes in total instead of %d.", nb_bytes_received_total,
                      nb_bytes_to_receive);
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     // server does not know the sent tag
     if ((lt_posix_tcp_tag_t)dev->rx_buffer.tag == LT_TCP_TAG_INVALID) {
         LT_LOG_ERROR("Tag %" PRIu8 " is not known by the server.", dev->tx_buffer.tag);
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
     // server does not know what to do with the sent tag
     else if ((lt_posix_tcp_tag_t)dev->rx_buffer.tag == LT_TCP_TAG_UNSUPPORTED) {
         LT_LOG_ERROR("Tag %" PRIu8 " is not supported by the server.", dev->tx_buffer.tag);
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
     // RX tag and TX tag should be identical
     else if (dev->rx_buffer.tag != dev->tx_buffer.tag) {
         LT_LOG_ERROR("Expected tag %" PRIu8 ", received %" PRIu8 ".", dev->rx_buffer.tag,
                      dev->tx_buffer.tag);
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     LT_LOG_DEBUG("Rx tag and tx tag match: %" PRIu8 ".", dev->rx_buffer.tag);
@@ -188,7 +188,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     dev->socket_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (dev->socket_fd < 0) {
         LT_LOG_ERROR("Could not create socket: %s (%d).", strerror(errno), errno);
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
     LT_LOG_DEBUG("Socket created.");
 
@@ -204,7 +204,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     if (connect(dev->socket_fd, (struct sockaddr *)(&server), sizeof(server)) < 0) {
         LT_LOG_ERROR("Could not connect: %s (%d).", strerror(errno), errno);
         close(dev->socket_fd);
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
     LT_LOG_DEBUG("Connected to the server.");
 
@@ -218,7 +218,7 @@ lt_ret_t lt_port_deinit(lt_l2_state_t *s2)
     LT_LOG_DEBUG("-- Server disconnect");
     if (close(dev->socket_fd)) {
         LT_LOG_ERROR("close() failed: %s (%d)", strerror(errno), errno);
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     return LT_OK;
@@ -266,7 +266,7 @@ lt_ret_t lt_port_spi_transfer(lt_l2_state_t *s2, uint8_t offset, uint16_t tx_dat
     memcpy(&dev->tx_buffer.payload, s2->buff, tx_payload_length);
 
     if (communicate(dev, &tx_payload_length, &rx_payload_length) != LT_OK) {
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     memcpy(s2->buff + offset, &dev->rx_buffer.payload, rx_payload_length);

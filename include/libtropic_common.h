@@ -306,9 +306,9 @@ typedef enum lt_ret_t {
        I-Config).
     */
     LT_REBOOT_UNSUCCESSFUL = 6,
+    /** @brief Some HAL-related operation was not successful (SPI, delay, get random, ...) */
+    LT_HAL_ERROR = 7,
 
-    /** @brief Some SPI related operation was not successful */
-    LT_L1_SPI_ERROR = 7,
     /** @brief Data does not have an expected length */
     LT_L1_DATA_LEN_ERROR = 8,
     /** @brief Chip is in STARTUP mode */

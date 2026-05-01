@@ -69,13 +69,13 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     device->spi_fd = open(device->spi_dev, O_RDWR);
     if (device->spi_fd < 0) {
         LT_LOG_ERROR("Can't open device!");
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     // Set the SPI mode.
     if (ioctl(device->spi_fd, SPI_IOC_WR_MODE32, &request_spi_mode) < 0) {
         LT_LOG_ERROR("Can't set SPI mode!");
-        ret = LT_FAIL;
+        ret = LT_HAL_ERROR;
         goto spi_error;
     }
 
@@ -83,18 +83,18 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     uint32_t read_spi_mode;
     if (ioctl(device->spi_fd, SPI_IOC_RD_MODE32, &read_spi_mode) < 0) {
         LT_LOG_ERROR("Can't get SPI mode!");
-        ret = LT_FAIL;
+        ret = LT_HAL_ERROR;
         goto spi_error;
     }
     if (request_spi_mode != read_spi_mode) {
         LT_LOG_ERROR("Device does not support requested mode 0x%" PRIx32, request_spi_mode);
-        ret = LT_FAIL;
+        ret = LT_HAL_ERROR;
         goto spi_error;
     }
 
     if (ioctl(device->spi_fd, SPI_IOC_WR_MAX_SPEED_HZ, &device->spi_speed) < 0) {
         LT_LOG_ERROR("Can't set max SPI speed.");
-        ret = LT_FAIL;
+        ret = LT_HAL_ERROR;
         goto spi_error;
     }
 
@@ -102,7 +102,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     device->gpio_fd = open(device->gpio_dev, O_RDWR | O_CLOEXEC);
     if (device->gpio_fd < 0) {
         LT_LOG_ERROR("Can't open GPIO device!");
-        ret = LT_FAIL;
+        ret = LT_HAL_ERROR;
         goto spi_error;
     }
 
@@ -110,7 +110,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     if (ioctl(device->gpio_fd, GPIO_GET_CHIPINFO_IOCTL, &info) < 0) {
         LT_LOG_ERROR("GPIO_GET_CHIPINFO_IOCTL error!");
         LT_LOG_ERROR("Error string: %s", strerror(errno));
-        ret = LT_FAIL;
+        ret = LT_HAL_ERROR;
         goto gpio_error;
     }
 
@@ -128,7 +128,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     if (ioctl(device->gpio_fd, GPIO_V2_GET_LINE_IOCTL, &device->gpioreq_int) < 0) {
         LT_LOG_ERROR("GPIO_V2_GET_LINE_IOCTL (INT pin) error!");
         LT_LOG_ERROR("Error string: %s", strerror(errno));
-        ret = LT_FAIL;
+        ret = LT_HAL_ERROR;
         goto gpio_error;
     }
 #endif
@@ -195,7 +195,7 @@ lt_ret_t lt_port_spi_transfer(lt_l2_state_t *s2, uint8_t offset, uint16_t tx_dat
     if (!device->frame_in_progress) {
         LT_LOG_ERROR(
             "lt_port_spi_transfer: No transfer in progress (spi_transfer called before csn_low)!");
-        return LT_L1_SPI_ERROR;
+        return LT_HAL_ERROR;
     }
 
     if (device->frame_completed) {
@@ -211,11 +211,13 @@ lt_ret_t lt_port_spi_transfer(lt_l2_state_t *s2, uint8_t offset, uint16_t tx_dat
     };
 
     ret = ioctl(device->spi_fd, SPI_IOC_MESSAGE(1), &spi);
-    if (ret >= 0) {
-        device->frame_completed = 1;
-        return LT_OK;
+    if (ret < 0) {
+        LT_LOG_ERROR("ioctl() failed, ret=%d", ret);
+        return LT_HAL_ERROR;
     }
-    return LT_L1_SPI_ERROR;
+
+    device->frame_completed = 1;
+    return LT_OK;
 }
 
 lt_ret_t lt_port_delay(lt_l2_state_t *s2, uint32_t ms)
@@ -225,7 +227,7 @@ lt_ret_t lt_port_delay(lt_l2_state_t *s2, uint32_t ms)
     int ret = usleep(ms * 1000);
     if (ret != 0) {
         LT_LOG_ERROR("lt_port_delay: usleep() failed: %s (%d)", strerror(errno), ret);
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     return LT_OK;
@@ -239,14 +241,14 @@ lt_ret_t lt_port_random_bytes(lt_l2_state_t *s2, void *buff, size_t count)
 
     if (ret < 0) {
         LT_LOG_ERROR("lt_port_random_bytes: getrandom() failed (%s)!", strerror(errno));
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     if ((size_t)ret != count) {
         LT_LOG_ERROR(
             "lt_port_random_bytes: getrandom() generated %zd bytes instead of requested %zu bytes!",
             ret, count);
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     return LT_OK;
@@ -271,7 +273,7 @@ lt_ret_t lt_port_delay_on_int(lt_l2_state_t *s2, uint32_t ms)
 
     if (ret < 0) {
         LT_LOG_ERROR("lt_port_delay_on_int: poll() failed: %s", strerror(errno));
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     if (ret == 0) {
@@ -288,12 +290,12 @@ lt_ret_t lt_port_delay_on_int(lt_l2_state_t *s2, uint32_t ms)
 
         if (ret < 0) {
             LT_LOG_ERROR("lt_port_delay_on_int: read() on INT pin failed: %s", strerror(errno));
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
 
         if (ret != sizeof(event)) {
             LT_LOG_ERROR("lt_port_delay_on_int: read() on INT pin returned unexpected size: %d", ret);
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
 
         // Since we only configured for RISING_EDGE, any event is the one we want.
@@ -303,7 +305,7 @@ lt_ret_t lt_port_delay_on_int(lt_l2_state_t *s2, uint32_t ms)
     }
 
     LT_LOG_ERROR("lt_port_delay_on_int: Poll returned positive but no expected revents.");
-    return LT_FAIL;
+    return LT_HAL_ERROR;
 }
 #endif
 
