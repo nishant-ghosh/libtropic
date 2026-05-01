@@ -30,7 +30,7 @@ extern "C" {
 #define TR01_L1_CHIP_MODE_STARTUP_bit 0x04
 
 #ifndef LT_L1_READ_MAX_TRIES
-/** @brief Max number of GET_INFO requests when chip is not answering
+/** @brief Max number of Get_Response requests when chip is not answering.
  *
  * @note In CMake-based builds it is set in CMakeLists.txt and can be configured using CMake
  * parameters.
@@ -39,7 +39,7 @@ extern "C" {
 #endif
 
 #ifndef LT_L1_READ_RETRY_DELAY
-/** @brief Number of ms to wait between each GET_RESP request
+/** @brief Time to wait in ms between each Get_Response request.
  *
  * @note In CMake-based builds it is set in CMakeLists.txt and can be configured using CMake
  * parameters.

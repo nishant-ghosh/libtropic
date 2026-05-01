@@ -128,7 +128,7 @@ Sets how many times to try L1 transfer (if the chip is busy) before failing.
 See also [`LT_L1_READ_RETRY_DELAY`](#lt_l1_read_retry_delay).
 
 !!! tip "Tip: Use interrupt pin"
-    It is better to use interrupt pin functionality of TROPIC01 if you need to shorten reaction time. See [`LT_USE_INT_PIN`](#lt_use_int_pin) parameter.
+    It is better to use the interrupt pin functionality of TROPIC01 if you need to shorten reaction time. See [`LT_USE_INT_PIN`](#lt_use_int_pin) parameter.
 
 ### `LT_L1_READ_RETRY_DELAY`
 - integer (positive)
@@ -139,4 +139,4 @@ Sets how long to wait in milliseconds before retrying L1 transfer (if the chip i
 See also [`LT_L1_READ_MAX_TRIES`](#lt_l1_read_max_tries).
 
 !!! tip "Tip: Use interrupt pin"
-    It is better to use interrupt pin functionality of TROPIC01 if you need to shorten reaction time. See [`LT_USE_INT_PIN`](#lt_use_int_pin) parameter.
+    It is better to use the interrupt pin functionality of TROPIC01 if you need to shorten reaction time. See [`LT_USE_INT_PIN`](#lt_use_int_pin) parameter.

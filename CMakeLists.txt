@@ -108,14 +108,14 @@ if(NOT LT_CRC_ERR_RETRY_ATTEMPTS MATCHES "^(0|[1-9][0-9]*)$")
 endif()
 
 # Must be positive without leading zero.
-set(LT_L1_READ_MAX_TRIES "50" CACHE STRING "Max number of GET_INFO requests when chip is not answerin.")
+set(LT_L1_READ_MAX_TRIES "50" CACHE STRING "Max number of Get_Response requests when chip is not answering.")
 
 if(NOT LT_L1_READ_MAX_TRIES MATCHES "^([1-9][0-9]*)$")
     message(FATAL_ERROR "LT_L1_READ_MAX_TRIES must be a positive integer without leading zeros, got '${LT_L1_READ_MAX_TRIES}'")
 endif()
 
 # Must be positive without leading zero.
-set(LT_L1_READ_RETRY_DELAY "25" CACHE STRING "Number of ms to wait between each GET_RESP request.")
+set(LT_L1_READ_RETRY_DELAY "25" CACHE STRING "Time to wait in ms between each Get_Response request.")
 
 if(NOT LT_L1_READ_RETRY_DELAY MATCHES "^([1-9][0-9]*)$")
     message(FATAL_ERROR "LT_L1_READ_RETRY_DELAY must be a positive integer without leading zeros, got '${LT_L1_READ_RETRY_DELAY}'")
