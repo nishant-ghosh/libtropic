@@ -153,7 +153,7 @@ lt_ret_t lt_l2_send_encrypted_cmd(lt_l2_state_t *s2, uint8_t *buff, uint16_t buf
         return LT_PARAM_ERR;
     }
 
-    int ret = LT_FAIL;
+    lt_ret_t ret = LT_FAIL;
 
     // There is L3 payload in provided buffer (buff).
     // First check how much data are to be send and if it actually fits into that buffer,
@@ -283,7 +283,7 @@ lt_ret_t lt_l2_recv_encrypted_res(lt_l2_state_t *s2, uint8_t *buff, uint16_t max
         return LT_PARAM_ERR;
     }
 
-    int ret = LT_FAIL;
+    lt_ret_t ret = LT_FAIL;
     // Setup a response pointer to L2 buffer, which is placed in handle
     struct lt_l2_encrypted_cmd_rsp_t *resp = (struct lt_l2_encrypted_cmd_rsp_t *)s2->buff;
 
