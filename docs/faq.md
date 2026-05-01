@@ -62,10 +62,10 @@ This is an error code returned by HAL and can be caused by various issues. See b
 On Linux, a common cause is an error in opening the device due to insufficient permissions. If you run any example and receive `LT_HAL_ERROR`, enable debug logging (see [Logging](reference/logging.md)). If you see an error similar to the following:
 
 ```sh
-ERROR   [ 101] Error opening serial at "/dev/ttyACM0".
+ERROR   [ 145] Error opening serial at "/dev/ttyACM0", errno=13 (Permission denied)
 ```
 
-This is likely a permissions issue. Try adding your user account to the groups that provide access to the device you are using (for example, `dialout` or `plugdev` for USB serial devices, and `spi` for SPI devices). Refer to documentation of your distribution for details.
+This is likely an issue with permissions. Try adding your user account to the groups that provide access to the device you are using (for example, `dialout` or `plugdev` for USB serial devices, and `spi` for SPI devices). Refer to documentation of your distribution for details.
 
 ### `LT_L2_CRC_ERR` or `LT_L2_IN_CRC_ERR`
 This error means that either TROPIC01 received a corrupted frame (`LT_L2_CRC_ERR`) or the host received a corrupted frame (`LT_L2_IN_CRC_ERR`).
