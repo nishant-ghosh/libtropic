@@ -68,13 +68,13 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
 
     device->spi_fd = open(device->spi_dev, O_RDWR);
     if (device->spi_fd < 0) {
-        LT_LOG_ERROR("Can't open device!");
+        LT_LOG_ERROR("Can't open device, errno=%d (%s)", errno, strerror(errno));
         return LT_HAL_ERROR;
     }
 
     // Set the SPI mode.
     if (ioctl(device->spi_fd, SPI_IOC_WR_MODE32, &request_spi_mode) < 0) {
-        LT_LOG_ERROR("Can't set SPI mode!");
+        LT_LOG_ERROR("Can't set SPI mode, errno=%d (%s)", errno, strerror(errno));
         ret = LT_HAL_ERROR;
         goto spi_error;
     }
@@ -82,7 +82,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     // Read what SPI mode the device actually is in.
     uint32_t read_spi_mode;
     if (ioctl(device->spi_fd, SPI_IOC_RD_MODE32, &read_spi_mode) < 0) {
-        LT_LOG_ERROR("Can't get SPI mode!");
+        LT_LOG_ERROR("Can't get SPI mode, errno=%d (%s)", errno, strerror(errno));
         ret = LT_HAL_ERROR;
         goto spi_error;
     }
@@ -93,7 +93,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     }
 
     if (ioctl(device->spi_fd, SPI_IOC_WR_MAX_SPEED_HZ, &device->spi_speed) < 0) {
-        LT_LOG_ERROR("Can't set max SPI speed.");
+        LT_LOG_ERROR("Can't set max SPI speed, errno=%d (%s)", errno, strerror(errno));
         ret = LT_HAL_ERROR;
         goto spi_error;
     }
@@ -101,15 +101,14 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
 #if LT_USE_INT_PIN
     device->gpio_fd = open(device->gpio_dev, O_RDWR | O_CLOEXEC);
     if (device->gpio_fd < 0) {
-        LT_LOG_ERROR("Can't open GPIO device!");
+        LT_LOG_ERROR("Can't open GPIO device, errno=%d (%s)", errno, strerror(errno));
         ret = LT_HAL_ERROR;
         goto spi_error;
     }
 
     struct gpiochip_info info;
     if (ioctl(device->gpio_fd, GPIO_GET_CHIPINFO_IOCTL, &info) < 0) {
-        LT_LOG_ERROR("GPIO_GET_CHIPINFO_IOCTL error!");
-        LT_LOG_ERROR("Error string: %s", strerror(errno));
+        LT_LOG_ERROR("GPIO_GET_CHIPINFO_IOCTL error, errno=%d (%s)", errno, strerror(errno));
         ret = LT_HAL_ERROR;
         goto gpio_error;
     }
@@ -126,8 +125,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     device->gpioreq_int.config.flags = GPIO_V2_LINE_FLAG_INPUT | GPIO_V2_LINE_FLAG_EDGE_RISING;
 
     if (ioctl(device->gpio_fd, GPIO_V2_GET_LINE_IOCTL, &device->gpioreq_int) < 0) {
-        LT_LOG_ERROR("GPIO_V2_GET_LINE_IOCTL (INT pin) error!");
-        LT_LOG_ERROR("Error string: %s", strerror(errno));
+        LT_LOG_ERROR("GPIO_V2_GET_LINE_IOCTL (INT pin) error, errno=%d (%s)", errno, strerror(errno));
         ret = LT_HAL_ERROR;
         goto gpio_error;
     }
@@ -212,7 +210,7 @@ lt_ret_t lt_port_spi_transfer(lt_l2_state_t *s2, uint8_t offset, uint16_t tx_dat
 
     ret = ioctl(device->spi_fd, SPI_IOC_MESSAGE(1), &spi);
     if (ret < 0) {
-        LT_LOG_ERROR("ioctl() failed, ret=%d", ret);
+        LT_LOG_ERROR("SPI_IOC_MESSAGE failed, errno=%d (%s)", errno, strerror(errno));
         return LT_HAL_ERROR;
     }
 
@@ -226,7 +224,7 @@ lt_ret_t lt_port_delay(lt_l2_state_t *s2, uint32_t ms)
 
     int ret = usleep(ms * 1000);
     if (ret != 0) {
-        LT_LOG_ERROR("lt_port_delay: usleep() failed: %s (%d)", strerror(errno), ret);
+        LT_LOG_ERROR("lt_port_delay: usleep() failed, errno=%d (%s)", errno, strerror(errno));
         return LT_HAL_ERROR;
     }
 
@@ -240,7 +238,8 @@ lt_ret_t lt_port_random_bytes(lt_l2_state_t *s2, void *buff, size_t count)
     ssize_t ret = getrandom(buff, count, 0);
 
     if (ret < 0) {
-        LT_LOG_ERROR("lt_port_random_bytes: getrandom() failed (%s)!", strerror(errno));
+        LT_LOG_ERROR("lt_port_random_bytes: getrandom() failed, errno=%d (%s)", errno,
+                     strerror(errno));
         return LT_HAL_ERROR;
     }
 
@@ -272,7 +271,7 @@ lt_ret_t lt_port_delay_on_int(lt_l2_state_t *s2, uint32_t ms)
     ret = poll(&pfd, 1, (int)ms);
 
     if (ret < 0) {
-        LT_LOG_ERROR("lt_port_delay_on_int: poll() failed: %s", strerror(errno));
+        LT_LOG_ERROR("lt_port_delay_on_int: poll() failed, errno=%d (%s)", errno, strerror(errno));
         return LT_HAL_ERROR;
     }
 
@@ -289,7 +288,8 @@ lt_ret_t lt_port_delay_on_int(lt_l2_state_t *s2, uint32_t ms)
         ret = read(pfd.fd, &event, sizeof(event));
 
         if (ret < 0) {
-            LT_LOG_ERROR("lt_port_delay_on_int: read() on INT pin failed: %s", strerror(errno));
+            LT_LOG_ERROR("lt_port_delay_on_int: read() on INT pin failed, errno=%d (%s)", errno,
+                         strerror(errno));
             return LT_HAL_ERROR;
         }
 

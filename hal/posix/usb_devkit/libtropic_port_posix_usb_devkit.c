@@ -73,7 +73,7 @@ static bool write_port(int fd, const uint8_t *buffer, size_t size)
                 LT_LOG_INFO("write() interrupted by a signal, will try again.");
                 continue;
             }
-            LT_LOG_ERROR("write() failed: errno=%d (%s).", errno, strerror(errno));
+            LT_LOG_ERROR("write() failed, errno=%d (%s)", errno, strerror(errno));
             return false;
         }
 
@@ -118,7 +118,7 @@ static bool read_port(int fd, uint8_t *buffer, size_t size)
                 LT_LOG_INFO("read() interrupted by a signal, will try again.");
                 continue;
             }
-            LT_LOG_ERROR("read() failed: errno=%d (%s).", errno, strerror(errno));
+            LT_LOG_ERROR("read() failed, errno=%d (%s)", errno, strerror(errno));
             return false;
         }
 
@@ -142,7 +142,8 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     // Initialize the serial port.
     device->fd = open(device->dev_path, O_RDWR | O_NOCTTY);
     if (device->fd == -1) {
-        LT_LOG_ERROR("Error opening serial at \"%s\".", device->dev_path);
+        LT_LOG_ERROR("Error opening serial at \"%s\", errno=%d (%s)", device->dev_path, errno,
+                     strerror(errno));
         return LT_HAL_ERROR;
     }
 
@@ -157,7 +158,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     struct termios options;
     result = tcgetattr(device->fd, &options);
     if (result) {
-        LT_LOG_ERROR("tcgetattr failed, result=%d", result);
+        LT_LOG_ERROR("tcgetattr failed, errno=%d (%s)", errno, strerror(errno));
         close(device->fd);
         return LT_HAL_ERROR;
     }
@@ -200,7 +201,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
 
     result = tcsetattr(device->fd, TCSANOW, &options);
     if (result) {
-        LT_LOG_ERROR("tcsetattr failed, result=%d", result);
+        LT_LOG_ERROR("tcsetattr failed, errno=%d (%s)", errno, strerror(errno));
         close(device->fd);
         return LT_HAL_ERROR;
     }
@@ -212,10 +213,8 @@ lt_ret_t lt_port_deinit(lt_l2_state_t *s2)
 {
     lt_dev_posix_usb_devkit_t *device = (lt_dev_posix_usb_devkit_t *)s2->device;
 
-    int ret = close(device->fd);
-
-    if (ret != 0) {
-        LT_LOG_ERROR("close() failed, ret=%d", ret);
+    if (close(device->fd)) {
+        LT_LOG_ERROR("close() failed, errno=%d (%s)", errno, strerror(errno));
         return LT_HAL_ERROR;
     }
     return LT_OK;
@@ -226,7 +225,7 @@ lt_ret_t lt_port_delay(lt_l2_state_t *s2, uint32_t ms)
     LT_UNUSED(s2);
     int ret = usleep(ms * 1000);
     if (ret != 0) {
-        LT_LOG_ERROR("usleep() failed: %s (%d)", strerror(errno), ret);
+        LT_LOG_ERROR("usleep() failed, errno=%d (%s)", errno, strerror(errno));
         return LT_HAL_ERROR;
     }
 
@@ -247,7 +246,8 @@ lt_ret_t lt_port_random_bytes(lt_l2_state_t *s2, void *buff, size_t count)
         current_cnt = bytes_left > GETENTROPY_MAX ? GETENTROPY_MAX : bytes_left;
 
         if (0 != getentropy(buff_ptr, current_cnt)) {
-            LT_LOG_ERROR("lt_port_random_bytes: getentropy() failed (%s)!", strerror(errno));
+            LT_LOG_ERROR("lt_port_random_bytes: getentropy() failed, errno=%d (%s)", errno,
+                         strerror(errno));
             return LT_HAL_ERROR;
         }
 

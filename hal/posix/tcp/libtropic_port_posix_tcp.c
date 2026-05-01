@@ -54,7 +54,7 @@ static lt_ret_t send_all(const int socket_fd, const uint8_t *buffer, const size_
         LT_LOG_DEBUG("Attempting to send data: attempt #%d.", i);
         nb_bytes_sent = send(socket_fd, ptr, nb_bytes_to_send, 0);
         if (nb_bytes_sent <= 0) {
-            LT_LOG_ERROR("Send failed: %s (%d).", strerror(errno), errno);
+            LT_LOG_ERROR("Send failed, errno=%d (%s)", errno, strerror(errno));
             return LT_HAL_ERROR;
         }
 
@@ -111,7 +111,7 @@ static lt_ret_t communicate(lt_dev_posix_tcp_t *dev, int *tx_payload_length_ptr,
     nb_bytes_received = recv(dev->socket_fd, dev->rx_buffer.buff, LT_TCP_MAX_RECV_SIZE, 0);
 
     if (nb_bytes_received < 0) {
-        LT_LOG_ERROR("Receive failed: %s (%d).", strerror(errno), errno);
+        LT_LOG_ERROR("Receive failed, errno=%d (%s)", errno, strerror(errno));
         return LT_HAL_ERROR;
     }
     else if (nb_bytes_received < nb_bytes_to_receive) {
@@ -133,7 +133,7 @@ static lt_ret_t communicate(lt_dev_posix_tcp_t *dev, int *tx_payload_length_ptr,
             nb_bytes_received = recv(dev->socket_fd, dev->rx_buffer.buff, LT_TCP_MAX_RECV_SIZE, 0);
 
             if (nb_bytes_received < 0) {
-                LT_LOG_ERROR("Receive failed: %s (%d).", strerror(errno), errno);
+                LT_LOG_ERROR("Receive failed, errno=%d (%s)", errno, strerror(errno));
                 return LT_HAL_ERROR;
             }
 
@@ -187,7 +187,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     // Create socket
     dev->socket_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (dev->socket_fd < 0) {
-        LT_LOG_ERROR("Could not create socket: %s (%d).", strerror(errno), errno);
+        LT_LOG_ERROR("Could not create socket, errno=%d (%s)", errno, strerror(errno));
         return LT_HAL_ERROR;
     }
     LT_LOG_DEBUG("Socket created.");
@@ -202,7 +202,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     // Connect to the server
     LT_LOG_DEBUG("Connecting to %s:%d.", inet_ntoa(server.sin_addr), dev->port);
     if (connect(dev->socket_fd, (struct sockaddr *)(&server), sizeof(server)) < 0) {
-        LT_LOG_ERROR("Could not connect: %s (%d).", strerror(errno), errno);
+        LT_LOG_ERROR("Could not connect, errno=%d (%s)", errno, strerror(errno));
         close(dev->socket_fd);
         return LT_HAL_ERROR;
     }
@@ -217,7 +217,7 @@ lt_ret_t lt_port_deinit(lt_l2_state_t *s2)
 
     LT_LOG_DEBUG("-- Server disconnect");
     if (close(dev->socket_fd)) {
-        LT_LOG_ERROR("close() failed: %s (%d)", strerror(errno), errno);
+        LT_LOG_ERROR("close() failed, errno=%d (%s)", errno, strerror(errno));
         return LT_HAL_ERROR;
     }
 
