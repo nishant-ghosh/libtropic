@@ -16,6 +16,7 @@
 #include "libtropic.h"
 #include "libtropic_common.h"
 #include "libtropic_l2.h"
+#include "libtropic_logging.h"
 #include "libtropic_port.h"
 #include "libtropic_secure_memzero.h"
 #include "lt_aesgcm.h"
