@@ -2227,7 +2227,7 @@ lt_ret_t lt_print_fw_header(lt_handle_t *h, const lt_bank_id_t bank_id,
     }
     else {
         print_func("Unexpected header size %" PRIu16 "\n", read_header_size);
-        return LT_FAIL;
+        return LT_PARAM_ERR;
     }
 
     return LT_OK;
