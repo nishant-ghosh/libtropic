@@ -29,10 +29,23 @@ extern "C" {
 /** This bit in CHIP_STATUS byte signalizes that chip is in STARTUP mode */
 #define TR01_L1_CHIP_MODE_STARTUP_bit 0x04
 
-/** Max number of GET_INFO requests when chip is not answering */
+#ifndef LT_L1_READ_MAX_TRIES
+/** @brief Max number of GET_INFO requests when chip is not answering
+ *
+ * @note In CMake-based builds it is set in CMakeLists.txt and can be configured using CMake
+ * parameters.
+ */
 #define LT_L1_READ_MAX_TRIES 50
-/** Number of ms to wait between each GET_INFO request */
+#endif
+
+#ifndef LT_L1_READ_RETRY_DELAY
+/** @brief Number of ms to wait between each GET_RESP request
+ *
+ * @note In CMake-based builds it is set in CMakeLists.txt and can be configured using CMake
+ * parameters.
+ */
 #define LT_L1_READ_RETRY_DELAY 25
+#endif
 
 /** Minimal timeout when waiting for activity on SPI bus */
 #define LT_L1_TIMEOUT_MS_MIN 5

@@ -107,6 +107,20 @@ if(NOT LT_CRC_ERR_RETRY_ATTEMPTS MATCHES "^(0|[1-9][0-9]*)$")
     message(FATAL_ERROR "LT_CRC_ERR_RETRY_ATTEMPTS must be a non-negative integer without leading zeros unless the value is exactly '0', got '${LT_CRC_ERR_RETRY_ATTEMPTS}'")
 endif()
 
+# Must be positive without leading zero.
+set(LT_L1_READ_MAX_TRIES "50" CACHE STRING "Max number of GET_INFO requests when chip is not answerin.")
+
+if(NOT LT_L1_READ_MAX_TRIES MATCHES "^([1-9][0-9]*)$")
+    message(FATAL_ERROR "LT_L1_READ_MAX_TRIES must be a positive integer without leading zeros, got '${LT_L1_READ_MAX_TRIES}'")
+endif()
+
+# Must be positive without leading zero.
+set(LT_L1_READ_RETRY_DELAY "25" CACHE STRING "Number of ms to wait between each GET_RESP request.")
+
+if(NOT LT_L1_READ_RETRY_DELAY MATCHES "^([1-9][0-9]*)$")
+    message(FATAL_ERROR "LT_L1_READ_RETRY_DELAY must be a positive integer without leading zeros, got '${LT_L1_READ_RETRY_DELAY}'")
+endif()
+
 # Check whether compiling standalone (e.g. as a library) or as a child project (= has parent scope)
 # and save result to HAS_PARENT_SCOPE.
 get_directory_property(HAS_PARENT_SCOPE PARENT_DIRECTORY)
@@ -295,3 +309,5 @@ if(LT_RETRIEVE_ALARM_LOG)
 endif()
 
 target_compile_definitions(tropic PUBLIC LT_CRC_ERR_RETRY_ATTEMPTS=${LT_CRC_ERR_RETRY_ATTEMPTS})
+target_compile_definitions(tropic PUBLIC LT_L1_READ_MAX_TRIES=${LT_L1_READ_MAX_TRIES})
+target_compile_definitions(tropic PUBLIC LT_L1_READ_RETRY_DELAY=${LT_L1_READ_RETRY_DELAY})
