@@ -60,6 +60,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `lt_print_chip_id()`: Silicon revision field in CHIP_ID v0.0.0.1 is not interpreted as ASCII chars, as this version does not include silicon revision.
 - Added a check of `RSP_LEN` field value to `lt_l2_frame_check`.
 
+### Removed
+- `SDK_INCS` variable from the main `CMakeLists.txt`.
+
 ## [3.2.1]
 
 ### Fixed
