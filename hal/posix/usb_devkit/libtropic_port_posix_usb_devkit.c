@@ -369,7 +369,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     if (!write_port(device->fd, fw_id_msg, sizeof(fw_id_msg))) {
         LT_LOG_INFO("Failed to send a message to identify USB DevKit FW.");
         close(device->fd);
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
     // 2. Receive response.
     // We read only 2 bytes, as that should be enough to indentify the FW.
@@ -377,7 +377,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     if (!read_port(device->fd, fw_id_msg_resp, sizeof(fw_id_msg_resp))) {
         LT_LOG_ERROR("Failed to read USB DevKit FW identification response.");
         close(device->fd);
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
     // 3. Check the response.
     if (fw_id_msg_resp[0] == LT_USB_DT_NEW_FW_FRAME_MAGIC_BYTE_2 &&
@@ -390,7 +390,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     else {
         LT_LOG_ERROR("Could not identify USB DevKit FW.");
         close(device->fd);
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     // 4. Drop the rest of the response.
@@ -411,30 +411,30 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
         // 2. Send command.
         if (!send_usb_devkit_cmd(device->fd, &cmd)) {
             close(device->fd);
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
 
         // 2. Get response.
         UsbDevkitResp resp = UsbDevkitResp_init_zero;
         if (!recv_usb_devkit_resp(device->fd, &resp)) {
             close(device->fd);
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
         // 3. Check response.
         if (resp.which_type != UsbDevkitResp_raw_tag) {
             LT_LOG_ERROR("Received unexpected UsbDevkitResp tag=%d.", resp.which_type);
             close(device->fd);
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
         if (resp.type.raw.which_type != RawResp_set_auto_cs_mode_tag) {
             LT_LOG_ERROR("Received unexpected RawResp tag=%d.", resp.type.raw.which_type);
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
         if (resp.type.raw.type.set_auto_cs_mode.res_code != SET_AUTO_CS_MODE_RESP_CODE_OK) {
             LT_LOG_ERROR("Auto CS mode was not disabled, res_code=%d.",
                          resp.type.raw.type.set_auto_cs_mode.res_code);
             close(device->fd);
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
     }
 
@@ -506,26 +506,26 @@ lt_ret_t lt_port_spi_csn_low(lt_l2_state_t *s2)
         cmd.type.raw.type.set_cs.high = false;
         // 2. Send command.
         if (!send_usb_devkit_cmd(device->fd, &cmd)) {
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
 
         // 3. Get response.
         UsbDevkitResp resp = UsbDevkitResp_init_zero;
         if (!recv_usb_devkit_resp(device->fd, &resp)) {
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
         // 4. Check response.
         if (resp.which_type != UsbDevkitResp_raw_tag) {
             LT_LOG_ERROR("Received unexpected UsbDevkitResp tag=%d.", resp.which_type);
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
         if (resp.type.raw.which_type != RawResp_set_cs_tag) {
             LT_LOG_ERROR("Received unexpected RawResp tag=%d.", resp.type.raw.which_type);
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
         if (resp.type.raw.type.set_cs.res_code != SET_CS_RESP_CODE_OK) {
             LT_LOG_ERROR("CS was not driven low, res_code=%d.", resp.type.raw.type.set_cs.res_code);
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
     }
 
@@ -562,26 +562,26 @@ lt_ret_t lt_port_spi_csn_high(lt_l2_state_t *s2)
         cmd.type.raw.type.set_cs.high = true;
         // 2. Send command.
         if (!send_usb_devkit_cmd(device->fd, &cmd)) {
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
 
         // 3. Get response.
         UsbDevkitResp resp = UsbDevkitResp_init_zero;
         if (!recv_usb_devkit_resp(device->fd, &resp)) {
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
         // 4. Check response.
         if (resp.which_type != UsbDevkitResp_raw_tag) {
             LT_LOG_ERROR("Received unexpected UsbDevkitResp tag=%d.", resp.which_type);
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
         if (resp.type.raw.which_type != RawResp_set_cs_tag) {
             LT_LOG_ERROR("Received unexpected RawResp tag=%d.", resp.type.raw.which_type);
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
         if (resp.type.raw.type.set_cs.res_code != SET_CS_RESP_CODE_OK) {
             LT_LOG_ERROR("CS was not driven high, res_code=%d.", resp.type.raw.type.set_cs.res_code);
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
     }
 
@@ -639,27 +639,27 @@ lt_ret_t lt_port_spi_transfer(lt_l2_state_t *s2, uint8_t offset, uint16_t tx_dat
 
         // 2. Send command.
         if (!send_usb_devkit_cmd(device->fd, &cmd)) {
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
         // 3. Get response.
         UsbDevkitResp resp = UsbDevkitResp_init_zero;
         if (!recv_usb_devkit_resp(device->fd, &resp)) {
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
 
         // 4. Check response.
         if (resp.which_type != UsbDevkitResp_raw_tag) {
             LT_LOG_ERROR("Received unexpected UsbDevkitResp tag=%d.", resp.which_type);
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
         if (resp.type.raw.which_type != RawResp_send_spi_data_tag) {
             LT_LOG_ERROR("Received unexpected RawResp tag=%d.", resp.type.raw.which_type);
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
         if (resp.type.raw.type.send_spi_data.res_code != SEND_SPI_DATA_RESP_CODE_OK) {
             LT_LOG_ERROR("SendSpiDataRespCode is not OK, res_code=%d.",
                          resp.type.raw.type.send_spi_data.res_code);
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
         // 5. Get the received SPI payload.
         memcpy(s2->buff + offset, resp.type.raw.type.send_spi_data.rx_data.bytes, tx_data_length);
@@ -722,7 +722,7 @@ lt_ret_t lt_port_delay_on_int(lt_l2_state_t *s2, uint32_t ms)
     uint64_t start_ms = 0;
 
     if (!get_time_ms(&start_ms)) {
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     while (1) {
@@ -730,30 +730,30 @@ lt_ret_t lt_port_delay_on_int(lt_l2_state_t *s2, uint32_t ms)
             const uint8_t gpo_cmd[] = "GPO\n";
             if (!write_port(device->fd, gpo_cmd, sizeof(gpo_cmd))) {
                 LT_LOG_ERROR("Failed to send GPO command.");
-                return LT_L1_SPI_ERROR;
+                return LT_HAL_ERROR;
             }
 
             uint8_t gpo_cmd_resp[9];  // The buffer has space for additional '\0' (added later).
             if (!read_port(device->fd, gpo_cmd_resp, sizeof(gpo_cmd_resp) - 1)) {
                 LT_LOG_ERROR("Failed to read response for GPO command.");
-                return LT_L1_SPI_ERROR;
+                return LT_HAL_ERROR;
             }
             gpo_cmd_resp[sizeof(gpo_cmd_resp) - 1] = '\0';
 
             uint8_t gpo_cmd_ack[4];
             if (!read_port(device->fd, gpo_cmd_ack, sizeof(gpo_cmd_ack))) {
                 LT_LOG_ERROR("Failed to read ACK for GPO command.");
-                return LT_L1_SPI_ERROR;
+                return LT_HAL_ERROR;
             }
             if (memcmp(gpo_cmd_ack, "OK\r\n", sizeof(gpo_cmd_ack)) != 0) {
                 LT_LOG_ERROR("USB DevKit did not ACK GPO command.");
-                return LT_L1_SPI_ERROR;
+                return LT_HAL_ERROR;
             }
 
             int gpo_val;
             if (1 != sscanf((char *)gpo_cmd_resp, "GPO: %d", &gpo_val)) {
                 LT_LOG_ERROR("Failed to get the value of GPO from the response.");
-                return LT_FAIL;
+                return LT_HAL_ERROR;
             }
             if (gpo_val) {
                 return LT_OK;
@@ -766,27 +766,27 @@ lt_ret_t lt_port_delay_on_int(lt_l2_state_t *s2, uint32_t ms)
             cmd.type.raw.which_type = RawCmd_get_gpo_tag;
             // 2. Send command.
             if (!send_usb_devkit_cmd(device->fd, &cmd)) {
-                return LT_FAIL;
+                return LT_HAL_ERROR;
             }
             // 3. Get response.
             UsbDevkitResp resp = UsbDevkitResp_init_zero;
             if (!recv_usb_devkit_resp(device->fd, &resp)) {
-                return LT_FAIL;
+                return LT_HAL_ERROR;
             }
 
             // 4. Check response.
             if (resp.which_type != UsbDevkitResp_raw_tag) {
                 LT_LOG_ERROR("Received unexpected UsbDevkitResp tag=%d.", resp.which_type);
-                return LT_FAIL;
+                return LT_HAL_ERROR;
             }
             if (resp.type.raw.which_type != RawResp_get_gpo_tag) {
                 LT_LOG_ERROR("Received unexpected RawResp tag=%d.", resp.type.raw.which_type);
-                return LT_FAIL;
+                return LT_HAL_ERROR;
             }
             if (resp.type.raw.type.get_gpo.res_code != GET_GPO_RESP_CODE_OK) {
                 LT_LOG_ERROR("GetGpoRespCode is not OK, res_code=%d.",
                              resp.type.raw.type.get_gpo.res_code);
-                return LT_FAIL;
+                return LT_HAL_ERROR;
             }
             if (resp.type.raw.type.get_gpo.high) {
                 return LT_OK;
@@ -795,7 +795,7 @@ lt_ret_t lt_port_delay_on_int(lt_l2_state_t *s2, uint32_t ms)
 
         uint64_t now_ms = 0;
         if (!get_time_ms(&now_ms)) {
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
         if ((now_ms - start_ms) >= ms) {
             return LT_L1_INT_TIMEOUT;
