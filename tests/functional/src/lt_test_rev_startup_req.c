@@ -120,17 +120,9 @@ void lt_test_rev_startup_req(lt_handle_t *h)
         // work, we will call lt_session_start() directly with dummy STpub - TROPIC01 should indicate
         // that the command is unknown before we even process the STpub.
         uint8_t dummy_stpub[TR01_STPUB_LEN] = {0};
-#if defined(LT_SILICON_REV_ABAB)
-        LT_TEST_ASSERT(LT_L2_GEN_ERR, lt_session_start(h, dummy_stpub, TR01_PAIRING_KEY_SLOT_INDEX_0,
-                                                       LT_TEST_SH0_PRIV, LT_TEST_SH0_PUB));
-
-#elif defined(LT_SILICON_REV_ACAB)
         LT_TEST_ASSERT(LT_L2_UNKNOWN_REQ,
                        lt_session_start(h, dummy_stpub, TR01_PAIRING_KEY_SLOT_INDEX_0,
                                         LT_TEST_SH0_PRIV, LT_TEST_SH0_PUB));
-#else
-#error "Undefined silicon revision! One of the LT_SILICON_REV_* macros must be defined."
-#endif
     }
 
     // Part 3: Try to reboot from maintenance mode to app mode.
