@@ -67,7 +67,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
 
     if (baudrate != device->spi_baudrate) {
         LT_LOG_ERROR("Requested SPI baudrate %u Hz, but got %u Hz", device->spi_baudrate, baudrate);
-        return LT_L1_SPI_ERROR;
+        return LT_HAL_ERROR;
     }
 
     gpio_set_function(device->pin_miso, GPIO_FUNC_SPI);
@@ -116,7 +116,7 @@ lt_ret_t lt_port_spi_transfer(lt_l2_state_t *s2, uint8_t offset, uint16_t tx_dat
     if (dataLen != tx_data_length) {
         LT_LOG_ERROR("SPI transfer failed! Expected to transfer %u bytes, but transferred %u bytes",
                      tx_data_length, dataLen);
-        return LT_L1_SPI_ERROR;
+        return LT_HAL_ERROR;
     }
 
     return LT_OK;

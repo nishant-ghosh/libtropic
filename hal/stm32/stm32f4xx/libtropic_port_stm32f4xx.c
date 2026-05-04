@@ -38,7 +38,7 @@ lt_ret_t lt_port_random_bytes(lt_l2_state_t *s2, void *buff, size_t count)
         if (ret != HAL_OK) {
             LT_LOG_ERROR("HAL_RNG_GenerateRandomNumber failed, ret=%d", ret);
             lt_secure_memzero(&random_data, sizeof(random_data));
-            return LT_FAIL;
+            return LT_HAL_ERROR;
         }
 
         size_t cpy_cnt = bytes_left < sizeof(random_data) ? bytes_left : sizeof(random_data);
@@ -65,7 +65,7 @@ lt_ret_t lt_port_spi_csn_low(lt_l2_state_t *s2)
     }
 
     LT_LOG_ERROR("Failed to set CSN low!");
-    return LT_L1_SPI_ERROR;
+    return LT_HAL_ERROR;
 }
 
 lt_ret_t lt_port_spi_csn_high(lt_l2_state_t *s2)
@@ -82,7 +82,7 @@ lt_ret_t lt_port_spi_csn_high(lt_l2_state_t *s2)
     }
 
     LT_LOG_ERROR("Failed to set CSN high!");
-    return LT_L1_SPI_ERROR;
+    return LT_HAL_ERROR;
 }
 
 lt_ret_t lt_port_init(lt_l2_state_t *s2)
@@ -113,7 +113,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     ret = HAL_SPI_Init(&device->spi_handle);
     if (ret != HAL_OK) {
         LT_LOG_ERROR("Failed to init SPI, ret=%d", ret);
-        return LT_L1_SPI_ERROR;
+        return LT_HAL_ERROR;
     }
 
     // GPIO for chip select.
@@ -145,7 +145,7 @@ lt_ret_t lt_port_deinit(lt_l2_state_t *s2)
     ret = HAL_SPI_DeInit(&device->spi_handle);
     if (ret != HAL_OK) {
         LT_LOG_ERROR("Failed to deinit SPI, ret=%d", ret);
-        return LT_L1_SPI_ERROR;
+        return LT_HAL_ERROR;
     }
 
     return LT_OK;
@@ -164,7 +164,7 @@ lt_ret_t lt_port_spi_transfer(lt_l2_state_t *s2, uint8_t offset, uint16_t tx_dat
                                       tx_data_length, timeout_ms);
     if (ret != HAL_OK) {
         LT_LOG_ERROR("HAL_SPI_TransmitReceive failed, ret=%d", ret);
-        return LT_L1_SPI_ERROR;
+        return LT_HAL_ERROR;
     }
 
     return LT_OK;

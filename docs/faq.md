@@ -9,7 +9,7 @@ This list might help you resolve some issues.
     - [`LT_L2_HSK_ERR`](#lt_l2_hsk_err)
     - [`LT_L3_DATA_LEN_ERROR`](#lt_l3_data_len_error)
     - [`LT_L3_INVALID_CMD` or `LT_L2_UNKNOWN_REQ`](#lt_l3_invalid_cmd-or-lt_l2_unknown_req)
-    - [`LT_FAIL`](#lt_fail)
+    - [`LT_HAL_ERROR`](#lt_hal_error)
     - [`LT_L2_CRC_ERR` or `LT_L2_IN_CRC_ERR`](#lt_l2_crc_err-or-lt_l2_in_crc_err)
   - [I cannot establish a Secure Session](#i-cannot-establish-a-secure-session)
   - [FW update failed](#fw-update-failed)
@@ -54,18 +54,18 @@ A TROPIC01 will be in Maintenance Mode after a user-triggered reboot (calling `l
 
 However, a TROPIC01 can also enter Maintenance Mode automatically after an unsuccessful update or if firmware banks are empty or corrupted. In that case, a simple reboot will not help; you must run the firmware update again, either using the firmware update example (see [Tutorials](./tutorials/index.md)) or from your application code.
 
-### `LT_FAIL`
-This is a generic error code and can be caused by various issues. See below for the most common causes.
+### `LT_HAL_ERROR`
+This is an error code returned by HAL and can be caused by various issues. See below for the most common causes.
 
 #### Permissions issue on Linux
 
-On Linux, a common cause is an error in the HAL due to insufficient permissions. If you run any example and receive `LT_FAIL`, enable debug logging (see [Logging](reference/logging.md)). If you see an error similar to the following:
+On Linux, a common cause is an error in opening the device due to insufficient permissions. If you run any example and receive `LT_HAL_ERROR`, enable debug logging (see [Logging](reference/logging.md)). If you see an error similar to the following:
 
 ```sh
-ERROR   [ 101] Error opening serial at "/dev/ttyACM0".
+ERROR   [ 145] Error opening serial at "/dev/ttyACM0", errno=13 (Permission denied)
 ```
 
-This is likely a permissions issue. Try adding your user account to the groups that provide access to the device you are using (for example, `dialout` or `plugdev` for USB serial devices, and `spi` for SPI devices). Refer to documentation of your distribution for details.
+This is likely an issue with permissions. Try adding your user account to the groups that provide access to the device you are using (for example, `dialout` or `plugdev` for USB serial devices, and `spi` for SPI devices). Refer to documentation of your distribution for details.
 
 ### `LT_L2_CRC_ERR` or `LT_L2_IN_CRC_ERR`
 This error means that either TROPIC01 received a corrupted frame (`LT_L2_CRC_ERR`) or the host received a corrupted frame (`LT_L2_IN_CRC_ERR`).

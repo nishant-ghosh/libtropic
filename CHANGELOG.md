@@ -32,6 +32,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated all FW update examples to use the reworked `lt_do_mutable_fw_update()` helper function.
 - `lt_get_info_cert_store()`: X.509 Certificate Store can be read only in Application Mode.
 - [TROPIC01 Model installation script](scripts/tropic01_model/install_linux.sh) now downloads ts-tvl version 2.4, which fixes compatibility with Python 3.14.
+- Renamed `LT_L1_SPI_ERROR` to `LT_HAL_ERROR`.
+- Replaced `LT_FAIL` in HALs with `LT_HAL_ERROR`.
+- Enhanced logging: include errno (if set) in Linux/POSIX HALs, log error on invalid curve type in `lt_in__ecc_key_read`.
+- Return `LT_PARAM_ERR` in `lt_print_fw_header` on invalid firmware header size.
 
 ### Added
 - ECC + EdDSA example for USB DevKit.

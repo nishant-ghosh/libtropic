@@ -73,7 +73,7 @@ static bool write_port(int fd, const uint8_t *buffer, size_t size)
                 LT_LOG_INFO("write() interrupted by a signal, will try again.");
                 continue;
             }
-            LT_LOG_ERROR("write() failed: errno=%d (%s).", errno, strerror(errno));
+            LT_LOG_ERROR("write() failed, errno=%d (%s)", errno, strerror(errno));
             return false;
         }
 
@@ -118,7 +118,7 @@ static bool read_port(int fd, uint8_t *buffer, size_t size)
                 LT_LOG_INFO("read() interrupted by a signal, will try again.");
                 continue;
             }
-            LT_LOG_ERROR("read() failed: errno=%d (%s).", errno, strerror(errno));
+            LT_LOG_ERROR("read() failed, errno=%d (%s)", errno, strerror(errno));
             return false;
         }
 
@@ -142,8 +142,9 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     // Initialize the serial port.
     device->fd = open(device->dev_path, O_RDWR | O_NOCTTY);
     if (device->fd == -1) {
-        LT_LOG_ERROR("Error opening serial at \"%s\".", device->dev_path);
-        return LT_FAIL;
+        LT_LOG_ERROR("Error opening serial at \"%s\", errno=%d (%s)", device->dev_path, errno,
+                     strerror(errno));
+        return LT_HAL_ERROR;
     }
 
     // Flush away any bytes previously read or written.
@@ -157,9 +158,9 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     struct termios options;
     result = tcgetattr(device->fd, &options);
     if (result) {
-        LT_LOG_ERROR("tcgetattr failed, result=%d", result);
+        LT_LOG_ERROR("tcgetattr failed, errno=%d (%s)", errno, strerror(errno));
         close(device->fd);
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     // Turn off any options that might interfere with our ability to send and
@@ -200,9 +201,9 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
 
     result = tcsetattr(device->fd, TCSANOW, &options);
     if (result) {
-        LT_LOG_ERROR("tcsetattr failed, result=%d", result);
+        LT_LOG_ERROR("tcsetattr failed, errno=%d (%s)", errno, strerror(errno));
         close(device->fd);
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     return LT_OK;
@@ -213,7 +214,8 @@ lt_ret_t lt_port_deinit(lt_l2_state_t *s2)
     lt_dev_posix_usb_devkit_t *device = (lt_dev_posix_usb_devkit_t *)s2->device;
 
     if (close(device->fd)) {
-        return LT_FAIL;
+        LT_LOG_ERROR("close() failed, errno=%d (%s)", errno, strerror(errno));
+        return LT_HAL_ERROR;
     }
     return LT_OK;
 }
@@ -223,8 +225,8 @@ lt_ret_t lt_port_delay(lt_l2_state_t *s2, uint32_t ms)
     LT_UNUSED(s2);
     int ret = usleep(ms * 1000);
     if (ret != 0) {
-        LT_LOG_ERROR("usleep() failed: %s (%d)", strerror(errno), ret);
-        return LT_FAIL;
+        LT_LOG_ERROR("usleep() failed, errno=%d (%s)", errno, strerror(errno));
+        return LT_HAL_ERROR;
     }
 
     return LT_OK;
@@ -244,8 +246,9 @@ lt_ret_t lt_port_random_bytes(lt_l2_state_t *s2, void *buff, size_t count)
         current_cnt = bytes_left > GETENTROPY_MAX ? GETENTROPY_MAX : bytes_left;
 
         if (0 != getentropy(buff_ptr, current_cnt)) {
-            LT_LOG_ERROR("lt_port_random_bytes: getentropy() failed (%s)!", strerror(errno));
-            return LT_FAIL;
+            LT_LOG_ERROR("lt_port_random_bytes: getentropy() failed, errno=%d (%s)", errno,
+                         strerror(errno));
+            return LT_HAL_ERROR;
         }
 
         buff_ptr += current_cnt;
@@ -269,18 +272,18 @@ lt_ret_t lt_port_spi_csn_high(lt_l2_state_t *s2)
     uint8_t cs_high[] = "CS=0\n";  // Yes, CS=0 really means that CSN is low
     if (!write_port(device->fd, cs_high, 5)) {
         LT_LOG_ERROR("Failed to send CS=0 command.");
-        return LT_L1_SPI_ERROR;
+        return LT_HAL_ERROR;
     }
 
     uint8_t buff[4];
     if (!read_port(device->fd, buff, 4)) {
         LT_LOG_ERROR("Failed to read response for CS=0 command.");
-        return LT_L1_SPI_ERROR;
+        return LT_HAL_ERROR;
     }
 
     if (memcmp(buff, "OK\r\n", 4) != 0) {
         LT_LOG_ERROR("USB DevKit did not ACK CS=0 command.");
-        return LT_L1_SPI_ERROR;
+        return LT_HAL_ERROR;
     }
     return LT_OK;
 }
@@ -310,14 +313,14 @@ lt_ret_t lt_port_spi_transfer(lt_l2_state_t *s2, uint8_t offset, uint16_t tx_dat
 
     if (!write_port(device->fd, buffered_chars, (tx_data_length * 2) + 2)) {
         LT_LOG_ERROR("Failed to write SPI payload.");
-        return LT_L1_SPI_ERROR;
+        return LT_HAL_ERROR;
     }
 
     lt_port_delay(s2, LT_USB_DEVKIT_READ_WRITE_DELAY);
 
     if (!read_port(device->fd, buffered_chars, (2 * tx_data_length) + 2)) {
         LT_LOG_ERROR("Failed to read SPI payload.");
-        return LT_L1_SPI_ERROR;
+        return LT_HAL_ERROR;
     }
 
     for (size_t count = 0; count < tx_data_length; count++) {

@@ -85,7 +85,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     esp_ret = spi_bus_initialize(dev->spi_host_id, &spi_bus_cfg, SPI_DMA_CH_AUTO);
     if (esp_ret != ESP_OK) {
         LT_LOG_ERROR("spi_bus_initialize() failed: %s", esp_err_to_name(esp_ret));
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     // Create configuration for the SPI device.
@@ -101,7 +101,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     esp_ret = spi_bus_add_device(dev->spi_host_id, &spi_dev_cfg, &dev->spi_handle);
     if (esp_ret != ESP_OK) {
         LT_LOG_ERROR("spi_bus_add_device() failed: %s", esp_err_to_name(esp_ret));
-        lt_ret = LT_FAIL;
+        lt_ret = LT_HAL_ERROR;
         goto spi_bus_add_device_error;
     }
 
@@ -121,7 +121,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     esp_ret = gpio_config(&spi_cs_gpio_cfg);
     if (esp_ret != ESP_OK) {
         LT_LOG_ERROR("gpio_config() failed: %s", esp_err_to_name(esp_ret));
-        lt_ret = LT_FAIL;
+        lt_ret = LT_HAL_ERROR;
         goto cs_gpio_config_error;
     }
 
@@ -129,7 +129,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     esp_ret = gpio_set_level(dev->spi_cs_gpio_pin, 1);
     if (esp_ret != ESP_OK) {
         LT_LOG_ERROR("gpio_set_level() failed: %s", esp_err_to_name(esp_ret));
-        lt_ret = LT_FAIL;
+        lt_ret = LT_HAL_ERROR;
         goto cs_gpio_set_level_error;
     }
 
@@ -150,7 +150,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     esp_ret = gpio_config(&int_gpio_cfg);
     if (esp_ret != ESP_OK) {
         LT_LOG_ERROR("gpio_config() failed: %s", esp_err_to_name(esp_ret));
-        lt_ret = LT_FAIL;
+        lt_ret = LT_HAL_ERROR;
         goto int_gpio_config_error;
     }
 
@@ -158,7 +158,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     dev->int_gpio_sem = xSemaphoreCreateBinary();
     if (!dev->int_gpio_sem) {
         LT_LOG_ERROR("Failed to create semaphore with xSemaphoreCreateBinary!");
-        lt_ret = LT_FAIL;
+        lt_ret = LT_HAL_ERROR;
         goto xSemaphoreCreateBinary_error;
     }
 
@@ -166,7 +166,7 @@ lt_ret_t lt_port_init(lt_l2_state_t *s2)
     esp_ret = gpio_isr_handler_add(dev->int_gpio_pin, int_gpio_pin_isr_handler, dev);
     if (esp_ret != ESP_OK) {
         LT_LOG_ERROR("gpio_isr_handler_add() failed: %s", esp_err_to_name(esp_ret));
-        lt_ret = LT_FAIL;
+        lt_ret = LT_HAL_ERROR;
         goto gpio_isr_handler_add_error;
     }
 #endif
@@ -223,7 +223,7 @@ lt_ret_t lt_port_spi_csn_low(lt_l2_state_t *s2)
     ret = gpio_set_level(dev->spi_cs_gpio_pin, 0);
     if (ret != ESP_OK) {
         LT_LOG_ERROR("gpio_set_level() failed: %s", esp_err_to_name(ret));
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     return LT_OK;
@@ -237,7 +237,7 @@ lt_ret_t lt_port_spi_csn_high(lt_l2_state_t *s2)
     ret = gpio_set_level(dev->spi_cs_gpio_pin, 1);
     if (ret != ESP_OK) {
         LT_LOG_ERROR("gpio_set_level() failed: %s", esp_err_to_name(ret));
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     return LT_OK;
@@ -267,7 +267,7 @@ lt_ret_t lt_port_spi_transfer(lt_l2_state_t *s2, uint8_t offset, uint16_t tx_len
     ret = spi_device_acquire_bus(dev->spi_handle, portMAX_DELAY);
     if (ret != ESP_OK) {
         LT_LOG_ERROR("spi_device_acquire_bus() failed: %s", esp_err_to_name(ret));
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     // Queue the transaction and wait for its completion using the provided
@@ -277,7 +277,7 @@ lt_ret_t lt_port_spi_transfer(lt_l2_state_t *s2, uint8_t offset, uint16_t tx_len
     if (ret != ESP_OK) {
         LT_LOG_ERROR("spi_device_queue_trans() failed: %s", esp_err_to_name(ret));
         spi_device_release_bus(dev->spi_handle);
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     spi_transaction_t *rtrans = NULL;
@@ -286,7 +286,7 @@ lt_ret_t lt_port_spi_transfer(lt_l2_state_t *s2, uint8_t offset, uint16_t tx_len
         LT_LOG_ERROR("spi_device_get_trans_result() failed: %s", esp_err_to_name(ret));
         // Release the SPI bus.
         spi_device_release_bus(dev->spi_handle);
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     // Release the SPI bus.

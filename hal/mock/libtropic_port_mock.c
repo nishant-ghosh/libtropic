@@ -52,7 +52,7 @@ lt_ret_t lt_mock_hal_enqueue_response(lt_l2_state_t *s2, const uint8_t *data, co
 
     if (dev->mock_queue_count >= MOCK_QUEUE_DEPTH) {
         LT_LOG_ERROR("Mock HAL: response queue full, cannot enqueue more responses!");
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     // Copy provided data into next slot.
@@ -91,7 +91,7 @@ lt_ret_t lt_port_spi_csn_low(lt_l2_state_t *s2)
 
     if (dev->frame_in_progress) {
         LT_LOG_ERROR("Mock HAL: SPI CSN Low called while frame already in progress!");
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     dev->frame_in_progress = true;
@@ -106,7 +106,7 @@ lt_ret_t lt_port_spi_csn_high(lt_l2_state_t *s2)
 
     if (!dev->frame_in_progress) {
         LT_LOG_ERROR("Mock HAL: SPI CSN High called while no frame in progress!");
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     // End of transaction (frame), pop the response.
@@ -114,7 +114,7 @@ lt_ret_t lt_port_spi_csn_high(lt_l2_state_t *s2)
         // This could happen only if no response was enqueued and Libtropic
         // sets CSN low and high without any SPI transfer in between (implementation mistake).
         LT_LOG_ERROR("Mock HAL: no response queued at the end of transaction!");
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     dev->mock_queue_head = (dev->mock_queue_head + 1) % MOCK_QUEUE_DEPTH;
@@ -135,12 +135,12 @@ lt_ret_t lt_port_spi_transfer(lt_l2_state_t *s2, uint8_t offset, uint16_t tx_len
 
     if (!dev->frame_in_progress) {
         LT_LOG_ERROR("Mock HAL: SPI Transfer called while no frame in progress!");
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     if (dev->mock_queue_count == 0) {
         LT_LOG_ERROR("Mock HAL: no response queued!");
-        return LT_FAIL;
+        return LT_HAL_ERROR;
     }
 
     // Peek next response.
