@@ -6,6 +6,7 @@ These are the currently supported host platforms:
 - [Linux](linux.md)
 - [POSIX](posix.md)
 - [Arduino](arduino.md)
+- [Raspberry Pi Pico](rpi_pico.md)
 
 All HAL files can be found in the `libtropic/hal/` directory.
 

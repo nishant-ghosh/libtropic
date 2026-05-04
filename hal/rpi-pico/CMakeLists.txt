@@ -12,4 +12,4 @@ set(LT_HAL_INC_DIRS
 set(LT_HAL_SRCS ${LT_HAL_SRCS} PARENT_SCOPE)
 set(LT_HAL_INC_DIRS ${LT_HAL_INC_DIRS} PARENT_SCOPE)
 
-message(STATUS "HAL for Raspberry Pi Pico added: ${LT_HAL_SRCS}")
+message(WARNING "This is a community HAL created by Wuard. Official support by Tropic Square for this HAL is not available at the moment.")
