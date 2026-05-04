@@ -55,6 +55,14 @@ tar -xjf "$SCRIPT_DIR/_deps/mbedtls.tar.bz2" -C "$SCRIPT_DIR/_deps"
 rm "$SCRIPT_DIR/_deps/mbedtls.tar.bz2"
 mv "$SCRIPT_DIR/_deps/mbedtls-4.0.0" "$SCRIPT_DIR/_deps/mbedtls_v4"
 
+echo "Downloading Trezor Crypto..."
+# We don't verify it because it's under our organization.
+curl -L -o "$SCRIPT_DIR/_deps/trezor-crypto.zip" "https://github.com/tropicsquare/trezor-crypto/archive/main.zip"
+
+unzip "$SCRIPT_DIR/_deps/trezor-crypto.zip" -d "$SCRIPT_DIR/_deps"
+mv "$SCRIPT_DIR/_deps/trezor-crypto-main" "$SCRIPT_DIR/_deps/trezor-crypto"
+rm "$SCRIPT_DIR/_deps/trezor-crypto.zip"
+
 echo "Downloading WolfSSL..."
 curl -L -o "$SCRIPT_DIR/_deps/wolfssl.zip" "https://github.com/wolfSSL/wolfssl/archive/refs/tags/v5.8.4-stable.zip"
 
