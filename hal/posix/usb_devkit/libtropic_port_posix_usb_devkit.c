@@ -53,8 +53,11 @@
  * (used by legacy FW). This sequence should trigger "ERROR: unknown command" in the legacy FW and
  * ErrorResp with ERROR_RESP_CODE_BAD_DATA_LEN in the newer FW.
  */
-#define LT_USB_DT_FW_ID_MSG \
+// Disable clang-format for this macro due to old clang-format version available in GitHub CI.
+// clang-format off
+ #define LT_USB_DT_FW_ID_MSG \
     {LT_USB_DT_NEW_FW_FRAME_MAGIC_BYTE_1, LT_USB_DT_NEW_FW_FRAME_MAGIC_BYTE_2, 0x00, 0x00, '\n'}
+// clang-format on
 
 // getentropy() has a limit of random bytes it can generate in one call. The POSIX.1-2024 standard
 // requires GETENTROPY_MAX to be defined in limits.h, but because this standard is quite new, we will
