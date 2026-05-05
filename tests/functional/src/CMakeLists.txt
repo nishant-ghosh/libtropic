@@ -129,7 +129,7 @@ if(LT_CAL STREQUAL "trezor_crypto")
     set(LT_USE_TREZOR_CRYPTO 1)
 
     if(LT_CAL_LINK_DEPS)
-        add_subdirectory("${PATH_LIBTROPIC}/vendor/trezor_crypto/" "trezor_crypto")
+        add_subdirectory("${PATH_DEPS}/trezor-crypto/" "trezor_crypto")
         target_compile_definitions(trezor_crypto PRIVATE
             AES_VAR
             USE_INSECURE_PRNG
