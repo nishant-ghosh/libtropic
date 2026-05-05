@@ -140,3 +140,19 @@ See also [`LT_L1_READ_MAX_TRIES`](#lt_l1_read_max_tries).
 
 !!! tip "Tip: Use interrupt pin"
     It is better to use the interrupt pin functionality of TROPIC01 if you need to shorten reaction time. See [`LT_USE_INT_PIN`](#lt_use_int_pin) parameter.
+
+### `LT_L1_SPI_TIMEOUT_MS`
+- integer (non-negative)
+- default value: 70 (ms)
+
+Sets timeout on SPI operations. Used only by certain HALs, refer to the source code of the HAL you use.
+
+The default value was tested with supported HALs. Lowering the value may lower response delays but could also increase a risk of communication errors.
+
+### `LT_L1_INT_TIMEOUT_MS`
+- integer (non-negative)
+- default value: 150 (ms)
+
+Sets maximum waiting time for interrupt from TROPIC01's GPO pin before retrying. Used only by certain HALs when [`LT_USE_INT_PIN`](#lt_use_int_pin) is enabled. Refer to the source code of the HAL you use.
+
+The default value was tested with supported HALs. Lowering the value may lower response delays but could also increase a risk of communication errors.
