@@ -145,14 +145,14 @@ lt_ret_t lt_get_tr01_mode(lt_handle_t *h, lt_tr01_mode_t *mode)
     do {
         h->l2.buff[0] = TR01_L1_GET_RESPONSE_REQ_ID;
 
-        ret = lt_l1_write(&h->l2, 1, LT_L1_TIMEOUT_MS_DEFAULT);
+        ret = lt_l1_write(&h->l2, 1, LT_L1_SPI_TIMEOUT_MS);
         if (ret != LT_OK) {
             return ret;
         }
 
         if (h->l2.buff[0] & TR01_L1_CHIP_MODE_ALARM_bit) {
 #ifdef LT_RETRIEVE_ALARM_LOG
-            lt_ret_t ret_unused = lt_l1_retrieve_alarm_log(&h->l2, LT_L1_TIMEOUT_MS_DEFAULT);
+            lt_ret_t ret_unused = lt_l1_retrieve_alarm_log(&h->l2, LT_L1_SPI_TIMEOUT_MS);
             LT_UNUSED(ret_unused);
 #endif
 

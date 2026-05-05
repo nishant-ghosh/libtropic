@@ -35,7 +35,7 @@ lt_ret_t lt_l2_send(lt_l2_state_t *s2)
 
     uint8_t len = s2->buff[1];
 
-    return lt_l1_write(s2, len + 4, LT_L1_TIMEOUT_MS_DEFAULT);
+    return lt_l1_write(s2, len + 4, LT_L1_SPI_TIMEOUT_MS);
 }
 
 lt_ret_t lt_l2_resend_response(lt_l2_state_t *s2)
@@ -50,7 +50,7 @@ lt_ret_t lt_l2_resend_response(lt_l2_state_t *s2)
         return ret;
     }
 
-    ret = lt_l1_read(s2, TR01_L1_LEN_MAX, LT_L1_TIMEOUT_MS_DEFAULT);
+    ret = lt_l1_read(s2, TR01_L1_LEN_MAX, LT_L1_SPI_TIMEOUT_MS);
     if (ret != LT_OK) {
         return ret;
     }
@@ -64,7 +64,7 @@ lt_ret_t lt_l2_receive(lt_l2_state_t *s2)
         return LT_PARAM_ERR;
     }
 
-    lt_ret_t ret = lt_l1_read(s2, TR01_L1_LEN_MAX, LT_L1_TIMEOUT_MS_DEFAULT);
+    lt_ret_t ret = lt_l1_read(s2, TR01_L1_LEN_MAX, LT_L1_SPI_TIMEOUT_MS);
     if (ret != LT_OK) {
         return ret;
     }
@@ -212,13 +212,13 @@ lt_ret_t lt_l2_send_encrypted_cmd(lt_l2_state_t *s2, uint8_t *buff, uint16_t buf
         add_crc(req);
 
         // Send L2 request containing a chunk from L3 buff
-        ret = lt_l1_write(s2, 2 + req_len + 2, LT_L1_TIMEOUT_MS_DEFAULT);
+        ret = lt_l1_write(s2, 2 + req_len + 2, LT_L1_SPI_TIMEOUT_MS);
         if (ret != LT_OK) {
             return ret;
         }
 
         // Read a response on this L2 request
-        ret = lt_l1_read(s2, TR01_L1_LEN_MAX, LT_L1_TIMEOUT_MS_DEFAULT);
+        ret = lt_l1_read(s2, TR01_L1_LEN_MAX, LT_L1_SPI_TIMEOUT_MS);
         if (ret != LT_OK) {
             return ret;
         }
@@ -306,7 +306,7 @@ lt_ret_t lt_l2_recv_encrypted_res(lt_l2_state_t *s2, uint8_t *buff, uint16_t max
         // If previous frame was received OK, read a next frame. Otherwise, ask to resend
         // the previous frame.
         if (!resend_response) {
-            ret = lt_l1_read(s2, TR01_L1_LEN_MAX, LT_L1_TIMEOUT_MS_DEFAULT);
+            ret = lt_l1_read(s2, TR01_L1_LEN_MAX, LT_L1_SPI_TIMEOUT_MS);
             if (ret != LT_OK) {
                 return ret;
             }
