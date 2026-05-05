@@ -149,6 +149,9 @@ Sets timeout on SPI operations. Used only by certain HALs, refer to the source c
 
 The default value was tested with supported HALs. Lowering the value may lower response delays but could also increase a risk of communication errors.
 
+!!! warning "Warning: value '0'"
+    This parameter also accepts the value of zero, however, behavior is HAL-dependent. For example, in STM32 HAL the value of '0' disables polling and the function returns immediately. Check behavior of HAL you use carefully.
+
 ### `LT_L1_INT_TIMEOUT_MS`
 - integer (non-negative)
 - default value: 150 (ms)
@@ -156,3 +159,6 @@ The default value was tested with supported HALs. Lowering the value may lower r
 Sets maximum waiting time for interrupt from TROPIC01's GPO pin before retrying. Used only by certain HALs when [`LT_USE_INT_PIN`](#lt_use_int_pin) is enabled. Refer to the source code of the HAL you use.
 
 The default value was tested with supported HALs.
+
+!!! warning "Warning: value '0'"
+    This parameter also accepts the value of zero, however, behavior is HAL-dependent. Check behavior of HAL you use carefully.
