@@ -1,4 +1,4 @@
-# 5. ECC Key Generation and EdDSA Signing Example Tutorial
+# 4. ECC Key Generation and EdDSA Signing Example Tutorial
 
 --8<-- "docs/common/examples_descriptions/ecc_eddsa.md"
 
@@ -34,19 +34,40 @@
 
     After this, you should see an output in your terminal.
 
-If your TROPIC01 has engineering sample pairing keys, you can switch to them using the `LT_SH0_KEYS` CMake option:
-!!! example "Switching to engineering sample pairing keys"
-    === ":fontawesome-brands-linux: Linux"
-        You can pass `LT_SH0_KEYS` to `cmake` as follows:
-        ```bash { .copy }
-        cmake -DLT_SH0_KEYS="eng_sample" ..
-        make
-        ```
+## Configuration
+Beside the [Libtropic CMake options](../../../reference/integrating_libtropic/how_to_configure/index.md) used to configure Libtropic, there are multiple CMake options specific to this example:
 
-    === ":fontawesome-brands-apple: macOS"
-        TBA
+- `LT_USB_DEVKIT_PATH` (default: `"/dev/ttyACM0"`) to set the path to the USB device representing the USB DevKit serial port:
 
-    === ":fontawesome-brands-windows: Windows"
-        TBA
+    ??? example "Configuring USB DevKit serial port"
+        === ":fontawesome-brands-linux: Linux"
+            ```bash { .copy }
+            cmake -DLT_USB_DEVKIT_PATH=<serial_port_path> ..
+            make
+            ./libtropic_ecc_eddsa
+            ```
 
-Additionally, see [Default Pairing Keys for a Secure Channel Handshake](../../../reference/default_pairing_keys.md) for more information.
+        === ":fontawesome-brands-apple: macOS"
+            TBA
+
+        === ":fontawesome-brands-windows: Windows"
+            TBA
+
+- `LT_SH0_KEYS` (default: `"prod0"`) to choose which pairing keys in slot 0 will be used. Switch to engineering sample pairing keys if your TROPIC01 has them:
+
+    ??? example "Switching to engineering sample pairing keys"
+        === ":fontawesome-brands-linux: Linux"
+            ```bash { .copy }
+            cmake -DLT_SH0_KEYS="eng_sample" ..
+            make
+            ./libtropic_ecc_eddsa
+            ```
+
+        === ":fontawesome-brands-apple: macOS"
+            TBA
+
+        === ":fontawesome-brands-windows: Windows"
+            TBA
+    Additionally, see [Default Pairing Keys for a Secure Channel Handshake](../../../reference/default_pairing_keys.md) for more information.
+
+[Next example :material-arrow-right:](full_chain_verification.md){ .md-button }
