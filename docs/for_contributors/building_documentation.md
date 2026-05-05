@@ -8,37 +8,54 @@ Normally, you should not need to build the documentation yourself - it is availa
 
 ## Install the Dependencies
 !!! example "Installing dependencies"
-    First, instal MkDocs dependencies:
+    === ":fontawesome-brands-linux: Linux"
+        First, instal MkDocs dependencies:
 
-    1. Install Python 3, at least version 3.8.
-    2. We recommend creating a [Python Virtual Environment](https://docs.python.org/3/library/venv.html), for example with a name `.docs-venv`:
-    ```bash { .copy }
-    python3 -m venv .docs-venv
-    source .docs-venv/bin/activate
-    ```
-    3. Update `pip` and install the needed `pip` packages using `docs/requirements.txt`:
-    ```bash { .copy }
-    pip install --upgrade pip
-    pip install -r docs/requirements.txt
-    ```
-    
-    After that, install **Doxygen** and **Graphviz** (used for the diagrams) - installation depends on your system, but we will use Ubuntu in this example:
-    ```bash { .copy }
-    sudo apt-get install doxygen graphviz
-    ```
+        1. [Install Python](https://www.python.org/downloads/) (atleast version 3.8)
+            - You can also use your distribution's package manager.
+                - Fedora: `sudo dnf install python3`
+                - Debian/Ubuntu: `sudo apt update && sudo apt install python3`
+        2. We recommend creating a [Python Virtual Environment](https://docs.python.org/3/library/venv.html), for example with a name `.docs-venv`:
+        ```bash { .copy }
+        python3 -m venv .docs-venv
+        source .docs-venv/bin/activate
+        ```
+        3. Update `pip` and install the needed `pip` packages using `docs/requirements.txt`:
+        ```bash { .copy }
+        pip install --upgrade pip
+        pip install -r docs/requirements.txt
+        ```
+        
+        After that, install **Doxygen** and **Graphviz** (used for the diagrams):
+        
+        - Fedora: `sudo dnf install doxygen graphviz`
+        - Debian/Ubuntu: `sudo apt update && sudo apt install doxygen graphviz`
+
+    === ":fontawesome-brands-apple: macOS"
+        TBA
+
+    === ":fontawesome-brands-windows: Windows"
+        TBA
 
 ## Build Doxygen Documentation
 First, the API Reference has to be built using Doxygen:
 
 !!! example "Building Doxygen Documentation"
-    1. Switch to `docs/doxygen/`:
-    ```bash { .copy }
-    cd docs/doxygen/
-    ```
-    2. Build:
-    ```bash { .copy }
-    doxygen Doxyfile.in
-    ```
+    === ":fontawesome-brands-linux: Linux"
+        1. Switch to `docs/doxygen/`:
+        ```bash { .copy }
+        cd docs/doxygen/
+        ```
+        2. Build:
+        ```bash { .copy }
+        doxygen Doxyfile.in
+        ```
+
+    === ":fontawesome-brands-apple: macOS"
+        TBA
+
+    === ":fontawesome-brands-windows: Windows"
+        TBA
 
 The API Reference should be now built in `docs/doxygen/build/html/`.
 
@@ -48,10 +65,17 @@ The API Reference should be now built in `docs/doxygen/build/html/`.
 ## Build MkDocs Documentation
 MkDocs has the ability to run a builtin development server on localhost, where the documentation is automatically deployed. To run it, switch to the root Libtropic directory, where `mkdocs.yml` is located, and do:
 !!! example "Building MkDocs Documentation"
-    ```bash { .copy }
-    mkdocs serve
-    ```
-    In the terminal, you should see the address of the server. To open it in your browser, press <kbd>Ctrl</kbd> + <kbd>:material-mouse-left-click: Left Click</kbd> or just manually copy it.
+    === ":fontawesome-brands-linux: Linux"
+        ```bash { .copy }
+        mkdocs serve --livereload
+        ```
+        In the terminal, you should see the address of the server. To open it in your browser, press <kbd>Ctrl</kbd> + <kbd>:material-mouse-left-click: Left Click</kbd> or just manually copy it.
+
+    === ":fontawesome-brands-apple: macOS"
+        TBA
+
+    === ":fontawesome-brands-windows: Windows"
+        TBA
 
 !!! warning
     MkDocs does not rebuilt the Doxygen documentation automatically - to rebuild it, repeat the steps from section [Build Doxygen Documentation](#build-doxygen-documentation).
@@ -65,18 +89,25 @@ When you build the documentation using the steps from the section [Build MkDocs 
 ### Preview the Versioned Documentation
 The most common and safe use case is to locally preview the state of the documentation that is deployed to our [GitHub Pages](https://tropicsquare.github.io/libtropic/latest/):
 !!! example "Previewing the Versioned Documentation"
-    1. Make sure you have the latest version of the `gh-pages` branch from `origin`:
-    ```bash { .copy }
-    git fetch origin
-    git pull origin gh-pages
-    ```
-    Do not `git checkout gh-pages`, because you will not be able to build the documentation there. Do `git checkout` with `master`, `develop` or any other branch based from one of these.
-    1. Run a builtin development server with the contents of `gh-pages`:
-    ```bash { .copy }
-    mike serve
-    ```
+    === ":fontawesome-brands-linux: Linux"
+        1. Make sure you have the latest version of the `gh-pages` branch from `origin`:
+        ```bash { .copy }
+        git fetch origin
+        git pull origin gh-pages
+        ```
+        Do not `git checkout gh-pages`, because you will not be able to build the documentation there. Do `git checkout` with `master`, `develop` or any other branch based from one of these.
+        1. Run a builtin development server with the contents of `gh-pages`:
+        ```bash { .copy }
+        mike serve
+        ```
+        
+        In the terminal, you should see the address of the server. To open it in your browser, press <kbd>Ctrl</kbd> + <kbd>:material-mouse-left-click: Left Click</kbd> or just manually copy it.
 
-    In the terminal, you should see the address of the server. To open it in your browser, press <kbd>Ctrl</kbd> + <kbd>:material-mouse-left-click: Left Click</kbd> or just manually copy it.
+    === ":fontawesome-brands-apple: macOS"
+        TBA
+
+    === ":fontawesome-brands-windows: Windows"
+        TBA
 
 ### Edit the Versioned Documentation
 !!! danger
@@ -84,25 +115,46 @@ The most common and safe use case is to locally preview the state of the documen
 
 If you need to locally deploy a new version and preview it, you have to modify the `gh-pages` branch:
 !!! example "Locally Deploying a New Version"
-    ```bash { .copy }
-    mike deploy <version_name>
-    ```
-    After running this, `gh-pages` branch will be **created** (if it does not already exist) and the generated documentation will be **pushed** to it.
-    !!! danger
-        If you add the `--push` flag, the `gh-pages` branch will be pushed to `origin` - **we do not recommend doing that!** This applies to most of the `mike` commands.
+    === ":fontawesome-brands-linux: Linux"
+        ```bash { .copy }
+        mike deploy <version_name>
+        ```
+        After running this, `gh-pages` branch will be **created** (if it does not already exist) and the generated documentation will be **pushed** to it.
+        !!! danger
+            If you add the `--push` flag, the `gh-pages` branch will be pushed to `origin` - **we do not recommend doing that!** This applies to most of the `mike` commands.
+    
+    === ":fontawesome-brands-apple: macOS"
+        TBA
+
+    === ":fontawesome-brands-windows: Windows"
+        TBA
 
 To see all existing versions, do:
 !!! example "Seeing Existing Versions"
-    ```bash { .copy }
-    mike list
-    ```
-    !!! info
-        This command is safe - it does not change `gh-pages` branch.
+    === ":fontawesome-brands-linux: Linux"
+        ```bash { .copy }
+        mike list
+        ```
+        !!! info
+            This command is safe - it does not change `gh-pages` branch.
+
+    === ":fontawesome-brands-apple: macOS"
+        TBA
+
+    === ":fontawesome-brands-windows: Windows"
+        TBA
 
 To remove a specific version, do:
 !!! example "Deleting Existing Version"
-    ```bash { .copy }
-    mike delete
-    ```
+    === ":fontawesome-brands-linux: Linux"
+        ```bash { .copy }
+        mike delete
+        ```
+
+    === ":fontawesome-brands-apple: macOS"
+        TBA
+
+    === ":fontawesome-brands-windows: Windows"
+        TBA
 
 There are more commands available - refer to the [mike repository](https://github.com/jimporter/mike) for more information.
