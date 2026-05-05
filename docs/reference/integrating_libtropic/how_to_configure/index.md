@@ -155,4 +155,4 @@ The default value was tested with supported HALs. Lowering the value may lower r
 
 Sets maximum waiting time for interrupt from TROPIC01's GPO pin before retrying. Used only by certain HALs when [`LT_USE_INT_PIN`](#lt_use_int_pin) is enabled. Refer to the source code of the HAL you use.
 
-The default value was tested with supported HALs. Lowering the value may lower response delays but could also increase a risk of communication errors.
+The default value was tested with supported HALs.
