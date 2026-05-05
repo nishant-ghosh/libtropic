@@ -92,8 +92,7 @@ The most common and safe use case is to locally preview the state of the documen
     === ":fontawesome-brands-linux: Linux"
         1. Make sure you have the latest version of the `gh-pages` branch from `origin`:
         ```bash { .copy }
-        git fetch origin
-        git pull origin gh-pages
+        git fetch origin gh-pages:gh-pages
         ```
         Do not `git checkout gh-pages`, because you will not be able to build the documentation there. Do `git checkout` with `master`, `develop` or any other branch based from one of these.
         1. Run a builtin development server with the contents of `gh-pages`:
