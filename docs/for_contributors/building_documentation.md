@@ -95,7 +95,7 @@ The most common and safe use case is to locally preview the state of the documen
         git fetch origin gh-pages:gh-pages
         ```
         Do not `git checkout gh-pages`, because you will not be able to build the documentation there. Do `git checkout` with `master`, `develop` or any other branch based from one of these.
-        1. Run a builtin development server with the contents of `gh-pages`:
+        2. Run a builtin development server with the contents of `gh-pages`:
         ```bash { .copy }
         mike serve
         ```
@@ -147,7 +147,7 @@ To remove a specific version, do:
 !!! example "Deleting Existing Version"
     === ":fontawesome-brands-linux: Linux"
         ```bash { .copy }
-        mike delete
+        mike delete <version_name>
         ```
 
     === ":fontawesome-brands-apple: macOS"
