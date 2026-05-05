@@ -9,9 +9,9 @@ Normally, you should not need to build the documentation yourself - it is availa
 ## Install the Dependencies
 !!! example "Installing dependencies"
     === ":fontawesome-brands-linux: Linux"
-        First, instal MkDocs dependencies:
+        First, install MkDocs dependencies:
 
-        1. [Install Python](https://www.python.org/downloads/) (atleast version 3.8)
+        1. [Install Python](https://www.python.org/downloads/) (at least version 3.8)
             - You can also use your distribution's package manager.
                 - Fedora: `sudo dnf install python3`
                 - Debian/Ubuntu: `sudo apt update && sudo apt install python3`
@@ -78,7 +78,7 @@ MkDocs has the ability to run a builtin development server on localhost, where t
         TBA
 
 !!! warning
-    MkDocs does not rebuilt the Doxygen documentation automatically - to rebuild it, repeat the steps from section [Build Doxygen Documentation](#build-doxygen-documentation).
+    MkDocs does not rebuild the Doxygen documentation automatically - to rebuild it, repeat the steps from section [Build Doxygen Documentation](#build-doxygen-documentation).
 
 !!! tip
     Each time you edit some files inside `docs/`, the server does not have to be stopped and run again - the server content will be automatically reloaded on each file save.
