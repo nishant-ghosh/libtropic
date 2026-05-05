@@ -122,7 +122,7 @@ if(NOT LT_L1_READ_RETRY_DELAY MATCHES "^([1-9][0-9]*)$")
 endif()
 
 # Must be non-negative without leading zero.
-# Check HAL of your platform for supported range.
+# Check HAL of your platform for supported range and behavior.
 set(LT_L1_SPI_TIMEOUT_MS "70" CACHE STRING "Timeout when waiting for activity on SPI bus.")
 
 if(NOT LT_L1_SPI_TIMEOUT_MS MATCHES "^(0|[1-9][0-9]*)$")
@@ -130,7 +130,7 @@ if(NOT LT_L1_SPI_TIMEOUT_MS MATCHES "^(0|[1-9][0-9]*)$")
 endif()
 
 # Must be non-negative without leading zero.
-# Check HAL of your platform for supported range.
+# Check HAL of your platform for supported range and behavior.
 set(LT_L1_INT_TIMEOUT_MS "150" CACHE STRING "Timeout when waiting for interrupt from TROPIC01's GPO pin.")
 
 if(NOT LT_L1_INT_TIMEOUT_MS MATCHES "^(0|[1-9][0-9]*)$")
