@@ -53,16 +53,6 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-
-/* Choose pairing keypair for slot 0. */
-#if LT_USE_SH0_ENG_SAMPLE
-#define LT_EX_SH0_PRIV lt_sh0priv_eng_sample
-#define LT_EX_SH0_PUB lt_sh0pub_eng_sample
-#elif LT_USE_SH0_PROD0
-#define LT_EX_SH0_PRIV lt_sh0priv_prod0
-#define LT_EX_SH0_PUB lt_sh0pub_prod0
-#endif
-
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
