@@ -113,6 +113,7 @@ nav:
       - Linux: compatibility/host_platforms/linux.md
       - POSIX: compatibility/host_platforms/posix.md
       - Arduino: compatibility/host_platforms/arduino.md
+      - Raspberry Pi Pico: compatibility/host_platforms/rpi_pico.md
     - Cryptographic Functionality Providers:
       - compatibility/cfps/index.md
       - Trezor Crypto: compatibility/cfps/trezor_crypto.md
