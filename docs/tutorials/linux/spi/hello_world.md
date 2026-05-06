@@ -32,7 +32,7 @@
     After this, you should see an output in your terminal.
 
 ## Configuration
-Beside the [Libtropic CMake options](../../../reference/integrating_libtropic/how_to_configure/index.md) used to configure Libtropic, there are multiple CMake options specific to this example:
+Besides the [Libtropic CMake options](../../../reference/integrating_libtropic/how_to_configure/index.md) used to configure Libtropic, there are multiple CMake options specific to this example:
 
 - `LT_SPI_DEV_PATH` (default: `"/dev/spidev0.0"`) to set the path to the SPI device where TROPIC01 is connected:
 

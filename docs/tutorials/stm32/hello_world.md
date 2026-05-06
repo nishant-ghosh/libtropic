@@ -40,7 +40,7 @@
     After this, you should see an output in your serial monitor.
 
 ## Configuration
-Beside the [Libtropic CMake options](../../reference/integrating_libtropic/how_to_configure/index.md) used to configure Libtropic, there are multiple CMake options specific to this example:
+Besides the [Libtropic CMake options](../../reference/integrating_libtropic/how_to_configure/index.md) used to configure Libtropic, there are multiple CMake options specific to this example:
 
 - `STLINK_SERIAL_NUMBER` (default: none, OpenOCD looks for any STLink programming interface) to set the serial number of the STLink device which will be used for flashing. This is needed only when you have multiple STM32s connected using built-in STLink or problems with OpenOCD's autodetection:
 

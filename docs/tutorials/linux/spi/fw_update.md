@@ -37,7 +37,7 @@
     Check out the dedicated section in [FAQ](../../../faq.md#fw-update-failed).
 
 ## Configuration
-Beside the [Libtropic CMake options](../../../reference/integrating_libtropic/how_to_configure/index.md) used to configure Libtropic, there are multiple CMake options specific to this example:
+Besides the [Libtropic CMake options](../../../reference/integrating_libtropic/how_to_configure/index.md) used to configure Libtropic, there are multiple CMake options specific to this example:
 
 - `LT_SPI_DEV_PATH` (default: `"/dev/spidev0.0"`) to set the path to the SPI device where TROPIC01 is connected:
 
@@ -88,7 +88,7 @@ Beside the [Libtropic CMake options](../../../reference/integrating_libtropic/ho
             TBA
     Additionally, see [Default Pairing Keys for a Secure Channel Handshake](../../../reference/default_pairing_keys.md) for more information.
 
-- `LT_DISABLE_MAINTENANCE_MODE` (default: `"ON"`) to configure whether Maintenance Mode will be enabled/disabled. Set to `"OFF"` or `0` if your TROPIC01 has Maintenance Mode enabled and you don't want the FW update example to disable it:
+- `LT_DISABLE_MAINTENANCE_MODE` (default: `"ON"`) to control whether the FW update example disables Maintenance Mode in R-Config after a successful FW update. Set to `"OFF"` or `0` if your TROPIC01 has Maintenance Mode enabled and you don't want the FW update example to disable it:
 
     ??? example "Keeping Maintenance Mode enabled after FW update"
         === ":fontawesome-brands-linux: Linux"
