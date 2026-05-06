@@ -129,12 +129,12 @@ if(NOT LT_L1_SPI_TIMEOUT_MS MATCHES "^(0|[1-9][0-9]*)$")
     message(FATAL_ERROR "LT_L1_SPI_TIMEOUT_MS must be a non-negative integer without leading zeros unless the value is exactly '0', got '${LT_L1_SPI_TIMEOUT_MS}'")
 endif()
 
-# Must be non-negative without leading zero.
+# Must be positive without leading zero.
 # Check HAL of your platform for supported range and behavior.
-set(LT_L1_INT_TIMEOUT_MS "150" CACHE STRING "Timeout when waiting for interrupt from TROPIC01's GPO pin.")
+set(LT_L1_INT_TIMEOUT_MS "200" CACHE STRING "Timeout when waiting for interrupt from TROPIC01's GPO pin.")
 
-if(NOT LT_L1_INT_TIMEOUT_MS MATCHES "^(0|[1-9][0-9]*)$")
-    message(FATAL_ERROR "LT_L1_INT_TIMEOUT_MS must be a non-negative integer without leading zeros unless the value is exactly '0', got '${LT_L1_INT_TIMEOUT_MS}'")
+if(NOT LT_L1_INT_TIMEOUT_MS MATCHES "^([1-9][0-9]*)$")
+    message(FATAL_ERROR "LT_L1_INT_TIMEOUT_MS must be a positive integer without leading zeros, got '${LT_L1_INT_TIMEOUT_MS}'")
 endif()
 
 # Check whether compiling standalone (e.g. as a library) or as a child project (= has parent scope)

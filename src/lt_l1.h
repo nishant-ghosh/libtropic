@@ -62,7 +62,7 @@ extern "C" {
  * @note In CMake-based builds it is set in CMakeLists.txt and can be configured using CMake
  * parameters.
  */
-#define LT_L1_INT_TIMEOUT_MS 150
+#define LT_L1_INT_TIMEOUT_MS 200
 #endif
 
 /** Get response request's ID */
