@@ -11,11 +11,8 @@ There are multiple kinds of FW running in TROPIC01:
 3. *ECC engine mutable FW (ECC engine FW or SPECT FW)*. Updatable, located in R-memory, runs on ECC engine from RAM, helps the RISC-V CPU FW with processing ECC commands (ECC_Key_*, ECDSA/EDDSA_Sign).
 
 !!! info "More Information About TROPIC01 Firmware"
-    For more detailed information about each FW, refer to the latest **FW Update Application Note**:
+    For more detailed information about each FW, refer to the *FW Update Application Note* (ODN_TR01_app_007), available on [GitHub](https://github.com/tropicsquare/tropic01/blob/main/doc/pages/part-numbers.md#datasheet-application-notes-api-and-erratas).
 
-    1. Get the part number of your TROPIC01 (you can refer to [FAQ](../faq.md#what-is-the-part-number-pn-of-my-tropic01)).
-    2. Look for your TROPIC01 part number in our [TROPIC01 repository](https://github.com/tropicsquare/tropic01/blob/main/doc/pages/part-numbers.md#part-numbers) and click on it.
-    3. Scroll down to the **Application Notes** table and look for the row with **FW Update Application Note**.
 ## TROPIC01 Firmware in Libtropic
 Libtropic provides not only implementation of the FW update L2 commands, but also the necessary files for updating both the RISC-V and SPECT FW. Refer to:
 
