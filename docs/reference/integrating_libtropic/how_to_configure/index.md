@@ -145,12 +145,12 @@ See also [`LT_L1_READ_MAX_TRIES`](#lt_l1_read_max_tries).
 - integer (non-negative)
 - default value: 70 (ms)
 
-Sets timeout on SPI operations. If the operation times out, it is retried up to [`LT_L1_READ_MAX_TRIES`](#lt_l1_read_max_tries) times.
+Sets timeout on SPI transfer. If the transfer operation times out, `LT_L1_INT_TIMEOUT` is returned by Libtropic API functions.
 
 !!! info
     Used only by certain HALs, refer to the source code of the HAL you use.
 
-The default value was tested with supported HALs. Lowering the value may lower response delays but could also increase a risk of communication errors.
+The default value was tested with supported HALs and normally does not have to be changed. Lowering the value increases a risk of communication errors.
 
 !!! warning "Warning: value '0'"
     This parameter also accepts the value of zero, however, behavior is HAL-dependent. For example, in STM32 HAL the value of '0' disables polling and the function returns immediately. Check behavior of HAL you use carefully.
@@ -159,9 +159,9 @@ The default value was tested with supported HALs. Lowering the value may lower r
 - integer (positive)
 - default value: 200 (ms)
 
-Sets maximum waiting time for interrupt from TROPIC01's GPO pin. If the operation times out, `LT_L1_INT_TIMEOUT` is returned immediately (this is a **different** behavior than in the case of [`LT_L1_SPI_TIMEOUT_MS`](#lt_l1_spi_timeout_ms)).
+Sets maximum waiting time for interrupt from TROPIC01's GPO pin. If the operation times out, `LT_L1_INT_TIMEOUT` is returned by Libtropic API functions.
 
 !!! info
     Used only by certain HALs when [`LT_USE_INT_PIN`](#lt_use_int_pin) is enabled. Refer to the source code of the HAL you use.
 
-The default value was tested with supported HALs. It is recommended to keep this value equal or higher than the longest time a TROPIC01 operation can take. Refer to the [TROPIC01 Datasheet](https://github.com/tropicsquare/tropic01?tab=readme-ov-file#documentation).
+The default value was tested with supported HALs and normally does not have to be changed. It is recommended to keep this value equal or higher than the longest time a TROPIC01 operation can take. Refer to the [TROPIC01 Datasheet](https://github.com/tropicsquare/tropic01?tab=readme-ov-file#documentation).
