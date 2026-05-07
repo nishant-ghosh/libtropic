@@ -85,3 +85,38 @@ The script contains comments about each step, so refer to the code of the script
 
 !!! note "Alternative implementation of the verification"
     The script verifies the TROPIC01 certificates against certificate authority certificates downloaded from the Tropic Square PKI website. As the same certificates are present also in the TROPIC01 itself, those can be used instead. The importance of verifying the root certificate independently remains the key part of the process.
+
+## Configuration
+In addition to the [Libtropic CMake options](../../../reference/integrating_libtropic/how_to_configure/index.md) used to configure Libtropic, this example provides the following CMake options:
+
+- `LT_SPI_DEV_PATH` (default: `"/dev/spidev0.0"`) specifies the path to the SPI device to which the TROPIC01 is connected:
+
+    ??? example "Configuring SPI device path"
+        === ":fontawesome-brands-linux: Linux"
+            ```bash { .copy }
+            cmake -DLT_SPI_DEV_PATH=<spi_dev_path> ..
+            make
+            ./libtropic_dump_certificates
+            ```
+
+        === ":fontawesome-brands-apple: macOS"
+            TBA
+
+        === ":fontawesome-brands-windows: Windows"
+            TBA
+
+- `LT_GPIO_DEV_PATH` (default: `"/dev/gpiochip0"`) specifies the path to the GPIO device to which TROPIC01's interrupt (INT) and Chip Select (CS) lines are connected:
+
+    ??? example "Configuring GPIO device path"
+        === ":fontawesome-brands-linux: Linux"
+            ```bash { .copy }
+            cmake -DLT_GPIO_DEV_PATH=<gpio_dev_path> ..
+            make
+            ./libtropic_dump_certificates
+            ```
+
+        === ":fontawesome-brands-apple: macOS"
+            TBA
+
+        === ":fontawesome-brands-windows: Windows"
+            TBA

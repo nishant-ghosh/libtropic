@@ -31,4 +31,23 @@
 
     After this, you should see an output in your terminal.
 
+## Configuration
+In addition to the [Libtropic CMake options](../../../reference/integrating_libtropic/how_to_configure/index.md) used to configure Libtropic, this example provides the following CMake option:
+
+- `LT_USB_DEVKIT_PATH` (default: `"/dev/ttyACM0"`) sets the path to the USB device representing the USB DevKit serial port:
+
+    ??? example "Configuring USB DevKit serial port"
+        === ":fontawesome-brands-linux: Linux"
+            ```bash { .copy }
+            cmake -DLT_USB_DEVKIT_PATH=<serial_port_path> ..
+            make
+            ./libtropic_identify_chip
+            ```
+
+        === ":fontawesome-brands-apple: macOS"
+            TBA
+
+        === ":fontawesome-brands-windows: Windows"
+            TBA
+
 [Next example :material-arrow-right:](fw_update.md){ .md-button }
