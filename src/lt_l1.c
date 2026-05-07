@@ -105,7 +105,7 @@ lt_ret_t lt_l1_read(lt_l2_state_t *s2, const uint32_t max_len, const uint32_t ti
                 if (ret != LT_OK) {
                     return ret;
                 }
-                ret = lt_l1_delay(s2, LT_L1_READ_RETRY_DELAY);
+                ret = lt_l1_delay(s2, LT_L1_READ_RETRY_DELAY_MS);
                 if (ret != LT_OK) {
                     return ret;
                 }
@@ -148,7 +148,7 @@ lt_ret_t lt_l1_read(lt_l2_state_t *s2, const uint32_t max_len, const uint32_t ti
             if (s2->buff[0] & TR01_L1_CHIP_MODE_STARTUP_bit) {
                 // INT pin is not implemented in Start-up Mode
                 // So we wait a bit before we poll again for CHIP_STATUS
-                ret = lt_l1_delay(s2, LT_L1_READ_RETRY_DELAY);
+                ret = lt_l1_delay(s2, LT_L1_READ_RETRY_DELAY_MS);
                 if (ret != LT_OK) {
                     return ret;
                 }
@@ -163,7 +163,7 @@ lt_ret_t lt_l1_read(lt_l2_state_t *s2, const uint32_t max_len, const uint32_t ti
                 }
 #else
                 // INT pin not used, delay for some time
-                ret = lt_l1_delay(s2, LT_L1_READ_RETRY_DELAY);
+                ret = lt_l1_delay(s2, LT_L1_READ_RETRY_DELAY_MS);
                 if (ret != LT_OK) {
                     return ret;
                 }

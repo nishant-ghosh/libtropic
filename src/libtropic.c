@@ -170,7 +170,7 @@ lt_ret_t lt_get_tr01_mode(lt_handle_t *h, lt_tr01_mode_t *mode)
         }
 
         // Chip is not ready, let's wait and try again in a while.
-        ret = lt_l1_delay(&h->l2, LT_L1_READ_RETRY_DELAY);
+        ret = lt_l1_delay(&h->l2, LT_L1_READ_RETRY_DELAY_MS);
         if (ret != LT_OK) {
             return ret;
         }
