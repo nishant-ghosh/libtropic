@@ -69,7 +69,7 @@ void pin_verify(const PinVerifyCmd *cmd, AppResp *resp)
     hal_status = hmac_sha256(kdf_key_zeros, sizeof(kdf_key_zeros), pin_with_add_data,
                              pin_with_add_data_len, v);
     if (hal_status != HAL_OK) {
-        resp->type.pin_verify.res_code = PIN_SET_RESP_CODE_KDF_ERROR;
+        resp->type.pin_verify.res_code = PIN_VERIFY_RESP_CODE_KDF_ERROR;
         goto cleanup;
     }
 
@@ -93,7 +93,7 @@ void pin_verify(const PinVerifyCmd *cmd, AppResp *resp)
     // 6. Compute k_i = KDF(w, PIN || A).
     hal_status = hmac_sha256(w, sizeof(w), pin_with_add_data, pin_with_add_data_len, k_i);
     if (hal_status != HAL_OK) {
-        resp->type.pin_verify.res_code = PIN_SET_RESP_CODE_KDF_ERROR;
+        resp->type.pin_verify.res_code = PIN_VERIFY_RESP_CODE_KDF_ERROR;
         goto cleanup;
     }
 
@@ -104,7 +104,7 @@ void pin_verify(const PinVerifyCmd *cmd, AppResp *resp)
     // 9. Compute t = KDF(s, "0x00").
     hal_status = hmac_sha256(s, sizeof(s), (uint8_t *)"0", 1, t);
     if (hal_status != HAL_OK) {
-        resp->type.pin_verify.res_code = PIN_SET_RESP_CODE_KDF_ERROR;
+        resp->type.pin_verify.res_code = PIN_VERIFY_RESP_CODE_KDF_ERROR;
         goto cleanup;
     }
 
@@ -117,7 +117,7 @@ void pin_verify(const PinVerifyCmd *cmd, AppResp *resp)
     // 11. Compute u = KDF(s, "0x01").
     hal_status = hmac_sha256(s, sizeof(s), (uint8_t *)"1", 1, u);
     if (hal_status != HAL_OK) {
-        resp->type.pin_verify.res_code = PIN_SET_RESP_CODE_KDF_ERROR;
+        resp->type.pin_verify.res_code = PIN_VERIFY_RESP_CODE_KDF_ERROR;
         goto cleanup;
     }
 
@@ -141,7 +141,7 @@ void pin_verify(const PinVerifyCmd *cmd, AppResp *resp)
     // 14. Compute k = KDF(s, "0x02").
     hal_status = hmac_sha256(s, sizeof(s), (uint8_t *)"2", 1, resp->type.pin_verify.crypto_key);
     if (hal_status != HAL_OK) {
-        resp->type.pin_verify.res_code = PIN_SET_RESP_CODE_KDF_ERROR;
+        resp->type.pin_verify.res_code = PIN_VERIFY_RESP_CODE_KDF_ERROR;
         goto cleanup;
     }
 

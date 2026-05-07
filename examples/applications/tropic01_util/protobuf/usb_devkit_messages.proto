@@ -105,6 +105,7 @@ enum PinVerifyRespCode {
 	PIN_VERIFY_RESP_CODE_WRONG_PIN = 4;
 	PIN_VERIFY_RESP_CODE_FLASH_READ_ERROR = 5;
 	PIN_VERIFY_RESP_CODE_FLASH_WRITE_ERROR = 6;
+	PIN_VERIFY_RESP_CODE_KDF_ERROR = 7;
 }
 // ------------------------------- RMemReadResp
 message RMemReadResp {

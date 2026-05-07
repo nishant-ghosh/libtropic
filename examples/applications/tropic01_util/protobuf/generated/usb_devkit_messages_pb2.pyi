@@ -53,6 +53,7 @@ class _PinVerifyRespCodeEnumTypeWrapper(_enum_type_wrapper._EnumTypeWrapper[_Pin
     PIN_VERIFY_RESP_CODE_WRONG_PIN: _PinVerifyRespCode.ValueType  # 4
     PIN_VERIFY_RESP_CODE_FLASH_READ_ERROR: _PinVerifyRespCode.ValueType  # 5
     PIN_VERIFY_RESP_CODE_FLASH_WRITE_ERROR: _PinVerifyRespCode.ValueType  # 6
+    PIN_VERIFY_RESP_CODE_KDF_ERROR: _PinVerifyRespCode.ValueType  # 7
 
 class PinVerifyRespCode(_PinVerifyRespCode, metaclass=_PinVerifyRespCodeEnumTypeWrapper): ...
 
@@ -63,6 +64,7 @@ PIN_VERIFY_RESP_CODE_DEPLETED_ATTEMPS_OUT_OF_RANGE: PinVerifyRespCode.ValueType 
 PIN_VERIFY_RESP_CODE_WRONG_PIN: PinVerifyRespCode.ValueType  # 4
 PIN_VERIFY_RESP_CODE_FLASH_READ_ERROR: PinVerifyRespCode.ValueType  # 5
 PIN_VERIFY_RESP_CODE_FLASH_WRITE_ERROR: PinVerifyRespCode.ValueType  # 6
+PIN_VERIFY_RESP_CODE_KDF_ERROR: PinVerifyRespCode.ValueType  # 7
 Global___PinVerifyRespCode: _TypeAlias = PinVerifyRespCode  # noqa: Y015
 
 class _RMemReadRespCode:
