@@ -145,7 +145,7 @@ See also [`LT_L1_READ_MAX_TRIES`](#lt_l1_read_max_tries).
 - integer (non-negative)
 - default value: 70 (ms)
 
-Sets timeout on SPI transfer. If the transfer operation times out, `LT_L1_INT_TIMEOUT` is returned by Libtropic API functions.
+Sets timeout on SPI transfer. If the transfer operation times out, `LT_HAL_ERROR` is returned by Libtropic API functions.
 
 !!! info
     Used only by certain HALs, refer to the source code of the HAL you use.
