@@ -80,7 +80,7 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
     secret_group.add_argument(
         "--secret-bip39-file",
         default=None,
-        help="Path to text file containing BIP39 words used to derive the MAC-And-Destroy secret.",
+        help="Path to text file containing BIP39 words used to derive the MAC-And-Destroy secret. Tip: use 'tropic01_util/bip39_test_words.txt' we prepared for quick testing.",
     )
     parser.add_argument(
         "--secret-bip39-passphrase",
