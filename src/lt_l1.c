@@ -46,9 +46,6 @@ lt_ret_t lt_l1_read(lt_l2_state_t *s2, const uint32_t max_len, const uint32_t ti
     if (!s2) {
         return LT_PARAM_ERR;
     }
-    if ((timeout_ms < LT_L1_TIMEOUT_MS_MIN) | (timeout_ms > LT_L1_TIMEOUT_MS_MAX)) {
-        return LT_PARAM_ERR;
-    }
     if ((max_len < TR01_L1_LEN_MIN) | (max_len > TR01_L1_LEN_MAX)) {
         return LT_PARAM_ERR;
     }
@@ -160,7 +157,7 @@ lt_ret_t lt_l1_read(lt_l2_state_t *s2, const uint32_t max_len, const uint32_t ti
 #if LT_USE_INT_PIN
                 // Wait for rising edge on the INT pin, which signalizes that L2 Response frame is
                 // ready to be received
-                ret = lt_l1_delay_on_int(s2, LT_L1_TIMEOUT_MS_MAX);
+                ret = lt_l1_delay_on_int(s2, LT_L1_INT_TIMEOUT_MS);
                 if (ret != LT_OK) {
                     return ret;
                 }
@@ -182,9 +179,6 @@ lt_ret_t lt_l1_write(lt_l2_state_t *s2, const uint16_t len, const uint32_t timeo
 {
 #ifdef LT_REDUNDANT_ARG_CHECK
     if (!s2) {
-        return LT_PARAM_ERR;
-    }
-    if ((timeout_ms < LT_L1_TIMEOUT_MS_MIN) | (timeout_ms > LT_L1_TIMEOUT_MS_MAX)) {
         return LT_PARAM_ERR;
     }
     if ((len < TR01_L1_LEN_MIN) | (len > TR01_L1_LEN_MAX)) {

@@ -140,3 +140,28 @@ See also [`LT_L1_READ_MAX_TRIES`](#lt_l1_read_max_tries).
 
 !!! tip "Tip: Use interrupt pin"
     It is better to use the interrupt pin functionality of TROPIC01 if you need to shorten reaction time. See [`LT_USE_INT_PIN`](#lt_use_int_pin) parameter.
+
+### `LT_L1_SPI_TIMEOUT_MS`
+- integer (non-negative)
+- default value: 70 (ms)
+
+Sets timeout on SPI transfer. If the transfer operation times out, `LT_HAL_ERROR` is returned by Libtropic API functions.
+
+!!! info
+    Used only by certain HALs, refer to the source code of the HAL you use.
+
+The default value was tested with supported HALs and normally does not have to be changed. Lowering the value increases a risk of communication errors.
+
+!!! warning "Warning: value '0'"
+    This parameter also accepts the value of zero, however, behavior is HAL-dependent. For example, in STM32 HAL the value of '0' disables polling and the function returns immediately. Check behavior of HAL you use carefully.
+
+### `LT_L1_INT_TIMEOUT_MS`
+- integer (positive)
+- default value: 200 (ms)
+
+Sets maximum waiting time for interrupt from TROPIC01's GPO pin. If the operation times out, `LT_L1_INT_TIMEOUT` is returned by Libtropic API functions.
+
+!!! info
+    Used only by certain HALs when [`LT_USE_INT_PIN`](#lt_use_int_pin) is enabled. Refer to the source code of the HAL you use.
+
+The default value was tested with supported HALs and normally does not have to be changed. It is recommended to keep this value equal or higher than the longest time a TROPIC01 operation can take. Refer to the [TROPIC01 Datasheet](https://github.com/tropicsquare/tropic01?tab=readme-ov-file#documentation).

@@ -47,12 +47,23 @@ extern "C" {
 #define LT_L1_READ_RETRY_DELAY 25
 #endif
 
-/** Minimal timeout when waiting for activity on SPI bus */
-#define LT_L1_TIMEOUT_MS_MIN 5
-/** Default timeout when waiting for activity on SPI bus */
-#define LT_L1_TIMEOUT_MS_DEFAULT 70
-/** Maximal timeout when waiting for activity on SPI bus */
-#define LT_L1_TIMEOUT_MS_MAX 150
+#ifndef LT_L1_SPI_TIMEOUT_MS
+/** @brief Timeout when waiting for activity on SPI bus.
+ *
+ * @note In CMake-based builds it is set in CMakeLists.txt and can be configured using CMake
+ * parameters.
+ */
+#define LT_L1_SPI_TIMEOUT_MS 70
+#endif
+
+#ifndef LT_L1_INT_TIMEOUT_MS
+/** @brief Timeout when waiting for interrupt from TROPIC01's GPO pin.
+ *
+ * @note In CMake-based builds it is set in CMakeLists.txt and can be configured using CMake
+ * parameters.
+ */
+#define LT_L1_INT_TIMEOUT_MS 200
+#endif
 
 /** Get response request's ID */
 #define TR01_L1_GET_RESPONSE_REQ_ID 0xAA

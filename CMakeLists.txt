@@ -121,6 +121,22 @@ if(NOT LT_L1_READ_RETRY_DELAY MATCHES "^([1-9][0-9]*)$")
     message(FATAL_ERROR "LT_L1_READ_RETRY_DELAY must be a positive integer without leading zeros, got '${LT_L1_READ_RETRY_DELAY}'")
 endif()
 
+# Must be non-negative without leading zero.
+# Check HAL of your platform for supported range and behavior.
+set(LT_L1_SPI_TIMEOUT_MS "70" CACHE STRING "Timeout when waiting for activity on SPI bus.")
+
+if(NOT LT_L1_SPI_TIMEOUT_MS MATCHES "^(0|[1-9][0-9]*)$")
+    message(FATAL_ERROR "LT_L1_SPI_TIMEOUT_MS must be a non-negative integer without leading zeros unless the value is exactly '0', got '${LT_L1_SPI_TIMEOUT_MS}'")
+endif()
+
+# Must be positive without leading zero.
+# Check HAL of your platform for supported range and behavior.
+set(LT_L1_INT_TIMEOUT_MS "200" CACHE STRING "Timeout when waiting for interrupt from TROPIC01's GPO pin.")
+
+if(NOT LT_L1_INT_TIMEOUT_MS MATCHES "^([1-9][0-9]*)$")
+    message(FATAL_ERROR "LT_L1_INT_TIMEOUT_MS must be a positive integer without leading zeros, got '${LT_L1_INT_TIMEOUT_MS}'")
+endif()
+
 # Check whether compiling standalone (e.g. as a library) or as a child project (= has parent scope)
 # and save result to HAS_PARENT_SCOPE.
 get_directory_property(HAS_PARENT_SCOPE PARENT_DIRECTORY)
@@ -290,3 +306,5 @@ endif()
 target_compile_definitions(tropic PUBLIC LT_CRC_ERR_RETRY_ATTEMPTS=${LT_CRC_ERR_RETRY_ATTEMPTS})
 target_compile_definitions(tropic PUBLIC LT_L1_READ_MAX_TRIES=${LT_L1_READ_MAX_TRIES})
 target_compile_definitions(tropic PUBLIC LT_L1_READ_RETRY_DELAY=${LT_L1_READ_RETRY_DELAY})
+target_compile_definitions(tropic PUBLIC LT_L1_SPI_TIMEOUT_MS=${LT_L1_SPI_TIMEOUT_MS})
+target_compile_definitions(tropic PUBLIC LT_L1_INT_TIMEOUT_MS=${LT_L1_INT_TIMEOUT_MS})
