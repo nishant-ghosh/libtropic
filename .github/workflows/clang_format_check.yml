@@ -37,7 +37,7 @@ jobs:
             echo "Formatting issue in $f"
             exit_code=1
           fi
-        done < <(find . -type f \( -name '*.c' -o -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \) ! -path './vendor/*' ! -path './vendor/**' ! -path '*Vendor/*' ! -path '*_deps/*' ! -path './.git/*' -print0)
+        done < <(find . -type f \( -name '*.c' -o -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \) ! -path './vendor/*' ! -path './vendor/**' ! -path '*Vendor/*' ! -path '*_deps/*' ! -path './.git/*' ! -path '*protobuf/generated/*' -print0)
 
         if [ $exit_code -ne 0 ]; then
           echo "Clang-format check failed."

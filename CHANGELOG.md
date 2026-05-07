@@ -57,6 +57,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - FAQ section covering `LT_L2_CRC_ERR` and `LT_L2_IN_CRC_ERR`.
 - Possibility to configure `LT_L1_READ_MAX_TRIES` and `LT_L1_READ_RETRY_DELAY_MS`.
 - Community HAL for Raspberry Pi Pico boards created by [Wuard](https://github.com/wuard) (see the documentation for more information).
+- New TROPIC01 Util application for the USB DevKit.
+- Documentation: new Applications section with TROPIC01 Util application for the USB DevKit.
 
 ### Fixed
 - Change the type of `slot` parameter from `uint8_t` to `lt_pkey_index_t` in `lt_pairing_key_write()`, `lt_pairing_key_read()`, `lt_pairing_key_invalidate()`, `lt_out__pairing_key_write()`, `lt_out__pairing_key_read()`, `lt_out__pairing_key_invalidate()`.
