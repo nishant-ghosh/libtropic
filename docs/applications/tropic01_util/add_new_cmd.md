@@ -1,11 +1,11 @@
 # Add a New Command
-The process of adding a new command is done in three phases:
+Adding a new command involves three phases:
 
 1. [Declare Protobuf Messages](#declare-protobuf-messages) (Protobuf stands for [Protocol Buffers](https://protobuf.dev/))
 2. [Extend USB DevKit Firmware](#extend-usb-devkit-firmware)
 3. [Extend TROPIC01 Util](#extend-tropic01-util)
 
-All of the following steps are done relative to the `libtropic/examples/applications/tropic01_util/` directory.
+All steps below are relative to the `libtropic/examples/applications/tropic01_util/` directory.
 
 Before you start, complete [Install and Use](install_and_use.md) and then follow these steps to install the `protobuf-compiler`, which is needed when adding new Protobuf messages, as the Protobuf files have to be re-generated:
 !!! example "Install Protobuf compiler"
@@ -13,12 +13,12 @@ Before you start, complete [Install and Use](install_and_use.md) and then follow
         1. Install:
             - Ubuntu/Debian: `sudo apt update && sudo apt install protobuf-compiler`
             - Fedora: `sudo dnf install protobuf-compiler`
-        2. Ensure the version is 3+:
+        2. Ensure the version is 3 or newer:
             - `protoc --version`
-        3. Try to run it:
+        3. Try running it:
             - Build the USB DevKit firmware with additional CMake option — follow [these instructions](install_and_use.md#build-usb-devkit-firmware) and add the `-DGEN_PROTO_FILES=1` switch to `cmake`.
             - CMake automatically runs `protobuf-compiler`, generates Protobuf files in C (for the firmware) and Python (for the CLI application), and places them at the expected location — Check that it builds without any errors.
-            - Because we haven't changed the Protobuf messages yet, `git` should not report any new Protobuf files.
+            - Because the Protobuf messages have not been changed yet, `git` should not report any new Protobuf files.
 
     === ":fontawesome-brands-apple: macOS"
         1. Install:

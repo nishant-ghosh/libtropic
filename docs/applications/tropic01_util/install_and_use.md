@@ -23,7 +23,7 @@ This section provides instructions for installing dependencies, building and fla
                 - Fedora: `sudo dnf install python3`
                 - Debian/Ubuntu: `sudo apt update && sudo apt install python3`
             !!! warning "Python version"
-                At the time this guide was written, Python 3.14 did not work with our required packages. This might have been already solved, but if not, version 3.13 should work. Older versions were not tested.
+                At the time this guide was written, Python 3.14 did not work with our required packages. If that is still the case, try using Python 3.13, which should work. Older versions were not tested.
         5. Prepare Python Virtual Environment (venv):
             - Create venv: `python3 -m venv tropic01-util-venv`
             - Activate venv: `source tropic01-util-venv/bin/activate`
@@ -63,7 +63,7 @@ First, build the new USB DevKit firmware:
         ```
 
         !!! question "What is the revision of my USB DevKit?"
-            The revision is written on the back side of the PCB.
+            The revision is printed on the back side of the PCB.
 
     === ":fontawesome-brands-apple: macOS"
         TBA
