@@ -37,8 +37,8 @@ def decode_resp(resp: pb.AppResp) -> int:
     print(f"{PIN_VERIFY_SPEC.name} result: {pb.PinVerifyRespCode.Name(resp.pin_verify.res_code)}")
     if resp.pin_verify.res_code == pb.PIN_VERIFY_RESP_CODE_OK:
         print(f"{PIN_VERIFY_SPEC.name} crypto_key: {resp.pin_verify.crypto_key.hex()}")
-
-    return 0
+        return 0
+    return 1
 
 
 def execute(args: argparse.Namespace, app_cmd_sender: AppCommandSender) -> int:
