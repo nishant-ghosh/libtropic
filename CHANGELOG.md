@@ -36,7 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced `LT_FAIL` in HALs with `LT_HAL_ERROR`.
 - Enhanced logging: include errno (if set) in Linux/POSIX HALs, log error on invalid curve type in `lt_in__ecc_key_read`.
 - Return `LT_PARAM_ERR` in `lt_print_fw_header` on invalid firmware header size.
-- Replaced `LT_L1_TIMEOUT_MS_MIN`, `LT_L1_TIMEOUT_MS_DEFAULT`, `LT_L1_TIMEOUT_MS_MAX` with `LT_L1_SPI_TIMEOUT_MS` (timeout on SPI transfers) and `LT_L1_INT_TIMEOUT_MS` (timeout on waiting on interrupt from TROPIC01).
+- Replaced `LT_L1_TIMEOUT_MS_MIN`, `LT_L1_TIMEOUT_MS_DEFAULT`, `LT_L1_TIMEOUT_MS_MAX` with `LT_L1_SPI_TIMEOUT_MS` (timeout on SPI transfers) and `LT_L1_INT_TIMEOUT_MS` (timeout while waiting for an interrupt from TROPIC01).
   - Both constants are user-configurable. Provided values were tested on supported HALs.
   - Some HALs do not support timeouts, so they ignore those constants. Refer to the HAL source.
 
