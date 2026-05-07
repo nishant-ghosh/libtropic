@@ -193,6 +193,8 @@ static bool construct_frame(const uint8_t *data, size_t data_len, uint8_t *frame
     // 5. Place CRC into the frame.
     size_t crc_pos = LT_USB_DT_NEW_FW_FRAME_MAGIC_BYTES + LT_USB_DT_NEW_FW_FRAME_DATA_LEN_SIZE +
                      data_len;
+    // Although crc is appended here as little-endian, crc in the frame is encoded as big-endian,
+    // because crc16() pre-swaps the crc bytes.
     frame_buff[crc_pos] = (uint8_t)(crc & 0xFF);
     frame_buff[crc_pos + 1] = (uint8_t)((crc >> 8) & 0xFF);
 
