@@ -131,8 +131,8 @@ def decode_resp(resp: pb.AppResp) -> int:
     print(f"{PIN_SET_SPEC.name} result: {pb.PinSetRespCode.Name(resp.pin_set.res_code)}")
     if resp.pin_set.res_code == pb.PIN_SET_RESP_CODE_OK:
         print(f"{PIN_SET_SPEC.name} crypto_key: {resp.pin_set.crypto_key.hex()}")
-
-    return 0
+        return 0
+    return 1
 
 
 def execute(args: argparse.Namespace, app_cmd_sender: AppCommandSender) -> int:
