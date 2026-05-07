@@ -29,9 +29,9 @@
     Check out the dedicated section in [FAQ](../../faq.md#fw-update-failed).
 
 ## Configuration
-Besides the [Libtropic CMake options](../../reference/integrating_libtropic/how_to_configure/index.md) used to configure Libtropic, there are multiple CMake options specific to this example:
+In addition to the [Libtropic CMake options](../../reference/integrating_libtropic/how_to_configure/index.md) used to configure Libtropic, this example provides the following CMake options:
 
-- `LT_SH0_KEYS` (default: `"prod0"`) to choose which pairing keys in slot 0 will be used. Switch to engineering sample pairing keys if your TROPIC01 has them:
+- `LT_SH0_KEYS` (default: `"prod0"`) selects which pairing keys in slot 0 are used. Switch to engineering-sample pairing keys if your TROPIC01 is provisioned with them:
 
     ??? example "Switching to engineering sample pairing keys"
         === ":fontawesome-brands-linux: Linux"
@@ -46,7 +46,7 @@ Besides the [Libtropic CMake options](../../reference/integrating_libtropic/how_
             TBA
     Additionally, see [Default Pairing Keys for a Secure Channel Handshake](../../reference/default_pairing_keys.md) for more information.
 
-- `LT_DISABLE_MAINTENANCE_MODE` (default: `"ON"`) to control whether the FW update example disables Maintenance Mode in R-Config after a successful FW update. Set to `"OFF"` or `0` if your TROPIC01 has Maintenance Mode enabled and you don't want the FW update example to disable it:
+- `LT_DISABLE_MAINTENANCE_MODE` (default: `"ON"`) controls whether the FW update example disables Maintenance Mode in R-Config after a successful FW update. Set to `"OFF"` or `0` if Maintenance Mode is enabled in your TROPIC01 and you don't want the FW update example to disable it:
 
     ??? example "Keeping Maintenance Mode enabled after FW update"
         === ":fontawesome-brands-linux: Linux"

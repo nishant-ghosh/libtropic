@@ -32,9 +32,9 @@
     After this, you should see an output in your terminal.
 
 ## Configuration
-Besides the [Libtropic CMake options](../../../reference/integrating_libtropic/how_to_configure/index.md) used to configure Libtropic, there are multiple CMake options specific to this example:
+In addition to the [Libtropic CMake options](../../../reference/integrating_libtropic/how_to_configure/index.md) used to configure Libtropic, this example provides the following CMake options:
 
-- `LT_USB_DEVKIT_PATH` (default: `"/dev/ttyACM0"`) to set the path to the USB device representing the USB DevKit serial port:
+- `LT_USB_DEVKIT_PATH` (default: `"/dev/ttyACM0"`) sets the path to the USB device representing the USB DevKit serial port:
 
     ??? example "Configuring USB DevKit serial port"
         === ":fontawesome-brands-linux: Linux"
@@ -50,7 +50,7 @@ Besides the [Libtropic CMake options](../../../reference/integrating_libtropic/h
         === ":fontawesome-brands-windows: Windows"
             TBA
 
-- `LT_SH0_KEYS` (default: `"prod0"`) to choose which pairing keys in slot 0 will be used. Switch to engineering sample pairing keys if your TROPIC01 has them:
+- `LT_SH0_KEYS` (default: `"prod0"`) selects which pairing keys in slot 0 are used. Switch to engineering-sample pairing keys if your TROPIC01 is provisioned with them:
 
     ??? example "Switching to engineering sample pairing keys"
         === ":fontawesome-brands-linux: Linux"

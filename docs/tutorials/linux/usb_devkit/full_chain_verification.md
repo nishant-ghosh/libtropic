@@ -87,9 +87,9 @@ The script contains comments about each step, so refer to the code of the script
     The script verifies the TROPIC01 certificates against certificate authority certificates downloaded from the Tropic Square PKI website. As the same certificates are present also in the TROPIC01 itself, those can be used instead. The importance of verifying the root certificate independently remains the key part of the process.
 
 ## Configuration
-Besides the [Libtropic CMake options](../../../reference/integrating_libtropic/how_to_configure/index.md) used to configure Libtropic, there is the following CMake option specific to this example:
+In addition to the [Libtropic CMake options](../../../reference/integrating_libtropic/how_to_configure/index.md) used to configure Libtropic, this example provides the following CMake option:
 
-- `LT_USB_DEVKIT_PATH` (default: `"/dev/ttyACM0"`) to set the path to the USB device representing the USB DevKit serial port:
+- `LT_USB_DEVKIT_PATH` (default: `"/dev/ttyACM0"`) sets the path to the USB device representing the USB DevKit serial port:
 
     ??? example "Configuring USB DevKit serial port"
         === ":fontawesome-brands-linux: Linux"
