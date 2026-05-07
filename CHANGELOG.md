@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced `LT_L1_TIMEOUT_MS_MIN`, `LT_L1_TIMEOUT_MS_DEFAULT`, `LT_L1_TIMEOUT_MS_MAX` with `LT_L1_SPI_TIMEOUT_MS` (timeout on SPI transfers) and `LT_L1_INT_TIMEOUT_MS` (timeout while waiting for an interrupt from TROPIC01).
   - Both constants are user-configurable. Provided values were tested on supported HALs.
   - Some HALs do not support timeouts, so they ignore those constants. Refer to the HAL source.
+- Renamed `LT_L1_READ_RETRY_DELAY` to `LT_L1_READ_RETRY_DELAY_MS`.
 
 ### Added
 - ECC + EdDSA example for USB DevKit.
@@ -54,7 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Count of retries can be configured using `LT_CRC_ERR_RETRY_ATTEMPTS` parameter/macro. Default value is 3 retries.
   - See [`LT_CRC_ERR_RETRY_ATTEMPTS` section](https://tropicsquare.github.io/libtropic/latest/reference/integrating_libtropic/how_to_configure/#lt_crc_err_retry_attempts) in "How to Configure" page of the documentation to learn how the retry mechanism works.
 - FAQ section covering `LT_L2_CRC_ERR` and `LT_L2_IN_CRC_ERR`.
-- Possibility to configure `LT_L1_READ_MAX_TRIES` and `LT_L1_READ_RETRY_DELAY`.
+- Possibility to configure `LT_L1_READ_MAX_TRIES` and `LT_L1_READ_RETRY_DELAY_MS`.
 - Community HAL for Raspberry Pi Pico boards created by [Wuard](https://github.com/wuard) (see the documentation for more information).
 
 ### Fixed

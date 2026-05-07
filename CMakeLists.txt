@@ -115,10 +115,10 @@ if(NOT LT_L1_READ_MAX_TRIES MATCHES "^([1-9][0-9]*)$")
 endif()
 
 # Must be positive without leading zero.
-set(LT_L1_READ_RETRY_DELAY "25" CACHE STRING "Time to wait in ms between each Get_Response request.")
+set(LT_L1_READ_RETRY_DELAY_MS "25" CACHE STRING "Time to wait in ms between each Get_Response request.")
 
-if(NOT LT_L1_READ_RETRY_DELAY MATCHES "^([1-9][0-9]*)$")
-    message(FATAL_ERROR "LT_L1_READ_RETRY_DELAY must be a positive integer without leading zeros, got '${LT_L1_READ_RETRY_DELAY}'")
+if(NOT LT_L1_READ_RETRY_DELAY_MS MATCHES "^([1-9][0-9]*)$")
+    message(FATAL_ERROR "LT_L1_READ_RETRY_DELAY_MS must be a positive integer without leading zeros, got '${LT_L1_READ_RETRY_DELAY_MS}'")
 endif()
 
 # Must be non-negative without leading zero.
@@ -305,6 +305,6 @@ endif()
 
 target_compile_definitions(tropic PUBLIC LT_CRC_ERR_RETRY_ATTEMPTS=${LT_CRC_ERR_RETRY_ATTEMPTS})
 target_compile_definitions(tropic PUBLIC LT_L1_READ_MAX_TRIES=${LT_L1_READ_MAX_TRIES})
-target_compile_definitions(tropic PUBLIC LT_L1_READ_RETRY_DELAY=${LT_L1_READ_RETRY_DELAY})
+target_compile_definitions(tropic PUBLIC LT_L1_READ_RETRY_DELAY_MS=${LT_L1_READ_RETRY_DELAY_MS})
 target_compile_definitions(tropic PUBLIC LT_L1_SPI_TIMEOUT_MS=${LT_L1_SPI_TIMEOUT_MS})
 target_compile_definitions(tropic PUBLIC LT_L1_INT_TIMEOUT_MS=${LT_L1_INT_TIMEOUT_MS})

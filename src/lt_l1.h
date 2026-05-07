@@ -38,13 +38,13 @@ extern "C" {
 #define LT_L1_READ_MAX_TRIES 50
 #endif
 
-#ifndef LT_L1_READ_RETRY_DELAY
+#ifndef LT_L1_READ_RETRY_DELAY_MS
 /** @brief Time to wait in ms between each Get_Response request.
  *
  * @note In CMake-based builds it is set in CMakeLists.txt and can be configured using CMake
  * parameters.
  */
-#define LT_L1_READ_RETRY_DELAY 25
+#define LT_L1_READ_RETRY_DELAY_MS 25
 #endif
 
 #ifndef LT_L1_SPI_TIMEOUT_MS

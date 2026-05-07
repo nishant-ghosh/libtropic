@@ -125,12 +125,12 @@ Set this parameter to zero to disable retries.
 
 Sets how many times to try L1 transfer (if the chip is busy) before failing.
 
-See also [`LT_L1_READ_RETRY_DELAY`](#lt_l1_read_retry_delay).
+See also [`LT_L1_READ_RETRY_DELAY_MS`](#lt_l1_read_retry_delay_ms).
 
 !!! tip "Tip: Use interrupt pin"
     It is better to use the interrupt pin functionality of TROPIC01 if you need to shorten reaction time. See [`LT_USE_INT_PIN`](#lt_use_int_pin) parameter.
 
-### `LT_L1_READ_RETRY_DELAY`
+### `LT_L1_READ_RETRY_DELAY_MS`
 - integer (positive)
 - default value: 25 (ms)
 
