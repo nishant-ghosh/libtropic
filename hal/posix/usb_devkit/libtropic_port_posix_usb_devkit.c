@@ -613,11 +613,11 @@ lt_ret_t lt_port_spi_transfer(lt_l2_state_t *s2, uint8_t offset, uint16_t tx_dat
             int written = snprintf((char *)(buffered_chars + i * 2), remaining, "%02" PRIX8,
                                    s2->buff[i + offset]);
             if (written < 0) {
-                LT_LOG_ERROR("sprintf failed: errno=%d (%s)", errno, strerror(errno));
+                LT_LOG_ERROR("snprintf failed: errno=%d (%s)", errno, strerror(errno));
                 return LT_HAL_ERROR;
             }
             else if (written != 2) {
-                LT_LOG_ERROR("sprintf wrote incorrect number of chars, expected 2, got %d", written);
+                LT_LOG_ERROR("snprintf wrote incorrect number of chars, expected 2, got %d", written);
                 return LT_HAL_ERROR;
             }
         }
