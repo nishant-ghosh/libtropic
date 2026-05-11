@@ -1702,10 +1702,20 @@ lt_ret_t lt_print_bytes(const uint8_t *bytes, const size_t bytes_cnt, char *out_
     for (size_t i = 0; i < bytes_cnt; i++) {
         size_t remaining = out_buf_size - (i * 2);
         int written = snprintf(&out_buf[i * 2], remaining, "%02" PRIX8, bytes[i]);
-        // Verify snprintf succeeded and didn't truncate
-        // (should never happen given precondition check, but defensive)
-        if (written < 0 || (size_t)written >= remaining) {
-            return LT_FAIL;
+        if (written < 0) {
+            // Not using errno here, as it is required only by POSIX.
+            LT_LOG_ERROR("snprintf failed, written=%d", written);
+            return LT_HAL_ERROR;
+        }
+        // Considering one additional byte for null terminator.
+        else if ((size_t)written >= remaining) {
+            LT_LOG_ERROR("snprintf output was truncated, written=%d, remaining=%zu", written,
+                         remaining);
+            return LT_HAL_ERROR;
+        }
+        else if (written != 2) {
+            LT_LOG_ERROR("snprintf wrote incorrect number of chars, expected 2, got %d", written);
+            return LT_HAL_ERROR;
         }
     }
     out_buf[bytes_cnt * 2] = '\0';
@@ -2215,8 +2225,8 @@ lt_ret_t lt_print_fw_header(lt_handle_t *h, const lt_bank_id_t bank_id,
         print_func("      Git hash:           %08" PRIX32 "\n", p_h->git_hash);
         // Hash str has 32B
         char hash_str[32 * 2 + 1] = {0};
-        for (int i = 0; i < 32; i++) {
-            snprintf(hash_str + i * 2, sizeof(hash_str) - i * 2, "%02" PRIX8, p_h->hash[i]);
+        if (LT_OK != lt_print_bytes(p_h->hash, sizeof(p_h->hash), hash_str, sizeof(hash_str))) {
+            return LT_FAIL;
         }
         print_func("      Hash:          %s\n", hash_str);
         print_func("      Pair version:  %08" PRIX32 "\n", p_h->pair_version);

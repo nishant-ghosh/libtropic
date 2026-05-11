@@ -18,7 +18,14 @@ extern "C" {
 #endif
 
 #define LT_USB_DEVKIT_READ_WRITE_DELAY 10
-#define LT_USB_DEVKIT_SPI_TRANSFER_BUFF_SIZE_MAX ((TR01_L1_LEN_MAX * 2) + 1)
+
+/**
+ * @brief Size of the buffer used for encoded data prepared for transfer.
+ *
+ * Each byte is translated to hex number (len * 2 bytes), two-character terminator is appended (+ 2
+ * bytes) and null-terminator for sscanf is appended (+ 1 byte).
+ */
+#define LT_USB_DEVKIT_SPI_TRANSFER_BUFF_SIZE_MAX ((TR01_L1_LEN_MAX * 2) + 3)
 
 /**
  * @brief Device structure for TROPIC01 USB DevKit POSIX port.

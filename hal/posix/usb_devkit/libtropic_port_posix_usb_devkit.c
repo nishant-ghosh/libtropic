@@ -609,7 +609,23 @@ lt_ret_t lt_port_spi_transfer(lt_l2_state_t *s2, uint8_t offset, uint16_t tx_dat
         // buffered_chars.
         uint8_t buffered_chars[LT_USB_DEVKIT_SPI_TRANSFER_BUFF_SIZE_MAX] = {0};
         for (int i = 0; i < tx_data_length; i++) {
-            sprintf((char *)(buffered_chars + i * 2), "%02" PRIX8, s2->buff[i + offset]);
+            size_t remaining = sizeof(buffered_chars) - i * 2;
+            int written = snprintf((char *)(buffered_chars + i * 2), remaining, "%02" PRIX8,
+                                   s2->buff[i + offset]);
+            if (written < 0) {
+                LT_LOG_ERROR("snprintf failed: errno=%d (%s)", errno, strerror(errno));
+                return LT_HAL_ERROR;
+            }
+            // Considering one additional byte for null terminator.
+            else if ((size_t)written >= remaining) {
+                LT_LOG_ERROR("snprintf output was truncated, written=%d, remaining=%zu", written,
+                             remaining);
+                return LT_HAL_ERROR;
+            }
+            else if (written != 2) {
+                LT_LOG_ERROR("snprintf wrote incorrect number of chars, expected 2, got %d", written);
+                return LT_HAL_ERROR;
+            }
         }
 
         // Control characters to keep CS LOW (they are expected by USB DevKit, see the top of this file
@@ -629,8 +645,16 @@ lt_ret_t lt_port_spi_transfer(lt_l2_state_t *s2, uint8_t offset, uint16_t tx_dat
             return LT_HAL_ERROR;
         }
 
+        // Ensure the buffer is null-terminated (for sscanf).
+        buffered_chars[LT_USB_DEVKIT_SPI_TRANSFER_BUFF_SIZE_MAX - 1] = '\0';
+
         for (size_t count = 0; count < tx_data_length; count++) {
-            sscanf((char *)&buffered_chars[count * 2], "%02" SCNx8, &s2->buff[count + offset]);
+            int ret = sscanf((char *)&buffered_chars[count * 2], "%02" SCNx8,
+                             &s2->buff[count + offset]);
+            if (ret != 1) {
+                LT_LOG_ERROR("sscanf failed to convert hex value at offset %zu, ret=%d", count, ret);
+                return LT_HAL_ERROR;
+            }
         }
     }
     else {
