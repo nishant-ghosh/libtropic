@@ -1703,8 +1703,7 @@ lt_ret_t lt_print_bytes(const uint8_t *bytes, const size_t bytes_cnt, char *out_
     for (size_t i = 0; i < bytes_cnt; i++) {
         size_t remaining = out_buf_size - (i * 2);
         int written = snprintf(&out_buf[i * 2], remaining, "%02" PRIX8, bytes[i]);
-        // Verify snprintf succeeded and didn't truncate
-        // (should never happen given precondition check, but defensive)
+        // '"%02" PRIX8' should always result in 2 characters written.
         if (written != 2) {
             return LT_FAIL;
         }
