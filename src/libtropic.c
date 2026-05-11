@@ -2215,12 +2215,8 @@ lt_ret_t lt_print_fw_header(lt_handle_t *h, const lt_bank_id_t bank_id,
         print_func("      Git hash:           %08" PRIX32 "\n", p_h->git_hash);
         // Hash str has 32B
         char hash_str[32 * 2 + 1] = {0};
-        for (int i = 0; i < 32; i++) {
-            int written = snprintf(hash_str + i * 2, sizeof(hash_str) - i * 2, "%02" PRIX8,
-                                   p_h->hash[i]);
-            if (written != 2) {
-                return LT_FAIL;
-            }
+        if (LT_OK != lt_print_bytes(p_h->hash, sizeof(p_h->hash), hash_str, sizeof(hash_str))) {
+            return LT_FAIL;
         }
         print_func("      Hash:          %s\n", hash_str);
         print_func("      Pair version:  %08" PRIX32 "\n", p_h->pair_version);
