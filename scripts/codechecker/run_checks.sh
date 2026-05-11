@@ -35,7 +35,17 @@ fi
 if ! command -v make >/dev/null 2>&1; then  
     echo "Missing make! Install and try again."  
     exit 1  
-fi  
+fi
+if ! command -v arm-none-eabi-gcc >/dev/null 2>&1; then
+    echo "Missing arm-none-eabi-gcc (ARM GCC toolchain). Install and try again."
+    exit 1
+fi
+
+# Check for ESP-IDF `idf.py` tool used for ESP32 builds
+if ! command -v idf.py >/dev/null 2>&1; then
+    echo "Missing idf.py (ESP-IDF build tool). Install ESP-IDF and ensure idf.py is on PATH."
+    exit 1
+fi
 
 # Recreating directories
 rm -fr "$LT_ROOT_DIR/.codechecker/"
