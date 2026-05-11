@@ -20,6 +20,7 @@
 lt_ret_t lt_X25519(const uint8_t *privkey, const uint8_t *pubkey, uint8_t *secret)
 {
     int ret;
+    word32 secret_out_len = TR01_X25519_KEY_LEN;
     lt_ret_t lt_ret = LT_OK;
     curve25519_key wc_priv, wc_pub;
 #ifdef WOLFSSL_CURVE25519_BLINDING
@@ -76,7 +77,6 @@ lt_ret_t lt_X25519(const uint8_t *privkey, const uint8_t *pubkey, uint8_t *secre
         goto lt_X25519_cleanup;
     }
 
-    word32 secret_out_len = TR01_X25519_KEY_LEN;
     ret = wc_curve25519_shared_secret_ex(&wc_priv, &wc_pub, secret, &secret_out_len,
                                          EC25519_LITTLE_ENDIAN);
     if (ret != 0) {
@@ -110,6 +110,7 @@ lt_X25519_cleanup:
 lt_ret_t lt_X25519_scalarmult(const uint8_t *sk, uint8_t *pk)
 {
     int ret;
+    word32 pk_out_len = TR01_X25519_KEY_LEN;
     lt_ret_t lt_ret = LT_OK;
     curve25519_key wc_secret;
 #ifdef WOLFSSL_CURVE25519_BLINDING
@@ -150,7 +151,6 @@ lt_ret_t lt_X25519_scalarmult(const uint8_t *sk, uint8_t *pk)
     }
 #endif
 
-    word32 pk_out_len = TR01_X25519_KEY_LEN;
     ret = wc_curve25519_export_public_ex(&wc_secret, pk, &pk_out_len, EC25519_LITTLE_ENDIAN);
     if (ret != 0) {
         LT_LOG_ERROR("Failed to compute X25519 public key, ret=%d (%s)", ret, wc_GetErrorString(ret));

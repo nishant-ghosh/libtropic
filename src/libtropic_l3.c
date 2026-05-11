@@ -88,6 +88,17 @@ lt_ret_t lt_in__session_start(lt_handle_t *h, const uint8_t *stpub, const lt_pke
                                  '5', '5', '1', '9', '_', 'A', 'E', 'S',  'G',  'C', 'M',
                                  '_', 'S', 'H', 'A', '2', '5', '6', 0x00, 0x00, 0x00};
     uint8_t hash[LT_SHA256_DIGEST_LENGTH] = {0};
+
+    // Variables used during key derivation (ECDH)
+    uint8_t output_1[33] = {0};  // Temp storage for ck, kcmd.
+    uint8_t output_2[32] = {0};  // Temp storage for kauth.
+    uint8_t shared_secret[TR01_X25519_KEY_LEN] = {0};
+    uint8_t kcmd[TR01_AES256_KEY_LEN] = {
+        0};  // AES256 key used for L3 command packet encryption/decryption.
+    uint8_t kres[TR01_AES256_KEY_LEN] = {
+        0};  // AES256 key used for L3 result packet encryption/decryption.
+    uint8_t kauth[TR01_AES256_KEY_LEN] = {0};  // AES256 key used for handshake authentication.
+
     lt_ret_t ret;
     lt_ret_t ret_unused;
 
@@ -202,15 +213,6 @@ lt_ret_t lt_in__session_start(lt_handle_t *h, const uint8_t *stpub, const lt_pke
     }
 
     // Derivate the keys (ECDH)
-    uint8_t output_1[33] = {0};  // Temp storage for ck, kcmd.
-    uint8_t output_2[32] = {0};  // Temp storage for kauth.
-    uint8_t shared_secret[TR01_X25519_KEY_LEN] = {0};
-    uint8_t kcmd[TR01_AES256_KEY_LEN] = {
-        0};  // AES256 key used for L3 command packet encryption/decryption.
-    uint8_t kres[TR01_AES256_KEY_LEN] = {
-        0};  // AES256 key used for L3 result packet encryption/decryption.
-    uint8_t kauth[TR01_AES256_KEY_LEN] = {0};  // AES256 key used for handshake authentication.
-
     // ck = protocol_name
     // ck = HKDF (ck, X25519(EHPRIV, ETPUB), 1)
     ret = lt_X25519(host_eph_keys->ehpriv, p_rsp->e_tpub, shared_secret);
