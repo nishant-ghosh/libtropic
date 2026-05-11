@@ -27,6 +27,9 @@ extern "C" {
  * @note Before calling this function, place request's data into handle's internal L2 buffer.
  * Structures defined in lt_l2_api_structs.h might help with encoding the data.
  *
+ * @warning This function does not handle retries on CRC errors. It is recommended to use
+ * lt_l2_transfer which combines send/receive functionality and implements retries.
+ *
  * @param s2          Structure holding l2 state
  *
  * @retval            LT_OK Function executed successfully
@@ -49,7 +52,10 @@ lt_ret_t lt_l2_resend_response(lt_l2_state_t *s2);
  * @brief Receives L2 response.
  *
  * After successful execution, handle's `l2_buff` will contain response.
- * @note Structures defined in lt_l2_api_structs.h migh help with decoding.
+ * @note Structures defined in lt_l2_api_structs.h might help with decoding.
+ *
+ * @warning This function does not handle retries on CRC errors. It is recommended to use
+ * lt_l2_transfer which combines send/receive functionality and implements retries.
  *
  * @param s2          Structure holding l2 state
  *
@@ -57,6 +63,21 @@ lt_ret_t lt_l2_resend_response(lt_l2_state_t *s2);
  * @retval            other Function did not execute successully
  */
 lt_ret_t lt_l2_receive(lt_l2_state_t *s2);
+
+/**
+ * @brief Send L2 Request and receive L2 Response.
+ *
+ * This function combines lt_l2_send and lt_l2_receive with additional
+ * handling of retrying the transfer: resending outgoing frames on
+ * LT_L2_CRC_ERR errors and sending Resend_Req on LT_L2_IN_CRC_ERR
+ * errors when an invalid incoming CRC is detected.
+ *
+ * @param s2          Structure holding l2 state
+ *
+ * @retval            LT_OK Function executed successfully
+ * @retval            other Function did not execute successfully
+ */
+lt_ret_t lt_l2_transfer(lt_l2_state_t *s2);
 
 /**
  * @brief Sends content of encrypted L3 command's buffer over Layer 2.

@@ -39,19 +39,38 @@
 
     After this, you should see an output in your serial monitor.
 
-If your TROPIC01 has engineering sample pairing keys, you can switch to them using the `LT_SH0_KEYS` CMake option:
-!!! example "Switching to engineering sample pairing keys"
-    === ":fontawesome-brands-linux: Linux"
-        You can pass `LT_SH0_KEYS` to `cmake` as follows:
-        ```bash { .copy }
-        cmake -DLT_SH0_KEYS="eng_sample" ..
-        make
-        ```
+## Configuration
+In addition to the [Libtropic CMake options](../../reference/integrating_libtropic/how_to_configure/index.md) used to configure Libtropic, this example provides the following CMake options:
 
-    === ":fontawesome-brands-apple: macOS"
-        TBA
+- `STLINK_SERIAL_NUMBER` (default: none, OpenOCD looks for any STLink programming interface) specifies the serial number of the STLink device used for flashing. This is needed only when you have multiple STM32s connected via built-in STLink or when OpenOCD autodetection does not work:
 
-    === ":fontawesome-brands-windows: Windows"
-        TBA
+    ??? example "Configuring STLink serial number"
+        === ":fontawesome-brands-linux: Linux"
+            ```bash { .copy }
+            cmake -DSTLINK_SERIAL_NUMBER=<stlink_serial_number> ..
+            make
+            make flash
+            ```
 
-Additionally, see [Default Pairing Keys for a Secure Channel Handshake](../../reference/default_pairing_keys.md) for more information.
+        === ":fontawesome-brands-apple: macOS"
+            TBA
+
+        === ":fontawesome-brands-windows: Windows"
+            TBA
+
+- `LT_SH0_KEYS` (default: `"prod0"`) selects which pairing keys in slot 0 are used. Switch to engineering-sample pairing keys if your TROPIC01 is provisioned with them:
+
+    ??? example "Switching to engineering sample pairing keys"
+        === ":fontawesome-brands-linux: Linux"
+            ```bash { .copy }
+            cmake -DLT_SH0_KEYS="eng_sample" ..
+            make
+            make flash
+            ```
+
+        === ":fontawesome-brands-apple: macOS"
+            TBA
+
+        === ":fontawesome-brands-windows: Windows"
+            TBA
+    Additionally, see [Default Pairing Keys for a Secure Channel Handshake](../../reference/default_pairing_keys.md) for more information.

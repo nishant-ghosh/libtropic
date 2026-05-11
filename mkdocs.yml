@@ -69,12 +69,13 @@ nav:
           - 2. FW Update: tutorials/linux/spi/fw_update.md
           - 3. Hello, World!: tutorials/linux/spi/hello_world.md
           - 4. Full Chain Verification: tutorials/linux/spi/full_chain_verification.md
-        - USB Devkit:
+        - USB DevKit:
           - tutorials/linux/usb_devkit/index.md
           - 1. Chip Identification: tutorials/linux/usb_devkit/identify_chip.md
           - 2. FW Update: tutorials/linux/usb_devkit/fw_update.md
           - 3. Hello, World!: tutorials/linux/usb_devkit/hello_world.md
-          - 4. Full Chain Verification: tutorials/linux/usb_devkit/full_chain_verification.md
+          - 4. ECC EdDSA: tutorials/linux/usb_devkit/ecc_eddsa.md
+          - 5. Full Chain Verification: tutorials/linux/usb_devkit/full_chain_verification.md
       - ESP32:
         - tutorials/esp32/index.md
         - 1. Chip Identification: tutorials/esp32/identify_chip.md
@@ -112,6 +113,7 @@ nav:
       - Linux: compatibility/host_platforms/linux.md
       - POSIX: compatibility/host_platforms/posix.md
       - Arduino: compatibility/host_platforms/arduino.md
+      - Raspberry Pi Pico: compatibility/host_platforms/rpi_pico.md
     - Cryptographic Functionality Providers:
       - compatibility/cfps/index.md
       - Trezor Crypto: compatibility/cfps/trezor_crypto.md
@@ -130,6 +132,13 @@ nav:
     - Using the CodeChecker: for_contributors/codechecker.md
     - Adding a New Host Platform: for_contributors/adding_host_platform.md
     - Adding a New Cryptographic Functionality Provider: for_contributors/adding_cfp.md
+  - Applications:
+    - applications/index.md
+    - TROPIC01 Util:
+      - applications/tropic01_util/index.md
+      - Install and Use: applications/tropic01_util/install_and_use.md
+      - How It Works: applications/tropic01_util/how_it_works.md
+      - Add a New Command: applications/tropic01_util/add_new_cmd.md
   - FAQ: faq.md
 
 plugins:

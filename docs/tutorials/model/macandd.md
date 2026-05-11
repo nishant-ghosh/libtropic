@@ -20,7 +20,7 @@ In this example, we also define two functions to implement PIN verification func
 You can use these functions as an inspiration for your project.
 
 !!! info "More Information"
-    For more information about Mac-And-Destroy, we recommend checking out the [Pin Verification Application Note](https://github.com/tropicsquare/tropic01?tab=readme-ov-file#application-notes) or the example's source code in `examples/model/mac_and_destroy/`.
+    For more information about Mac-And-Destroy, we recommend checking out the *Pin Verification Application Note* (ODN_TR01_app_002) (available on [GitHub](https://github.com/tropicsquare/tropic01/blob/main/doc/pages/part-numbers.md#datasheet-application-notes-api-and-erratas)) or the example's source code in `examples/model/mac_and_destroy/`.
 
 ## Build and Run
 Before proceeding, make sure you have activated the virtual environment you installed the TROPIC01 Model in and started it. If you're lost, see [First Steps](first_steps.md).

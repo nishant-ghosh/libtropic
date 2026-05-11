@@ -5,6 +5,72 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0]
+
+### Changed
+- USB DevKit HAL: call `write()` in a loop, allow `EINTR` error code for both `write()` and `read()`.
+- Refer to USB Dongle as USB DevKit:
+  - Rename `hal/posix/usb_dongle/` to `hal/posix/usb_devkit/`.
+  - Rename `libtropic_port_posix_usb_dongle.*` to `libtropic_port_posix_usb_devkit.*`
+  - Rename `LT_USB_DONGLE_READ_WRITE_DELAY` to `LT_USB_DEVKIT_READ_WRITE_DELAY`.
+  - Rename `LT_USB_DONGLE_SPI_TRANSFER_BUFF_SIZE_MAX` to `LT_USB_DEVKIT_SPI_TRANSFER_BUFF_SIZE_MAX`.
+  - Rename `lt_dev_posix_usb_dongle_t` to `lt_dev_posix_usb_devkit_t`.
+- Added `lt_` prefixes to `sh0priv_eng_sample`, `sh0pub_eng_sample`, `sh0priv_prod0`, `sh0pub_prod0` arrays to avoid name collisions.
+- Renamed `TR01_CURVE_GENERATED` to `TR01_KEY_GENERATED` and `TR01_CURVE_STORED` to `TR01_KEY_STORED` in the `lt_ecc_key_origin_t` enum (typo).
+- Rename STM32 Nucleo F439ZI HAL to STM32F4xx HAL to provide compatibility with the MCU family:
+  - Renamed `hal/stm32/nucleo_f439zi/libtropic_port_stm32_nucleo_f439zi.*` to `hal/stm32/stm32f4xx/libtropic_port_stm32f4xx.*`.
+  - Renamed `LT_STM32_F439ZI_GPIO_OUTPUT_CHECK_ATTEMPTS` to `LT_STM32F4XX_GPIO_OUTPUT_CHECK_ATTEMPTS`.
+  - Renamed `lt_dev_stm32_nucleo_f439zi_t` to `lt_dev_stm32f4xx_t`.
+- Rename STM32 Nucleo L432KC HAL to STM32L4xx HAL to provide compatibility with the MCU family:
+  - Renamed `hal/stm32/nucleo_l432kc/libtropic_port_stm32_nucleo_l432kc.*` to `hal/stm32/stm32l4xx/libtropic_port_stm32l4xx.*`.
+  - Renamed `LT_STM32_L432KC_GPIO_OUTPUT_CHECK_ATTEMPTS` to `LT_STM32L4XX_GPIO_OUTPUT_CHECK_ATTEMPTS`.
+  - Renamed `lt_dev_stm32_nucleo_l432kc_t` to `lt_dev_stm32l4xx_t`.
+- `lt_ecc_ecdsa_sign` now expects a 32-byte hash instead of an arbitrary message - provided data are not hashed anymore. Select a hash function that outputs 32 bytes (for example, SHA-256). If using a longer digest, apply standard truncation as appropriate; do not pad shorter digests.
+- `lt_random_value_get()`, `lt_out__random_value_get()`, `lt_in__random_value_get()`: changed type of `rnd_bytes_cnt` parameter to `uint8_t` to align with the TROPIC01 User API.
+- Added the `LT_SILICON_REV_` prefix to the `ABAB` and `ACAB` build-time configuration macros to avoid naming collisions; these macros are user-facing when building Libtropic from sources, especially outside CMake.
+- `lt_do_mutable_fw_update()`: changed parameters, reworked to do the recommended FW update procedure.
+- Updated all FW update examples to use the reworked `lt_do_mutable_fw_update()` helper function.
+- `lt_get_info_cert_store()`: X.509 Certificate Store can be read only in Application Mode.
+- [TROPIC01 Model installation script](scripts/tropic01_model/install_linux.sh) now downloads ts-tvl version 2.4, which fixes compatibility with Python 3.14.
+- Renamed `LT_L1_SPI_ERROR` to `LT_HAL_ERROR`.
+- Replaced `LT_FAIL` in HALs with `LT_HAL_ERROR`.
+- Enhanced logging: include errno (if set) in Linux/POSIX HALs, log error on invalid curve type in `lt_in__ecc_key_read`.
+- Return `LT_PARAM_ERR` in `lt_print_fw_header` on invalid firmware header size.
+- Replaced `LT_L1_TIMEOUT_MS_MIN`, `LT_L1_TIMEOUT_MS_DEFAULT`, `LT_L1_TIMEOUT_MS_MAX` with `LT_L1_SPI_TIMEOUT_MS` (timeout on SPI transfers) and `LT_L1_INT_TIMEOUT_MS` (timeout while waiting for an interrupt from TROPIC01).
+  - Both constants are user-configurable. Provided values were tested on supported HALs.
+  - Some HALs do not support timeouts, so they ignore those constants. Refer to the HAL source.
+- Renamed `LT_L1_READ_RETRY_DELAY` to `LT_L1_READ_RETRY_DELAY_MS`.
+
+### Added
+- ECC + EdDSA example for USB DevKit.
+- STM32L4xx HAL: support for TROPIC01 GPO pin.
+- Arrays to firmware update files which contain firmware version of the update: `fw_CPU_ver`, `fw_SPECT_ver`.
+- `fw_data_size` parameter to `lt_mutable_fw_update()` (ACAB version).
+- STM32 L432KC examples: support for TROPIC01 GPO pin.
+- FW update examples: recommended handling of Maintenance Mode to reduce the attack surface.
+- Examples: Added examples for STM32 Nucleo U545RE-Q board: Hello World, FW Update, Chip Identification.
+- `lt_l2_transfer`: this function combines `lt_l2_send`, `lt_l2_receive` and implements retry mechanism on CRC errors. If using separate API functionality, it is recommended to use `lt_l2_transfer`.
+- Diagnostic counters for tracking CRC errors to `lt_l2_state`: `l2_crc_error_count`, `l2_in_crc_error_count`.
+- Implemented retry mechanism on L2 Layer in the case of CRC errors:
+  - Count of retries can be configured using `LT_CRC_ERR_RETRY_ATTEMPTS` parameter/macro. Default value is 3 retries.
+  - See [`LT_CRC_ERR_RETRY_ATTEMPTS` section](https://tropicsquare.github.io/libtropic/latest/reference/integrating_libtropic/how_to_configure/#lt_crc_err_retry_attempts) in "How to Configure" page of the documentation to learn how the retry mechanism works.
+- FAQ section covering `LT_L2_CRC_ERR` and `LT_L2_IN_CRC_ERR`.
+- Possibility to configure `LT_L1_READ_MAX_TRIES` and `LT_L1_READ_RETRY_DELAY_MS`.
+- Community HAL for Raspberry Pi Pico boards created by [Wuard](https://github.com/wuard) (see the documentation for more information).
+- New TROPIC01 Util application for the USB DevKit.
+- Documentation: new Applications section with TROPIC01 Util application for the USB DevKit.
+
+### Fixed
+- Change the type of `slot` parameter from `uint8_t` to `lt_pkey_index_t` in `lt_pairing_key_write()`, `lt_pairing_key_read()`, `lt_pairing_key_invalidate()`, `lt_out__pairing_key_write()`, `lt_out__pairing_key_read()`, `lt_out__pairing_key_invalidate()`.
+- `examples/model/mac_and_destroy/`: Log the correct number of wrong attempts and indexes of destroyed slots.
+- Target version reporting in Firmware Update examples for Linux.
+- Compatibility table in main README.md: mention support of Bootloader FW 1.0.1-2.0.1 for all existing Libtropic releases.
+- `lt_print_chip_id()`: Silicon revision field in CHIP_ID v0.0.0.1 is not interpreted as ASCII chars, as this version does not include silicon revision.
+- Added a check of `RSP_LEN` field value to `lt_l2_frame_check`.
+
+### Removed
+- `SDK_INCS` variable from the main `CMakeLists.txt`.
+
 ## [3.2.1]
 
 ### Fixed

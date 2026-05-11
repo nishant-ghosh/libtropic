@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.21)
 
 project(libtropic_functional_mock_tests)
 
+if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.24")
+    cmake_policy(SET CMP0135 NEW) # Timestamp extraction policy
+endif()
+
 ###########################################################################
 #                                                                         #
 #   Paths and setup                                                       #
@@ -68,7 +72,6 @@ add_subdirectory("${PATH_TO_LIBTROPIC}cal/mbedtls_v4" "cal_mbedtls_v4")
 FetchContent_Declare(
     mbedtls
     URL https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-4.0.0/mbedtls-4.0.0.tar.bz2
-    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 set(ENABLE_TESTING OFF CACHE BOOL "Disable mbedtls_v4 test building.")
 set(ENABLE_PROGRAMS OFF CACHE BOOL "Disable mbedtls_v4 examples building.")
@@ -114,6 +117,7 @@ target_include_directories(libtropic_functional_mock_tests_objs PUBLIC ${CMAKE_C
 
 set(LIBTROPIC_MOCK_TEST_LIST
     lt_test_mock_attrs
+    lt_test_mock_invalid_crc
     lt_test_mock_invalid_in_crc
     lt_test_mock_hardware_fail
     lt_test_mock_invalid_app_fw_init

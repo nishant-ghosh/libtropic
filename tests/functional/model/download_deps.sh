@@ -55,6 +55,22 @@ tar -xjf "$SCRIPT_DIR/_deps/mbedtls.tar.bz2" -C "$SCRIPT_DIR/_deps"
 rm "$SCRIPT_DIR/_deps/mbedtls.tar.bz2"
 mv "$SCRIPT_DIR/_deps/mbedtls-4.0.0" "$SCRIPT_DIR/_deps/mbedtls_v4"
 
+echo "Downloading Trezor Crypto..."
+curl -L -o "$SCRIPT_DIR/_deps/trezor-crypto.zip" "https://github.com/tropicsquare/trezor-crypto/archive/ceccdb40467ad3a484b74ab7160c38fc1806119a.zip"
+
+# Verify trezor-crypto zip checksum
+echo "Verifying trezor-crypto.zip checksum..."
+EXPECTED_TREZOR_CRYPTO="131ca76f990318a6ce87ac55e02ce5243f2bd95d31504eee1cbc6369df0d9c74"
+ACTUAL_TREZOR_CRYPTO=$(sha256sum "$SCRIPT_DIR/_deps/trezor-crypto.zip" | awk '{print $1}')
+if [ "$EXPECTED_TREZOR_CRYPTO" != "$ACTUAL_TREZOR_CRYPTO" ]; then
+  echo "Checksum mismatch for trezor-crypto.zip: expected $EXPECTED_TREZOR_CRYPTO, got $ACTUAL_TREZOR_CRYPTO" >&2
+  exit 1
+fi
+
+unzip "$SCRIPT_DIR/_deps/trezor-crypto.zip" -d "$SCRIPT_DIR/_deps"
+mv "$SCRIPT_DIR/_deps/trezor-crypto-ceccdb40467ad3a484b74ab7160c38fc1806119a" "$SCRIPT_DIR/_deps/trezor-crypto"
+rm "$SCRIPT_DIR/_deps/trezor-crypto.zip"
+
 echo "Downloading WolfSSL..."
 curl -L -o "$SCRIPT_DIR/_deps/wolfssl.zip" "https://github.com/wolfSSL/wolfssl/archive/refs/tags/v5.8.4-stable.zip"
 

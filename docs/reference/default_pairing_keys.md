@@ -4,13 +4,13 @@ To establish a Secure Channel Session with TROPIC01, one of the Pairing Key slot
 At the time of manufacturing, Tropic Square configures the Pairing Key slot 0 of every TROPIC01 with $S_{H0PUB}$, generated from $S_{H0PRIV}$, which is provided to customers. The customer can then establish a Secure Channel Session with Pairing Key slot 0, configure TROPIC01, write their own X25519 public key to slot 1, 2 or 3 and invalidate the slot 0 (which is recommended for security reasons).
 
 !!! info "More Information About Pairing Keys"
-    For more information, refer to the [TROPIC01 datasheet](https://github.com/tropicsquare/tropic01?tab=readme-ov-file#documentation).
+    For more information, refer to the *TROPIC01 datasheet* or the *First Pairing Key Application Note* (ODN_TR01_app_005) available on [GitHub](https://github.com/tropicsquare/tropic01/blob/main/doc/pages/part-numbers.md#datasheet-application-notes-api-and-erratas).
 
 ## Default Pairing Keys in Libtropic
 Libtropic provides both of these default $S_{H0PUB}$ and $S_{H0PRIV}$ keys by including `libtropic_common.h`:
 
-1. arrays `sh0pub_prod0` and `sh0priv_prod0` - production keys found in the majority of distributed TROPIC01 chips (see [Available Parts](https://github.com/tropicsquare/tropic01?tab=readme-ov-file#available-parts) table in the TROPIC01 GitHub repository for P/N values),
-2. arrays `sh0pub_eng_sample` and `sh0priv_eng_sample` - keys found in engineering (pre-production) samples of TROPIC01 with P/N `TROPIC01-ES`.
+1. arrays `lt_sh0pub_prod0` and `lt_sh0priv_prod0` - production keys found in the majority of distributed TROPIC01 chips (see available [part numbers](https://github.com/tropicsquare/tropic01/blob/main/doc/pages/part-numbers.md#part-numbers)),
+2. arrays `lt_sh0pub_eng_sample` and `lt_sh0priv_eng_sample` - keys found in engineering (pre-production) samples of TROPIC01 with P/N `TROPIC01-ES`.
 
 ### Establishing Your First Secure Channel Session
 To establish a Secure Channel Session with your new TROPIC01, do the following:

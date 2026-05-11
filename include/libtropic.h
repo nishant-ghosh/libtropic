@@ -72,6 +72,7 @@ lt_ret_t lt_get_tr01_mode(lt_handle_t *h, lt_tr01_mode_t *mode);
 
 /**
  * @brief Read out PKI chain from TROPIC01's Certificate Store
+ * @warning Reading X.509 Certificate Store in the Start-up Mode will fail.
  *
  * @param h           Handle for communication with TROPIC01
  * @param store       Certificate store handle to be filled
@@ -101,6 +102,8 @@ lt_ret_t lt_get_st_pub(const struct lt_cert_store_t *store, uint8_t *stpub);
 
 /**
  * @brief Read TROPIC01's CHIP ID
+ * @note The silicon revision field may be unavailable in CHIP_ID version 0.0.0.1. This CHIP_ID version
+ * was used only in ABAB silicon revisions.
  *
  * @param h           Handle for communication with TROPIC01
  * @param chip_id     Structure which holds all fields of CHIP ID
@@ -215,14 +218,15 @@ lt_ret_t lt_sleep(lt_handle_t *h, const uint8_t sleep_kind);
  */
 lt_ret_t lt_reboot(lt_handle_t *h, const lt_startup_id_t startup_id);
 
-#ifdef ABAB
+#if defined(LT_SILICON_REV_ABAB)
 /** @brief Maximal size of update data */
 #define TR01_MUTABLE_FW_UPDATE_SIZE_MAX 25600
 /**
- * @brief Erase mutable firmware in one of banks
+ * @brief Erases the given mutable firmware bank using Mutable_FW_Erase_Req L2 request.
+ * @note This function is used with silicon revision ABAB.
  *
  * @param h           Handle for communication with TROPIC01
- * @param bank_id     enum lt_bank_id_t
+ * @param bank_id     Mutable firmware bank ID
  *
  * @retval            LT_OK Function executed successfully
  * @retval            other Function did not execute successully, you might use lt_ret_verbose() to get
@@ -231,43 +235,47 @@ lt_ret_t lt_reboot(lt_handle_t *h, const lt_startup_id_t startup_id);
 lt_ret_t lt_mutable_fw_erase(lt_handle_t *h, const lt_bank_id_t bank_id);
 
 /**
- * @brief Update mutable firmware in one of banks
+ * @brief Performs FW update by sending multiple Mutable_FW_Update_Req L2 requests.
+ * @note This function is used with silicon revision ABAB.
  *
  * @param h             Handle for communication with TROPIC01
- * @param fw_data       Array with firmware bytes
- * @param fw_data_size  Number of firmware's bytes in passed array
- * @param bank_id       enum lt_bank_id_t
- * lt_ret_t             LT_OK            - SUCCESS
- *                      other parameters - ERROR, for verbose output pass return value to function
- * lt_ret_verbose()
+ * @param fw_data       Firmware update data
+ * @param fw_data_size  Size of firmware update data
+ * @param bank_id       Mutable firmware bank ID
+ * @retval              LT_OK Function executed successfully
+ * @retval              other Function did not execute successully, you might use lt_ret_verbose() to
+ * get verbose encoding of returned value
  */
-lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const uint16_t fw_data_size,
-                              lt_bank_id_t bank_id);
+lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const size_t fw_data_size,
+                              const lt_bank_id_t bank_id);
 
-#elif ACAB
+#elif defined(LT_SILICON_REV_ACAB)
 /** @brief Maximal size of update data */
 #define TR01_MUTABLE_FW_UPDATE_SIZE_MAX 30720
 
 /**
- * @brief Sends mutable firmware update L2 request to TROPIC01 with silicon revision ACAB
+ * @brief Sends Mutable_FW_Update_Req L2 request.
+ * @note This function is used with silicon revision ACAB and newer.
  *
- * @param h               Handle for communication with TROPIC01
- * @param update_request  Array with firmware update request bytes
- * @return                LT_OK if success, otherwise returns other error code.
+ * @param h             Handle for communication with TROPIC01
+ * @param fw_data       Firmware update data
+ * @param fw_data_size  Size of firmware update data
+ * @return              LT_OK if success, otherwise returns other error code.
  */
-lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *update_request);
+lt_ret_t lt_mutable_fw_update(lt_handle_t *h, const uint8_t *fw_data, const size_t fw_data_size);
 
 /**
- * @brief Sends mutable firmware update data to TROPIC01 with silicon revision ACAB. Function
- * `lt_mutable_fw_update()` must be called first to start authenticated mutable fw update.
+ * @brief Performs the rest of the FW update by sending multiple Mutable_FW_Update_Data_Req L2
+ * requests.
+ * @attention `lt_mutable_fw_update()` must be called before this function.
+ * @note This function is used with silicon revision ACAB and newer.
  *
- * @param h                 Handle for communication with TROPIC01
- * @param update_data       Array with firmware update data bytes
- * @param update_data_size  Size of update data
- * @return                  LT_OK if success, otherwise returns other error code.
+ * @param h             Handle for communication with TROPIC01
+ * @param fw_data       Firmware update data
+ * @param fw_data_size  Size of firmware update data
+ * @return              LT_OK if success, otherwise returns other error code.
  */
-lt_ret_t lt_mutable_fw_update_data(lt_handle_t *h, const uint8_t *update_data,
-                                   const uint16_t update_data_size);
+lt_ret_t lt_mutable_fw_update_data(lt_handle_t *h, const uint8_t *fw_data, const size_t fw_data_size);
 
 #endif
 /**
@@ -313,26 +321,26 @@ lt_ret_t lt_ping(lt_handle_t *h, const uint8_t *msg_out, uint8_t *msg_in, const 
  *
  * @param h           Handle for communication with TROPIC01
  * @param pairing_pub 32B of pubkey
- * @param slot        Pairing key lot SH0PUB - SH3PUB
+ * @param slot        Pairing key slot index
  *
  * @retval            LT_OK Function executed successfully
  * @retval            other Function did not execute successully, you might use lt_ret_verbose() to get
  * verbose encoding of returned value
  */
-lt_ret_t lt_pairing_key_write(lt_handle_t *h, const uint8_t *pairing_pub, const uint8_t slot);
+lt_ret_t lt_pairing_key_write(lt_handle_t *h, const uint8_t *pairing_pub, const lt_pkey_index_t slot);
 
 /**
  * @brief Reads pairing public key from TROPIC01's pairing key slot 0-3
  *
  * @param h           Handle for communication with TROPIC01
  * @param pairing_pub 32B of pubkey
- * @param slot        Pairing key lot SH0PUB - SH3PUB
+ * @param slot        Pairing key slot index
  *
  * @retval            LT_OK Function executed successfully
  * @retval            other Function did not execute successully, you might use lt_ret_verbose() to get
  * verbose encoding of returned value
  */
-lt_ret_t lt_pairing_key_read(lt_handle_t *h, uint8_t *pairing_pub, const uint8_t slot);
+lt_ret_t lt_pairing_key_read(lt_handle_t *h, uint8_t *pairing_pub, const lt_pkey_index_t slot);
 
 /**
  * @brief Invalidates pairing key in slot 0-3
@@ -343,13 +351,13 @@ lt_ret_t lt_pairing_key_read(lt_handle_t *h, uint8_t *pairing_pub, const uint8_t
  * invalidated if operating outside this range. Refer to datasheet for absolute maximum ratings.
  *
  * @param h           Handle for communication with TROPIC01
- * @param slot        Pairing key lot SH0PUB - SH3PUB
+ * @param slot        Pairing key slot index
  *
  * @retval            LT_OK Function executed successfully
  * @retval            other Function did not execute successully, you might use lt_ret_verbose() to get
  * verbose encoding of returned value
  */
-lt_ret_t lt_pairing_key_invalidate(lt_handle_t *h, const uint8_t slot);
+lt_ret_t lt_pairing_key_invalidate(lt_handle_t *h, const lt_pkey_index_t slot);
 
 /**
  * @brief Writes configuration object specified by `addr`. Make sure to read the Configuration Objects
@@ -482,7 +490,7 @@ lt_ret_t lt_r_mem_data_erase(lt_handle_t *h, const uint16_t udata_slot);
  * @retval                  other Function did not execute successully, you might use lt_ret_verbose()
  * to get verbose encoding of returned value
  */
-lt_ret_t lt_random_value_get(lt_handle_t *h, uint8_t *rnd_bytes, const uint16_t rnd_bytes_cnt);
+lt_ret_t lt_random_value_get(lt_handle_t *h, uint8_t *rnd_bytes, const uint8_t rnd_bytes_cnt);
 
 /**
  * @brief Generates ECC key in the specified ECC key slot
@@ -549,21 +557,22 @@ lt_ret_t lt_ecc_key_read(lt_handle_t *h, const lt_ecc_slot_t ecc_slot, uint8_t *
 lt_ret_t lt_ecc_key_erase(lt_handle_t *h, const lt_ecc_slot_t ecc_slot);
 
 /**
- * @brief Performs ECDSA sign of a message with a private ECC key stored in TROPIC01
+ * @brief Calculates ECDSA signature of a message hash (32 bytes) with a private ECC key stored in
+ * TROPIC01.
  *
- * @param h           Handle for communication with TROPIC01
- * @param ecc_slot    Slot containing a private key, TR01_ECC_SLOT_0 - TR01_ECC_SLOT_31
- * @param msg         Buffer containing a message
- * @param msg_len     Length of the message
- * @param rs          Buffer for storing a signature in a form of R and S bytes (should always have
- * length 64B)
+ * @param h            Handle for communication with TROPIC01
+ * @param ecc_slot     Slot containing a private key, TR01_ECC_SLOT_0 - TR01_ECC_SLOT_31
+ * @param msg_hash     Buffer containing a 32-byte hash of the message to sign
+ * @param msg_hash_len Length of the hash; must be exactly 32 bytes
+ * @param rs           Buffer for storing a signature in a form of R and S bytes (should always have
+ * length 64 B).
  *
- * @retval            LT_OK Function executed successfully
- * @retval            other Function did not execute successully, you might use lt_ret_verbose() to get
- * verbose encoding of returned value
+ * @retval             LT_OK Function executed successfully
+ * @retval             other Function did not execute successfully, you might use lt_ret_verbose() to
+ * get verbose encoding of returned value
  */
-lt_ret_t lt_ecc_ecdsa_sign(lt_handle_t *h, const lt_ecc_slot_t ecc_slot, const uint8_t *msg,
-                           const uint32_t msg_len, uint8_t *rs);
+lt_ret_t lt_ecc_ecdsa_sign(lt_handle_t *h, const lt_ecc_slot_t ecc_slot, const uint8_t *msg_hash,
+                           const uint32_t msg_hash_len, uint8_t *rs);
 
 /**
  * @brief Performs EdDSA sign of a message with a private ECC key stored in TROPIC01
@@ -767,6 +776,8 @@ lt_ret_t lt_print_bytes(const uint8_t *bytes, const size_t bytes_cnt, char *out_
 
 /**
  * @brief Interprets fields of CHIP_ID and prints them using the passed printf-like function.
+ * @note If the silicon revision field says "N/A", silicon revision of the TROPIC01 is ABAB. This is
+ * because CHIP_ID v0.0.0.1, used in ABAB chips, does not include the silicon revision field.
  *
  * @param  chip_id     CHIP_ID structure
  * @param  print_func  printf-like function to use for printing
@@ -793,20 +804,30 @@ lt_ret_t lt_print_fw_header(lt_handle_t *h, const lt_bank_id_t bank_id,
                             int (*print_func)(const char *format, ...));
 
 /**
- * @brief Performs mutable firmware update on ABAB and ACAB silicon revisions.
- * @important After this function returns successfully, the handle (`lt_handle_t`) has to be
- * initialized again (i.e. calling `lt_deinit()` and `lt_init()`).
+ * @brief Helper function to perform mutable firmware update on both firmware banks.
+ * @note This helper function follows the recommended FW update process.
+ * @note This helper function is compatible with all silicon revisions.
+ * @important Even if this function fails, the Application FW might still be bootable (at least one
+ * of the banks was updated successfully). However, ignoring this is strongly discouraged:
+ *  - There is a non-negligible security risk.
+ *  - Libtropic was not reinitialized to be compatible with the updated Application FW - some
+ *    functionalities may not be available or may produce undefined behavior.
+ *  - **Solution**: call this function again and make sure it succeeds. If it continues to fail, refer
+ *    to our [FAQ](https://tropicsquare.github.io/libtropic/latest/faq/) or contact us via our [support
+ *    portal](https://support.desk.tropicsquare.com/servicedesk/customer/user/login?destination=portals).
  *
- * @param h                 Handle for communication with TROPIC01
- * @param update_data       Pointer to the data to be written
- * @param update_data_size  Size of the data to be written
- * @param bank_id           Bank ID where the update should be applied, valid values are
- *                             For ABAB: TR01_FW_BANK_FW1, TR01_FW_BANK_FW2, TR01_FW_BANK_SPECT1,
- * TR01_FW_BANK_SPECT2 For ACAB: Parameter is ignored, chip is handling firmware banks on its own
- * @return                  LT_OK if success, otherwise returns other error code.
+ * @param h                   Handle for communication with TROPIC01
+ * @param cpu_fw_data         Firmware update data for RISC-V main CPU
+ * @param cpu_fw_data_size    Size of firmware update data for RISC-V main CPU
+ * @param spect_fw_data       Firmware update data for SPECT coprocessor
+ * @param spect_fw_data_size  Size of firmware update data for SPECT coprocessor
+ * @retval                    LT_OK Function executed successfully
+ * @retval                    other Function did not execute successully, you might use
+ * lt_ret_verbose() to get verbose encoding of returned value
  */
-lt_ret_t lt_do_mutable_fw_update(lt_handle_t *h, const uint8_t *update_data,
-                                 const uint16_t update_data_size, const lt_bank_id_t bank_id);
+lt_ret_t lt_do_mutable_fw_update(lt_handle_t *h, const uint8_t *cpu_fw_data,
+                                 const size_t cpu_fw_data_size, const uint8_t *spect_fw_data,
+                                 const size_t spect_fw_data_size);
 
 /** @} */  // end of libtropic_API_helpers group
 #endif

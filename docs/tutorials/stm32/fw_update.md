@@ -37,6 +37,64 @@
     === ":fontawesome-brands-windows: Windows"
         TBA
 
-    After this, you should see a colored output in your serial monitor.
+    After successful execution, your chip will contain the latest firmware and will be compatible with the current Libtropic API.
+
+!!! question "What if firmware update failed?"
+    Check out the dedicated section in [FAQ](../../faq.md#fw-update-failed).
+
+## Configuration
+In addition to the [Libtropic CMake options](../../reference/integrating_libtropic/how_to_configure/index.md) used to configure Libtropic, this example provides the following CMake options:
+
+- `STLINK_SERIAL_NUMBER` (default: none, OpenOCD looks for any STLink programming interface) specifies the serial number of the STLink device used for flashing. This is needed only when you have multiple STM32s connected via built-in STLink or when OpenOCD autodetection does not work:
+
+    ??? example "Configuring STLink serial number"
+        === ":fontawesome-brands-linux: Linux"
+            ```bash { .copy }
+            cmake -DSTLINK_SERIAL_NUMBER=<stlink_serial_number> ..
+            make
+            make flash
+            ```
+
+        === ":fontawesome-brands-apple: macOS"
+            TBA
+
+        === ":fontawesome-brands-windows: Windows"
+            TBA
+
+- `LT_SH0_KEYS` (default: `"prod0"`) selects which pairing keys in slot 0 are used. Switch to engineering-sample pairing keys if your TROPIC01 is provisioned with them:
+
+    ??? example "Switching to engineering sample pairing keys"
+        === ":fontawesome-brands-linux: Linux"
+            ```bash { .copy }
+            cmake -DLT_SH0_KEYS="eng_sample" ..
+            make
+            make flash
+            ```
+
+        === ":fontawesome-brands-apple: macOS"
+            TBA
+
+        === ":fontawesome-brands-windows: Windows"
+            TBA
+    Additionally, see [Default Pairing Keys for a Secure Channel Handshake](../../reference/default_pairing_keys.md) for more information.
+
+- `LT_DISABLE_MAINTENANCE_MODE` (default: `"ON"`) controls whether the FW update example disables Maintenance Mode in R-Config after a successful FW update. Set to `"OFF"` or `0` if Maintenance Mode is enabled in your TROPIC01 and you don't want the FW update example to disable it:
+
+    ??? example "Keeping Maintenance Mode enabled after FW update"
+        === ":fontawesome-brands-linux: Linux"
+            ```bash { .copy }
+            cmake -DLT_DISABLE_MAINTENANCE_MODE=0 ..
+            make
+            make flash
+            ```
+
+        === ":fontawesome-brands-apple: macOS"
+            TBA
+
+        === ":fontawesome-brands-windows: Windows"
+            TBA
+
+        !!! warning "Not recommended"
+            This step is not recommended because it can increase the attack surface.
 
 [Next example :material-arrow-right:](hello_world.md){ .md-button }

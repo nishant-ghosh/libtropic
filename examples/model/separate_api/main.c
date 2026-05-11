@@ -28,8 +28,8 @@
 #define PING_MSG_SIZE 44
 
 // Choose pairing keypair for slot 0.
-#define LT_EX_SH0_PRIV sh0priv_prod0
-#define LT_EX_SH0_PUB sh0pub_prod0
+#define LT_EX_SH0_PRIV lt_sh0priv_prod0
+#define LT_EX_SH0_PUB lt_sh0pub_prod0
 
 int main(void)
 {
@@ -151,21 +151,11 @@ int main(void)
     // handle's buffer (lt_handle.l2_buff) now contains data which must be transferred over a tunnel to
     // TROPIC01.
 
-    // Following L2 functions are called on a remote host.
-    printf("Executing lt_l2_send()...");
-    ret = lt_l2_send(&lt_handle.l2);
+    // Following L2 function is called on a remote host.
+    printf("Executing lt_l2_transfer()...");
+    ret = lt_l2_transfer(&lt_handle.l2);
     if (LT_OK != ret) {
-        fprintf(stderr, "\nlt_l2_send() failed, ret=%s\n", lt_ret_verbose(ret));
-        lt_deinit(&lt_handle);
-        mbedtls_psa_crypto_free();
-        return -1;
-    }
-    printf("OK\n");
-
-    printf("Executing lt_l2_receive()...");
-    ret = lt_l2_receive(&lt_handle.l2);
-    if (LT_OK != ret) {
-        fprintf(stderr, "\nlt_l2_receive() failed, ret=%s\n", lt_ret_verbose(ret));
+        fprintf(stderr, "\nlt_l2_transfer() failed, ret=%s\n", lt_ret_verbose(ret));
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
         return -1;

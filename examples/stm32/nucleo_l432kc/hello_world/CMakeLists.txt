@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.21.0)
 include (FetchContent)
 
+if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.24")
+    cmake_policy(SET CMP0135 NEW) # Timestamp extraction policy
+endif()
+
 ###########################################################################
 #                                                                         #
 #   Set up project and paths                                              #
@@ -34,10 +38,6 @@ project(
 #   Configuration                                                         #
 #                                                                         #
 ###########################################################################
-
-if(LT_USE_INT_PIN)
-    message(FATAL_ERROR "Using interrupt pin is currently not supported on Nucleo L432KC board")
-endif()
 
 # Serial number of the STLink device which will be used for flashing.
 # You need to define this only if you have multiple STM32s connected using built-in STLink or 
@@ -124,7 +124,7 @@ target_sources(tropic PRIVATE ${LT_CAL_SRCS})
 target_include_directories(tropic PUBLIC ${LT_CAL_INC_DIRS})
 
 # Add Libtropic STM32 HAL
-add_subdirectory("${PATH_LIBTROPIC}hal/stm32/nucleo_l432kc" "nucleo_l432kc_hal")
+add_subdirectory("${PATH_LIBTROPIC}hal/stm32/stm32l4xx" "stm32l4xx_hal")
 
 # Specify other source files
 set(SOURCES

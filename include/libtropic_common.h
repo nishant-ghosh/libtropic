@@ -22,7 +22,7 @@ extern "C" {
 
 /** @brief Size of CHIP_STATUS field */
 #define TR01_L1_CHIP_STATUS_SIZE 1u
-/** @brief Maximal number of data bytes in one L1 transfer */
+/** @brief Minimal number of data bytes in one L1 transfer */
 #define TR01_L1_LEN_MIN TR01_L1_CHIP_STATUS_SIZE
 /** @brief Maximal number of data bytes in one L1 transfer */
 #define TR01_L1_LEN_MAX (TR01_L1_CHIP_STATUS_SIZE + TR01_L2_MAX_FRAME_SIZE)
@@ -102,7 +102,7 @@ extern "C" {
  * the slot 0 after you write your own pairing key to another slot. Refer to the section 5.4 (Security
  * Lifecycle Management) in the datasheet for more information.
  */
-extern const uint8_t sh0priv_eng_sample[];
+extern const uint8_t lt_sh0priv_eng_sample[];
 /**
  * @brief Host MCU's X25519 public key (stored in TROPIC01) to execute a Secure Channel Handshake on
  * Pairing Key slot 0 of the engineering (pre-production) TROPIC01 samples.
@@ -111,7 +111,7 @@ extern const uint8_t sh0priv_eng_sample[];
  * the slot 0 after you write your own pairing key to another slot. Refer to the section 5.4 (Security
  * Lifecycle Management) in the datasheet for more information.
  */
-extern const uint8_t sh0pub_eng_sample[];
+extern const uint8_t lt_sh0pub_eng_sample[];
 /**
  * @brief Host MCU's X25519 private key to execute a Secure Channel Handshake on Pairing Key slot 0 of
  * the production TROPIC01 chips.
@@ -120,7 +120,7 @@ extern const uint8_t sh0pub_eng_sample[];
  * the slot 0 after you write your own pairing key to another slot. Refer to the section 5.4 (Security
  * Lifecycle Management) in the datasheet for more information.
  */
-extern const uint8_t sh0priv_prod0[];
+extern const uint8_t lt_sh0priv_prod0[];
 /**
  * @brief Host MCU's X25519 public key (stored in TROPIC01) to execute a Secure Channel Handshake on
  * Pairing Key slot 0 of the production TROPIC01 chips.
@@ -129,7 +129,7 @@ extern const uint8_t sh0priv_prod0[];
  * the slot 0 after you write your own pairing key to another slot. Refer to the section 5.4 (Security
  * Lifecycle Management) in the datasheet for more information.
  */
-extern const uint8_t sh0pub_prod0[];
+extern const uint8_t lt_sh0pub_prod0[];
 
 //--------------------------------------------------------------------------------------------------------------------//
 
@@ -210,13 +210,18 @@ typedef enum lt_tr01_mode_t {
 } lt_tr01_mode_t;
 
 //--------------------------------------------------------------------------------------------------------------------//
+/** @brief Size of the buffer for Requests/Responses in L2 state structure. */
+#define LT_SIZE_OF_L2_BUFF TR01_L1_LEN_MAX
+
 typedef struct lt_l2_state_t {
     void *device;
-    uint8_t buff[TR01_L1_CHIP_STATUS_SIZE + TR01_L2_MAX_FRAME_SIZE];
+    uint8_t buff[LT_SIZE_OF_L2_BUFF];
     bool startup_req_sent;
+
+    uint32_t l2_in_crc_error_count;
+    uint32_t l2_crc_error_count;
 } lt_l2_state_t;
 
-// #define LT_SIZE_OF_L3_BUFF (1000)
 #ifndef LT_SIZE_OF_L3_BUFF
 #define LT_SIZE_OF_L3_BUFF TR01_L3_PACKET_MAX_SIZE
 #endif
@@ -297,12 +302,13 @@ typedef enum lt_ret_t {
        Application FW - it will stay in Start-up Mode no matter the `startup_id`), or
 
        - `startup_id`==`TR01_MAINTENANCE_REBOOT` and TROPIC01's mode after successful reboot is **not**
-       `LT_TR01_MAINTENANCE`.
+       `LT_TR01_MAINTENANCE` (this can e.g. happen when Maintenance Mode is disabled in R-Config or
+       I-Config).
     */
     LT_REBOOT_UNSUCCESSFUL = 6,
+    /** @brief Some HAL-related operation was not successful (SPI, delay, get random, ...) */
+    LT_HAL_ERROR = 7,
 
-    /** @brief Some SPI related operation was not successful */
-    LT_L1_SPI_ERROR = 7,
     /** @brief Data does not have an expected length */
     LT_L1_DATA_LEN_ERROR = 8,
     /** @brief Chip is in STARTUP mode */
@@ -407,6 +413,17 @@ typedef enum lt_ret_t {
 } lt_ret_t;
 
 #define LT_TR01_REBOOT_DELAY_MS 250
+
+//--------------------------------------------------------------------------------------------------------------------//
+
+#ifndef LT_CRC_ERR_RETRY_ATTEMPTS
+/** @brief Count of attempts to resend request/response on LT_L2_CRC_ERR or LT_L2_IN_CRC_ERR error.
+ *
+ * @note In CMake-based builds it is set in CMakeLists.txt and can be configured using CMake
+ * parameters.
+ */
+#define LT_CRC_ERR_RETRY_ATTEMPTS 3
+#endif
 
 //--------------------------------------------------------------------------------------------------------------------//
 /** @brief Maximal size of TROPIC01's certificate */
@@ -639,6 +656,39 @@ typedef enum lt_bank_id_t {
     TR01_FW_BANK_SPECT1 = 17,  // SPECT bank 1.
     TR01_FW_BANK_SPECT2 = 18,  // SPECT bank 2
 } lt_bank_id_t;
+
+/**
+ * @brief Format of the first chunk in the mutable FW update data.
+ * @note This format applies to silicon revision ACAB and newer.
+ */
+typedef struct lt_mutable_fw_update_chunk_0_t {
+    uint8_t req_len;       /**< Length byte. */
+    uint8_t signature[64]; /**< Signature of SHA256 hash calculated from the rest of the data in
+                              Mutable_FW_Update_Req.REQ_DATA field. */
+    uint8_t hash[32]; /**< SHA256 hash of the first FW chunk sent in Mutable_FW_Update_Data_Req. */
+    uint16_t type;    /**< FW type which is going to be updated. */
+    uint8_t padding;  /**< Padding, zero value. */
+    uint8_t header_version; /**< Version of used header. */
+    uint32_t version;       /**< Version of the mutable FW. */
+} __attribute__((packed)) lt_mutable_fw_update_chunk_0_t;
+
+// clang-format off
+/** \cond */
+LT_STATIC_ASSERT(
+    ( sizeof(struct lt_mutable_fw_update_chunk_0_t) )
+    ==
+    (
+        LT_MEMBER_SIZE(struct lt_mutable_fw_update_chunk_0_t, req_len) + 
+        LT_MEMBER_SIZE(struct lt_mutable_fw_update_chunk_0_t, signature) + 
+        LT_MEMBER_SIZE(struct lt_mutable_fw_update_chunk_0_t, hash) + 
+        LT_MEMBER_SIZE(struct lt_mutable_fw_update_chunk_0_t, type) + 
+        LT_MEMBER_SIZE(struct lt_mutable_fw_update_chunk_0_t, padding) + 
+        LT_MEMBER_SIZE(struct lt_mutable_fw_update_chunk_0_t, header_version) +
+        LT_MEMBER_SIZE(struct lt_mutable_fw_update_chunk_0_t, version)
+    )
+)
+/** \endcond */
+// clang-format on
 
 /**
  * @brief When in MAINTENANCE mode, it is possible to read firmware header from a firmware bank.
@@ -893,8 +943,14 @@ typedef enum lt_ecc_slot_t {
     TR01_ECC_SLOT_31,
 } lt_ecc_slot_t;
 
-/** @brief ECC key type */
-typedef enum lt_ecc_curve_type_t { TR01_CURVE_P256 = 1, TR01_CURVE_ED25519 } lt_ecc_curve_type_t;
+/** @brief Type of the Elliptic Curve used for the key pair. Used by the ECC_Key_Generate,
+ * ECC_Key_Store and ECC_Key_Read L3 commands. */
+typedef enum lt_ecc_curve_type_t {
+    /** @brief Curve P-256. */
+    TR01_CURVE_P256 = 1,
+    /** @brief Curve Ed25519. */
+    TR01_CURVE_ED25519 = 2
+} lt_ecc_curve_type_t;
 
 /** @brief Length of public keys for P256 curve. */
 #define TR01_CURVE_P256_PUBKEY_LEN 64
@@ -903,8 +959,14 @@ typedef enum lt_ecc_curve_type_t { TR01_CURVE_P256 = 1, TR01_CURVE_ED25519 } lt_
 /** @brief Common length of private keys for both P256 and ED25519 curves. */
 #define TR01_CURVE_PRIVKEY_LEN 32
 
-/** @brief ECC key origin */
-typedef enum lt_ecc_key_origin_t { TR01_CURVE_GENERATED = 1, TR01_CURVE_STORED } lt_ecc_key_origin_t;
+/** @brief Origin of the Elliptic Curve private key used to derive the public key. Used by the
+ * ECC_Key_Read L3 command. */
+typedef enum lt_ecc_key_origin_t {
+    /** @brief Private key was generated via the ECC_Key_Generate L3 command. */
+    TR01_KEY_GENERATED = 1,
+    /** @brief Private key was stored via the ECC_Key_Store L3 command. */
+    TR01_KEY_STORED = 2
+} lt_ecc_key_origin_t;
 
 /** @brief Length of the EC signature (RS) for both ECDSA and EDDSA. */
 #define TR01_ECDSA_EDDSA_SIGNATURE_LENGTH 64

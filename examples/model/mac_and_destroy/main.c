@@ -23,8 +23,8 @@
 
 // Pairing keys the model was configured with, defaults to prod0 keys.
 // Provide your own keys here if you configured the model differently.
-#define DEFAULT_SH0_PRIV sh0priv_prod0
-#define DEFAULT_SH0_PUB sh0pub_prod0
+#define DEFAULT_SH0_PRIV lt_sh0priv_prod0
+#define DEFAULT_SH0_PUB lt_sh0pub_prod0
 
 /** @brief Last slot in User memory used for storing of M&D related data (only in this example). */
 #define MACANDD_R_MEM_DATA_SLOT (511)
@@ -682,9 +682,9 @@ int main(void)
     printf("Initialized final_key: %s\n", print_buff);
 
     uint8_t final_key_exported[TR01_MAC_AND_DESTROY_DATA_SIZE] = {0};
-    printf("\nWill do %d PIN check attempts with wrong PIN:\n", MACANDD_ROUNDS);
-    for (int i = 1; i < MACANDD_ROUNDS; i++) {
-        printf("\tInputting wrong PIN -> slot #%d will be destroyed...\n", i);
+    printf("\nWill do %d PIN check attempts with wrong PIN:\n", MACANDD_ROUNDS - 1);
+    for (int i = 0; i < MACANDD_ROUNDS - 1; i++) {
+        printf("\tInputting wrong PIN -> slot #%d will be destroyed...\n", MACANDD_ROUNDS - 1 - i);
         ret = PIN_entry_check(&lt_handle, pin_wrong, sizeof(pin_wrong), additional_data,
                               sizeof(additional_data), final_key_exported);
         if (ret != LT_FAIL) {

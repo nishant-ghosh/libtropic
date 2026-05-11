@@ -112,7 +112,8 @@ lt_ret_t mock_session_abort(lt_handle_t *h)
 }
 
 lt_ret_t mock_l3_result(lt_handle_t *h, const uint8_t *result_plaintext,
-                        const size_t result_plaintext_size)
+                        const size_t result_plaintext_size, const uint8_t status,
+                        const bool corrupt_crc)
 {
     uint8_t l2_frame[TR01_L2_MAX_FRAME_SIZE];
 
@@ -135,7 +136,7 @@ lt_ret_t mock_l3_result(lt_handle_t *h, const uint8_t *result_plaintext,
     }
 
     l2_frame[TR01_L2_CHIP_STATUS_OFFSET] = TR01_L1_CHIP_MODE_READY_bit;
-    l2_frame[TR01_L2_STATUS_OFFSET] = TR01_L2_STATUS_RESULT_OK;
+    l2_frame[TR01_L2_STATUS_OFFSET] = status;
     l2_frame[TR01_L2_RSP_LEN_OFFSET] = (uint8_t)packet_size;
 
     l2_frame[TR01_L2_RSP_DATA_RSP_CRC_OFFSET] = result_plaintext_size;
@@ -154,6 +155,9 @@ lt_ret_t mock_l3_result(lt_handle_t *h, const uint8_t *result_plaintext,
 
     uint16_t crc = crc16(&l2_frame[TR01_L2_STATUS_OFFSET],
                          TR01_L2_STATUS_SIZE + TR01_L2_REQ_RSP_LEN_SIZE + packet_size);
+    if (corrupt_crc) {
+        crc = ~crc;
+    }
     size_t crc_offset = TR01_L2_RSP_DATA_RSP_CRC_OFFSET + packet_size;
     l2_frame[crc_offset] = crc >> 8;
     l2_frame[crc_offset + 1] = crc & 0x00FF;
@@ -167,7 +171,8 @@ lt_ret_t mock_l3_result(lt_handle_t *h, const uint8_t *result_plaintext,
     return LT_OK;
 }
 
-lt_ret_t mock_l3_command_responses(lt_handle_t *h, const size_t chunk_count)
+lt_ret_t mock_l3_command_responses(lt_handle_t *h, const size_t chunk_count, const bool corrupt_crc,
+                                   const uint8_t custom_resp_frame[5])
 {
     if (chunk_count > 1) {
         LT_LOG_ERROR("Only single chunk supported now!");
@@ -181,14 +186,22 @@ lt_ret_t mock_l3_command_responses(lt_handle_t *h, const size_t chunk_count)
         return ret;
     }
 
-    uint8_t req_ok_frame[5] = {
-        TR01_L1_CHIP_MODE_READY_bit, TR01_L2_STATUS_REQUEST_OK,
-        0x00,  // Zero RSP length
-        0x00,  // | Dummy CRC -- will be calculated later
-        0x00   // |
-    };
+    uint8_t req_ok_frame[5] = {0};
+    if (custom_resp_frame == NULL) {
+        req_ok_frame[TR01_L2_CHIP_STATUS_OFFSET] = TR01_L1_CHIP_MODE_READY_bit;
+        req_ok_frame[TR01_L2_STATUS_OFFSET] = TR01_L2_STATUS_REQUEST_OK;
+        req_ok_frame[TR01_L2_RSP_LEN_OFFSET] = 0x00;
+    }
+    else {
+        memcpy(req_ok_frame, custom_resp_frame, sizeof(req_ok_frame));
+    }
 
     uint16_t crc = crc16(req_ok_frame + 1, 2);
+
+    if (corrupt_crc) {
+        crc = ~crc;
+    }
+
     req_ok_frame[TR01_L2_RSP_DATA_RSP_CRC_OFFSET] = crc >> 8;
     req_ok_frame[TR01_L2_RSP_DATA_RSP_CRC_OFFSET + 1] = crc & 0x00FF;
 

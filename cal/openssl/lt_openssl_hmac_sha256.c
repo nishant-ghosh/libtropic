@@ -20,6 +20,7 @@ lt_ret_t lt_hmac_sha256(const uint8_t *key, const uint32_t key_len, const uint8_
     EVP_MD_CTX *ctx = NULL;
     EVP_PKEY *pkey = NULL;
     unsigned long err_code;
+    size_t out_len = LT_HMAC_SHA256_HASH_LEN;
     lt_ret_t ret = LT_OK;
 
     // Convert `key` raw bytes into an OpenSSL Key object.
@@ -61,7 +62,6 @@ lt_ret_t lt_hmac_sha256(const uint8_t *key, const uint32_t key_len, const uint8_
     }
 
     // Finalize the HMAC-SHA256 computation.
-    size_t out_len = LT_HMAC_SHA256_HASH_LEN;
     if (!EVP_DigestSignFinal(ctx, output, &out_len)) {
         err_code = ERR_get_error();
         LT_LOG_ERROR("Failed to finalize HMAC-SHA256 hash, err_code=%lu (%s)", err_code,

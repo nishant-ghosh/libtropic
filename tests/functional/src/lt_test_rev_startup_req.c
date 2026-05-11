@@ -114,18 +114,15 @@ void lt_test_rev_startup_req(lt_handle_t *h)
         LT_LOG_INFO("Checking the chip is in the maintenance mode...");
         LT_TEST_ASSERT(MAINTENANCE_MODE, check_current_state());
         LT_LOG_INFO("Checking that the handshake does not work...");
-#ifdef ABAB
-        LT_TEST_ASSERT(LT_L2_GEN_ERR,
-                       lt_verify_chip_and_start_secure_session(h, LT_TEST_SH0_PRIV, LT_TEST_SH0_PUB,
-                                                               TR01_PAIRING_KEY_SLOT_INDEX_0));
-
-#elif ACAB
+        // We don't call lt_verify_chip_and_start_secure_session(), because it calls
+        // lt_get_info_cert_store() to get STpub from the X.509 certificate. But the X.509 certificate
+        // cannot be read in Maintenance Mode. So, to really test Handshake_Req L2 command does not
+        // work, we will call lt_session_start() directly with dummy STpub - TROPIC01 should indicate
+        // that the command is unknown before we even process the STpub.
+        uint8_t dummy_stpub[TR01_STPUB_LEN] = {0};
         LT_TEST_ASSERT(LT_L2_UNKNOWN_REQ,
-                       lt_verify_chip_and_start_secure_session(h, LT_TEST_SH0_PRIV, LT_TEST_SH0_PUB,
-                                                               TR01_PAIRING_KEY_SLOT_INDEX_0));
-#else
-#error "Undefined silicon revision. Please define either ABAB or ACAB."
-#endif
+                       lt_session_start(h, dummy_stpub, TR01_PAIRING_KEY_SLOT_INDEX_0,
+                                        LT_TEST_SH0_PRIV, LT_TEST_SH0_PUB));
     }
 
     // Part 3: Try to reboot from maintenance mode to app mode.

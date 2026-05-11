@@ -182,7 +182,7 @@ Where to learn/do it:
 
 - Read: [TROPIC01 Firmware](../../reference/tropic01_fw.md)
 - If Secure Session / commands start failing unexpectedly, also check: [FAQ](../../faq.md#lt_l3_invalid_cmd-or-lt_l2_unknown_req)
-- Follow the firmware-update tutorials for your platform (for example on Linux USB devkit): [Tutorials](../../tutorials/index.md)
+- Follow the firmware-update tutorials for your platform (for example on Linux USB DevKit): [Tutorials](../../tutorials/index.md)
 
 ---
 

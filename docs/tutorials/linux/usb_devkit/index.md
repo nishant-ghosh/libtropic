@@ -1,15 +1,15 @@
-# TROPIC01 USB Devkit Tutorials
-These tutorials will help you get started with our TROPIC01 USB Devkit (available [here](https://www.tropicsquare.com/order-devkit)) mainly on Linux-based systems, but it should also be compatible with other POSIX systems. We will go through our examples in the `examples/linux/usb_devkit/` directory.
+# TROPIC01 USB DevKit Tutorials
+These tutorials will help you get started with our TROPIC01 USB DevKit (available [here](https://www.tropicsquare.com/order-devkit)) mainly on Linux-based systems, but it should also be compatible with other POSIX systems. We will go through our examples in the `examples/linux/usb_devkit/` directory.
 
 ## Hardware Setup
-As mentioned above, we will use our TROPIC01 USB Devkit (available [here](https://www.tropicsquare.com/order-devkit)), specifically the TS1303 version, but other versions should also work:
+As mentioned above, we will use our TROPIC01 USB DevKit (available [here](https://www.tropicsquare.com/order-devkit)), specifically the TS1303 version, but other versions should also work:
 <figure style="text-align: center;">
-<img src="../../../img/TS1303_USB_Devkit_prod_photo.png" alt="TROPIC01 USB Devkit (TS1303)" width="250"/>
+<img src="../../../img/TS1303_USB_Devkit_prod_photo.png" alt="TROPIC01 USB DevKit (TS1303)" width="250"/>
 <figcaption style="font-size: 0.9em; color: #555; margin-top: 0.5em;">
-    TROPIC01 USB Devkit (TS1303)
+    TROPIC01 USB DevKit (TS1303)
   </figcaption>
 </figure>
-Go ahead and plug the USB Devkit into your machine.
+Go ahead and plug the USB DevKit into your machine.
 
 ## Software Setup
 First, install the dependencies and prepare the repository:
@@ -42,7 +42,8 @@ After that, setup your system:
 1. [Chip Identification](identify_chip.md)
 2. [FW Update](fw_update.md)
 3. [Hello, World!](hello_world.md)
-4. [Full Chain Verification](full_chain_verification.md)
+4. [ECC Key Generation and EdDSA Signing](ecc_eddsa.md)
+5. [Full Chain Verification](full_chain_verification.md)
 
 ## FAQ
 If you encounter any issues, please check the [FAQ](../../../faq.md) before filing an issue or reaching out to our [support](https://support.tropicsquare.com/).

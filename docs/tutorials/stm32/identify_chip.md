@@ -39,4 +39,23 @@
 
     After this, you should see a colored output in your serial monitor.
 
+## Configuration
+In addition to the [Libtropic CMake options](../../reference/integrating_libtropic/how_to_configure/index.md) used to configure Libtropic, this example provides the following CMake option:
+
+- `STLINK_SERIAL_NUMBER` (default: none, OpenOCD looks for any STLink programming interface) specifies the serial number of the STLink device used for flashing. This is needed only when you have multiple STM32s connected via built-in STLink or when OpenOCD autodetection does not work:
+
+    ??? example "Configuring STLink serial number"
+        === ":fontawesome-brands-linux: Linux"
+            ```bash { .copy }
+            cmake -DSTLINK_SERIAL_NUMBER=<stlink_serial_number> ..
+            make
+            make flash
+            ```
+
+        === ":fontawesome-brands-apple: macOS"
+            TBA
+
+        === ":fontawesome-brands-windows: Windows"
+            TBA
+
 [Next example :material-arrow-right:](fw_update.md){ .md-button }

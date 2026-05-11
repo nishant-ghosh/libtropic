@@ -1,5 +1,5 @@
 # STM32 Tutorials
-These tutorials will help you get started with TROPIC01 on STM32-based platforms using Libtropic. Currently, we officially support [Nucleo F439ZI](https://www.st.com/en/evaluation-tools/nucleo-f439zi.html) and [Nucleo L432KC](https://www.st.com/en/evaluation-tools/nucleo-l432kc.html) development boards.
+These tutorials will help you get started with TROPIC01 on STM32-based platforms using Libtropic. To see the currently supported STM32 platforms, refer to the [STM32 Compatibility](../../compatibility/host_platforms/stm32.md) page.
 
 We will go through our examples in the `examples/stm32/` directory. In this directory, there are multiple subdirectories for each supported Nucleo board. Most of the instructions in this tutorial are common for all of the boards.
 
@@ -20,11 +20,11 @@ We will go through our examples in the `examples/stm32/` directory. In this dire
         
         |  TROPIC01     |   NUCLEO F439ZI  |
         |---------------|------------------|
-        |  GND          |  GND             |
         |  3V3          |  3V3             |
+        |  GND          |  GND             |
+        |  SCK          |  GPIOA_5         |
         |  MISO (SDO)   |  GPIOA_6         |
         |  MOSI (SDI)   |  GPIOA_7         |
-        |  SCK          |  GPIOA_5         |
         |  CS (CSN)     |  GPIOD_14        |
         |  GPO          |  GPIOF_15        |
 
@@ -34,13 +34,36 @@ We will go through our examples in the `examples/stm32/` directory. In this dire
 
         |  TROPIC01     |  NUCLEO L432KC  |
         |---------------|-----------------|
-        |  GND          |  GND            |
         |  3V3          |  3V3            |
-        |  MISO (SDO)   |  A6             |
-        |  MOSI (SDI)   |  A5             |
+        |  GND          |  GND            |
         |  SCK          |  A4             |
+        |  MISO (SDO)   |  A5             |
+        |  MOSI (SDI)   |  A6             |
         |  CS (CSN)     |  A3             |
-    
+        |  GPO          |  D10            |
+
+    === "Nucleo U545RE-Q"
+        The Nucleo U545RE-Q board is compatible with our **TROPIC01 Arduino Shield**, which we recommend for this tutorial. You can get the shield [here](https://www.tropicsquare.com/order-devkit).
+
+        <figure style="text-align: center;">
+        <img src="../../img/arduino-shield-pinout.svg" alt="TROPIC01 Arduino Shield pinout" width="600"/>
+        <figcaption style="font-size: 0.9em; color: #555; margin-top: 0.5em;">
+            TROPIC01 Arduino Shield pinout
+        </figcaption>
+        </figure>
+
+        If you have any other shield which exposes SPI connections (or a custom PCB), you can use it as well, but you have to connect it manually e.g., using DuPont (jumper) wires. Refer to the table below for wiring:
+        
+        |  TROPIC01     | NUCLEO U545RE-Q  |
+        |---------------|------------------|
+        |  3V3          |  3V3             |
+        |  GND          |  GND             |
+        |  SCK          |  D13             |
+        |  MISO (SDO)   |  D12             |
+        |  MOSI (SDI)   |  D11             |
+        |  CS (CSN)     |  D10             |
+        |  GPO          |  D2              |
+
     ??? question "Advanced: How to Use Different Nucleo Pins?"
         The pin assignments above are used in our examples by default. The pins can be changed in the source code of each example. However, apart from changing assignment, you also have to initialize different peripherals, which is not documented here.
 
@@ -57,7 +80,7 @@ First, install the dependencies and prepare the repository:
             - Fedora: `sudo dnf install make`
         3. Install GCC cross-compiler for ARM:
             - Ubuntu/Debian: `sudo apt update && sudo apt install gcc-arm-none-eabi`
-            - Fedora: `sudo dnf install arm-none-eabi-gcc`
+            - Fedora: `sudo dnf install arm-none-eabi-gcc arm-none-eabi-binutils-cs arm-none-eabi-newlib`
         4. Install [OpenOCD](https://openocd.org/pages/getting-openocd.html):
             - Ubuntu/Debian: `sudo apt update && sudo apt install openocd`
             - Fedora: `sudo dnf install openocd`

@@ -97,6 +97,46 @@ else()
     message(FATAL_ERROR "Incorrect logging level specified: '${LT_LOG_LVL}'\nAvailable logging levels: ${lt_log_lvl_choices}")
 endif()
 
+# Set count of attempts to:
+# - resend request in case of LT_L2_CRC_ERR is received
+# - ask TROPIC01 to resend response in case of LT_L2_IN_CRC_ERR is received
+# Must be non-negative. Set to 0 to disable automatic resending.
+set(LT_CRC_ERR_RETRY_ATTEMPTS "3" CACHE STRING "Count of attempts to resend request/response on CRC or IN_CRC error.")
+
+if(NOT LT_CRC_ERR_RETRY_ATTEMPTS MATCHES "^(0|[1-9][0-9]*)$")
+    message(FATAL_ERROR "LT_CRC_ERR_RETRY_ATTEMPTS must be a non-negative integer without leading zeros unless the value is exactly '0', got '${LT_CRC_ERR_RETRY_ATTEMPTS}'")
+endif()
+
+# Must be positive without leading zero.
+set(LT_L1_READ_MAX_TRIES "50" CACHE STRING "Max number of Get_Response requests when chip is not answering.")
+
+if(NOT LT_L1_READ_MAX_TRIES MATCHES "^([1-9][0-9]*)$")
+    message(FATAL_ERROR "LT_L1_READ_MAX_TRIES must be a positive integer without leading zeros, got '${LT_L1_READ_MAX_TRIES}'")
+endif()
+
+# Must be positive without leading zero.
+set(LT_L1_READ_RETRY_DELAY_MS "25" CACHE STRING "Time to wait in ms between each Get_Response request.")
+
+if(NOT LT_L1_READ_RETRY_DELAY_MS MATCHES "^([1-9][0-9]*)$")
+    message(FATAL_ERROR "LT_L1_READ_RETRY_DELAY_MS must be a positive integer without leading zeros, got '${LT_L1_READ_RETRY_DELAY_MS}'")
+endif()
+
+# Must be non-negative without leading zero.
+# Check HAL of your platform for supported range and behavior.
+set(LT_L1_SPI_TIMEOUT_MS "70" CACHE STRING "Timeout when waiting for activity on SPI bus.")
+
+if(NOT LT_L1_SPI_TIMEOUT_MS MATCHES "^(0|[1-9][0-9]*)$")
+    message(FATAL_ERROR "LT_L1_SPI_TIMEOUT_MS must be a non-negative integer without leading zeros unless the value is exactly '0', got '${LT_L1_SPI_TIMEOUT_MS}'")
+endif()
+
+# Must be positive without leading zero.
+# Check HAL of your platform for supported range and behavior.
+set(LT_L1_INT_TIMEOUT_MS "200" CACHE STRING "Timeout when waiting for interrupt from TROPIC01's GPO pin.")
+
+if(NOT LT_L1_INT_TIMEOUT_MS MATCHES "^([1-9][0-9]*)$")
+    message(FATAL_ERROR "LT_L1_INT_TIMEOUT_MS must be a positive integer without leading zeros, got '${LT_L1_INT_TIMEOUT_MS}'")
+endif()
+
 # Check whether compiling standalone (e.g. as a library) or as a child project (= has parent scope)
 # and save result to HAS_PARENT_SCOPE.
 get_directory_property(HAS_PARENT_SCOPE PARENT_DIRECTORY)
@@ -106,14 +146,13 @@ get_directory_property(HAS_PARENT_SCOPE PARENT_DIRECTORY)
 #   Collect files:                                                        #
 #                                                                         #
 #   SDK_SRCS:       source files                                          #
-#   SDK_INCS:       header files                                          #
 #   SDK_DIRS_PRIV:  private directories                                   #
 #   SDK_DIRS_PUB:   public directories                                    #
 #                                                                         #
 ###########################################################################
 
 project(libtropic_SDK
-        VERSION 3.2.1
+        VERSION 4.0.0
         DESCRIPTION "TROPIC01 software development kit"
         HOMEPAGE_URL "https://tropicsquare.github.io/libtropic/latest/"
         LANGUAGES C)
@@ -137,21 +176,6 @@ set(SDK_SRCS ${SDK_SRCS}
     ${CMAKE_CURRENT_SOURCE_DIR}/src/libtropic_secure_memzero.c
 )
 
-set(SDK_INCS ${SDK_INCS}
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/libtropic_common.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/libtropic.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/libtropic_port.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/libtropic_l2.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/libtropic_l3.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/libtropic_secure_memzero.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/lt_crc16.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/lt_port_wrap.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/lt_l1.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/lt_l2_frame_check.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/lt_l3_process.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/lt_hkdf.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/lt_asn1_der.h
-)
 set(SDK_DIRS_PRIV ${SDK_DIRS_PRIV}
     ${CMAKE_CURRENT_SOURCE_DIR}/src/
 )
@@ -173,16 +197,11 @@ else()
     message(FATAL_ERROR "Invalid silicon revision: '${LT_SILICON_REV}'\nAvailable silicon revisions: ${lt_silicon_rev_choices}")
 endif()
 
-set(SDK_INCS ${SDK_INCS}
-    ${CMAKE_CURRENT_SOURCE_DIR}/TROPIC01_fw_update_files/${BL_FOLDER}/fw_v_${LT_CPU_FW_UPDATE_DATA_VER}/fw_CPU.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/TROPIC01_fw_update_files/${BL_FOLDER}/fw_v_${LT_CPU_FW_UPDATE_DATA_VER}/fw_SPECT.h
-)
-
 set(SDK_DIRS_PUB ${SDK_DIRS_PUB}
     ${CMAKE_CURRENT_SOURCE_DIR}/TROPIC01_fw_update_files/${BL_FOLDER}/fw_v_${LT_CPU_FW_UPDATE_DATA_VER}/
 )
 
-add_library(tropic ${SDK_SRCS} ${SDK_INCS})
+add_library(tropic ${SDK_SRCS})
 
 target_include_directories(tropic PRIVATE ${SDK_DIRS_PRIV})
 target_include_directories(tropic PUBLIC ${SDK_DIRS_PUB})
@@ -258,9 +277,9 @@ endforeach()
 ###########################################################################
 
 if (LT_SILICON_REV STREQUAL "ABAB")
-    target_compile_definitions(tropic PUBLIC ABAB)
+    target_compile_definitions(tropic PUBLIC LT_SILICON_REV_ABAB)
 elseif (LT_SILICON_REV STREQUAL "ACAB")
-    target_compile_definitions(tropic PUBLIC ACAB)
+    target_compile_definitions(tropic PUBLIC LT_SILICON_REV_ACAB)
 endif()
 
 if(LT_PRINT_SPI_DATA)
@@ -283,3 +302,9 @@ endif()
 if(LT_RETRIEVE_ALARM_LOG)
     target_compile_definitions(tropic PUBLIC LT_RETRIEVE_ALARM_LOG)
 endif()
+
+target_compile_definitions(tropic PUBLIC LT_CRC_ERR_RETRY_ATTEMPTS=${LT_CRC_ERR_RETRY_ATTEMPTS})
+target_compile_definitions(tropic PUBLIC LT_L1_READ_MAX_TRIES=${LT_L1_READ_MAX_TRIES})
+target_compile_definitions(tropic PUBLIC LT_L1_READ_RETRY_DELAY_MS=${LT_L1_READ_RETRY_DELAY_MS})
+target_compile_definitions(tropic PUBLIC LT_L1_SPI_TIMEOUT_MS=${LT_L1_SPI_TIMEOUT_MS})
+target_compile_definitions(tropic PUBLIC LT_L1_INT_TIMEOUT_MS=${LT_L1_INT_TIMEOUT_MS})

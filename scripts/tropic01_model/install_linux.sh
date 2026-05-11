@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-URL="https://github.com/tropicsquare/ts-tvl/releases/download/2.3/tvl-2.3-py3-none-any.whl"
+URL="https://github.com/tropicsquare/ts-tvl/releases/download/2.4/tvl-2.4-py3-none-any.whl"
 
 # Resolve script directory and venv path
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -16,6 +16,16 @@ elif command -v wget >/dev/null 2>&1; then
     DL_TOOL=wget
 else
     echo "Error: neither curl nor wget is installed. Please install curl or wget and retry." >&2
+    exit 1
+fi
+
+if ! command -v sha256sum >/dev/null 2>&1; then
+    echo "Error: sha256sum is not installed. Please install and retry." >&2
+    exit 1
+fi
+
+if ! command -v awk >/dev/null 2>&1; then
+    echo "Error: awk is not installed. Please install and retry." >&2
     exit 1
 fi
 
@@ -63,6 +73,14 @@ if [ "$DL_TOOL" = "curl" ]; then
     curl -fL "$URL" -o "$TMP_WHEEL"
 else
     wget -O "$TMP_WHEEL" "$URL"
+fi
+
+echo "Verifying wheel checksum..."
+EXPECTED_CHECKSUM="aaceecc3cdf408b94784ae6b5229bedda974d74530267ad25e0e0a61ad2e526c"
+ACTUAL_CHECKSUM=$(sha256sum "$TMP_WHEEL" | awk '{print $1}')
+if [ "$EXPECTED_CHECKSUM" != "$ACTUAL_CHECKSUM" ]; then
+  echo "Checksum mismatch: expected $EXPECTED_CHECKSUM, got $ACTUAL_CHECKSUM" >&2
+  exit 1
 fi
 
 echo "Installing wheel into virtualenv..."

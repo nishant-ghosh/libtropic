@@ -16,6 +16,7 @@
 #include "libtropic.h"
 #include "libtropic_common.h"
 #include "libtropic_l2.h"
+#include "libtropic_logging.h"
 #include "libtropic_port.h"
 #include "libtropic_secure_memzero.h"
 #include "lt_aesgcm.h"
@@ -87,6 +88,17 @@ lt_ret_t lt_in__session_start(lt_handle_t *h, const uint8_t *stpub, const lt_pke
                                  '5', '5', '1', '9', '_', 'A', 'E', 'S',  'G',  'C', 'M',
                                  '_', 'S', 'H', 'A', '2', '5', '6', 0x00, 0x00, 0x00};
     uint8_t hash[LT_SHA256_DIGEST_LENGTH] = {0};
+
+    // Variables used during key derivation (ECDH)
+    uint8_t output_1[33] = {0};  // Temp storage for ck, kcmd.
+    uint8_t output_2[32] = {0};  // Temp storage for kauth.
+    uint8_t shared_secret[TR01_X25519_KEY_LEN] = {0};
+    uint8_t kcmd[TR01_AES256_KEY_LEN] = {
+        0};  // AES256 key used for L3 command packet encryption/decryption.
+    uint8_t kres[TR01_AES256_KEY_LEN] = {
+        0};  // AES256 key used for L3 result packet encryption/decryption.
+    uint8_t kauth[TR01_AES256_KEY_LEN] = {0};  // AES256 key used for handshake authentication.
+
     lt_ret_t ret;
     lt_ret_t ret_unused;
 
@@ -201,15 +213,6 @@ lt_ret_t lt_in__session_start(lt_handle_t *h, const uint8_t *stpub, const lt_pke
     }
 
     // Derivate the keys (ECDH)
-    uint8_t output_1[33] = {0};  // Temp storage for ck, kcmd.
-    uint8_t output_2[32] = {0};  // Temp storage for kauth.
-    uint8_t shared_secret[TR01_X25519_KEY_LEN] = {0};
-    uint8_t kcmd[TR01_AES256_KEY_LEN] = {
-        0};  // AES256 key used for L3 command packet encryption/decryption.
-    uint8_t kres[TR01_AES256_KEY_LEN] = {
-        0};  // AES256 key used for L3 result packet encryption/decryption.
-    uint8_t kauth[TR01_AES256_KEY_LEN] = {0};  // AES256 key used for handshake authentication.
-
     // ck = protocol_name
     // ck = HKDF (ck, X25519(EHPRIV, ETPUB), 1)
     ret = lt_X25519(host_eph_keys->ehpriv, p_rsp->e_tpub, shared_secret);
@@ -344,9 +347,10 @@ lt_ret_t lt_in__ping(lt_handle_t *h, uint8_t *msg_in, const uint16_t msg_len)
     return LT_OK;
 }
 
-lt_ret_t lt_out__pairing_key_write(lt_handle_t *h, const uint8_t *pairing_pub, const uint8_t slot)
+lt_ret_t lt_out__pairing_key_write(lt_handle_t *h, const uint8_t *pairing_pub,
+                                   const lt_pkey_index_t slot)
 {
-    if (!h || !pairing_pub || (slot > 3)) {
+    if (!h || !pairing_pub || ((unsigned)slot > TR01_PAIRING_KEY_SLOT_INDEX_3)) {
         return LT_PARAM_ERR;
     }
     if (h->l3.session_status != LT_SECURE_SESSION_ON) {
@@ -393,9 +397,9 @@ lt_ret_t lt_in__pairing_key_write(lt_handle_t *h)
     return LT_OK;
 }
 
-lt_ret_t lt_out__pairing_key_read(lt_handle_t *h, const uint8_t slot)
+lt_ret_t lt_out__pairing_key_read(lt_handle_t *h, const lt_pkey_index_t slot)
 {
-    if (!h || (slot > 3)) {
+    if (!h || ((unsigned)slot > TR01_PAIRING_KEY_SLOT_INDEX_3)) {
         return LT_PARAM_ERR;
     }
     if (h->l3.session_status != LT_SECURE_SESSION_ON) {
@@ -441,9 +445,9 @@ lt_ret_t lt_in__pairing_key_read(lt_handle_t *h, uint8_t *pubkey)
     return LT_OK;
 }
 
-lt_ret_t lt_out__pairing_key_invalidate(lt_handle_t *h, const uint8_t slot)
+lt_ret_t lt_out__pairing_key_invalidate(lt_handle_t *h, const lt_pkey_index_t slot)
 {
-    if (!h || (slot > 3)) {
+    if (!h || ((unsigned)slot > TR01_PAIRING_KEY_SLOT_INDEX_3)) {
         return LT_PARAM_ERR;
     }
     if (h->l3.session_status != LT_SECURE_SESSION_ON) {
@@ -923,9 +927,9 @@ lt_ret_t lt_in__r_mem_data_erase(lt_handle_t *h)
     return LT_OK;
 }
 
-lt_ret_t lt_out__random_value_get(lt_handle_t *h, const uint16_t rnd_bytes_cnt)
+lt_ret_t lt_out__random_value_get(lt_handle_t *h, const uint8_t rnd_bytes_cnt)
 {
-    if ((rnd_bytes_cnt > TR01_RANDOM_VALUE_GET_LEN_MAX) || !h) {
+    if (!h) {
         return LT_PARAM_ERR;
     }
     if (h->l3.session_status != LT_SECURE_SESSION_ON) {
@@ -943,9 +947,9 @@ lt_ret_t lt_out__random_value_get(lt_handle_t *h, const uint16_t rnd_bytes_cnt)
     return lt_l3_encrypt_request(&h->l3);
 }
 
-lt_ret_t lt_in__random_value_get(lt_handle_t *h, uint8_t *rnd_bytes, const uint16_t rnd_bytes_cnt)
+lt_ret_t lt_in__random_value_get(lt_handle_t *h, uint8_t *rnd_bytes, const uint8_t rnd_bytes_cnt)
 {
-    if (!h || !rnd_bytes || (rnd_bytes_cnt > TR01_RANDOM_VALUE_GET_LEN_MAX)) {
+    if (!h || !rnd_bytes) {
         return LT_PARAM_ERR;
     }
     if (h->l3.session_status != LT_SECURE_SESSION_ON) {
@@ -1147,6 +1151,7 @@ lt_ret_t lt_in__ecc_key_read(lt_handle_t *h, uint8_t *key, const uint8_t key_max
     }
     else {
         // Unknown curve type.
+        LT_LOG_ERROR("Unknown curve type in ECC_Key_Read Result!");
         return LT_FAIL;
     }
 
@@ -1202,37 +1207,15 @@ lt_ret_t lt_in__ecc_key_erase(lt_handle_t *h)
     return LT_OK;
 }
 
-lt_ret_t lt_out__ecc_ecdsa_sign(lt_handle_t *h, const lt_ecc_slot_t slot, const uint8_t *msg,
-                                const uint32_t msg_len)
+lt_ret_t lt_out__ecc_ecdsa_sign(lt_handle_t *h, const lt_ecc_slot_t slot, const uint8_t *msg_hash,
+                                const uint32_t msg_hash_len)
 {
-    if (!h || (slot > TR01_ECC_SLOT_31) || !msg) {
+    if (!h || (slot > TR01_ECC_SLOT_31) || !msg_hash ||
+        msg_hash_len != TR01_L3_ECDSA_SIGN_CMD_MSG_HASH_LEN) {
         return LT_PARAM_ERR;
     }
     if (h->l3.session_status != LT_SECURE_SESSION_ON) {
         return LT_HOST_NO_SESSION;
-    }
-
-    // Prepare hash of a message
-    uint8_t msg_hash[32] = {0};
-    lt_ret_t ret;
-    lt_ret_t ret_unused;
-
-    // Initialize SHA-256 context.
-    ret = lt_sha256_init(h->l3.crypto_ctx);
-    if (ret != LT_OK) {
-        return ret;
-    }
-    ret = lt_sha256_start(h->l3.crypto_ctx);
-    if (ret != LT_OK) {
-        goto sha256_cleanup;
-    }
-    ret = lt_sha256_update(h->l3.crypto_ctx, (uint8_t *)msg, msg_len);
-    if (ret != LT_OK) {
-        goto sha256_cleanup;
-    }
-    ret = lt_sha256_finish(h->l3.crypto_ctx, msg_hash);
-    if (ret != LT_OK) {
-        goto sha256_cleanup;
     }
 
     // Pointer to access l3 buffer when it contains command data
@@ -1244,14 +1227,7 @@ lt_ret_t lt_out__ecc_ecdsa_sign(lt_handle_t *h, const lt_ecc_slot_t slot, const 
     p_l3_cmd->slot = slot;
     memcpy(p_l3_cmd->msg_hash, msg_hash, sizeof(p_l3_cmd->msg_hash));
 
-    ret = lt_l3_encrypt_request(&h->l3);
-
-sha256_cleanup:
-    ret_unused = lt_sha256_deinit(h->l3.crypto_ctx);
-    lt_secure_memzero(msg_hash, sizeof(msg_hash));
-    LT_UNUSED(ret_unused);
-
-    return ret;
+    return lt_l3_encrypt_request(&h->l3);
 }
 
 lt_ret_t lt_in__ecc_ecdsa_sign(lt_handle_t *h, uint8_t *rs)

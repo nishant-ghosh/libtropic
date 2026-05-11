@@ -1,13 +1,17 @@
 cmake_minimum_required(VERSION 3.21.0)
 include (FetchContent)
 
+if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.24")
+    cmake_policy(SET CMP0135 NEW) # Timestamp extraction policy
+endif()
+
 ###########################################################################
 #                                                                         #
 #   Set up projects and paths                                             #
 #                                                                         #
 ###########################################################################
 project(libtropic_dump_certificates
-        DESCRIPTION "Libtropic utility to dump certificates from TROPIC01 on Linux using USB devkit driver."
+        DESCRIPTION "Libtropic utility to dump certificates from TROPIC01 on Linux using USB DevKit driver."
         LANGUAGES C)
 
 set(PATH_LIBTROPIC ../../../../)
@@ -17,8 +21,8 @@ set(PATH_LIBTROPIC ../../../../)
 #   Configuration                                                         #
 #                                                                         #
 ###########################################################################
-# Override path to USB devkit device
-set(LT_USB_DEVKIT_PATH "/dev/ttyACM0" CACHE STRING "Path to the USB device representing the USB devkit serial port.")
+# Override path to USB DevKit device
+set(LT_USB_DEVKIT_PATH "/dev/ttyACM0" CACHE STRING "Path to the USB device representing the USB DevKit serial port.")
 message(STATUS "Using serial port: ${LT_USB_DEVKIT_PATH}. You can change it by passing -DLT_USB_DEVKIT_PATH=<path> to cmake.")
 
 ###########################################################################
@@ -59,7 +63,7 @@ target_sources(tropic PRIVATE ${LT_CAL_SRCS})
 target_include_directories(tropic PUBLIC ${LT_CAL_INC_DIRS})
 
 # Add USB DevKit POSIX HAL
-add_subdirectory("${PATH_LIBTROPIC}hal/posix/usb_dongle" "posix_usb_dongle")
+add_subdirectory("${PATH_LIBTROPIC}hal/posix/usb_devkit" "posix_usb_devkit")
 target_sources(tropic PRIVATE ${LT_HAL_SRCS})
 target_include_directories(tropic PUBLIC ${LT_HAL_INC_DIRS})
 

@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.21.0)
 include (FetchContent)
 
+if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.24")
+    cmake_policy(SET CMP0135 NEW) # Timestamp extraction policy
+endif()
+
 ###########################################################################
 #                                                                         #
 #   Set up project and paths                                              #
@@ -35,39 +39,12 @@ project(
 #                                                                         #
 ###########################################################################
 
-if(LT_USE_INT_PIN)
-    message(FATAL_ERROR "Using interrupt pin is currently not supported on Nucleo L432KC board")
-endif()
-
 # Serial number of the STLink device which will be used for flashing.
 # You need to define this only if you have multiple STM32s connected using built-in STLink or 
 # problems with OpenOCD's autodetection.
 if (NOT DEFINED STLINK_SERIAL_NUMBER)
     set(STLINK_SERIAL_NUMBER "")
 endif()
-
-# Select pairing keys written during manufacturing into your TROPIC01
-set(LT_SH0_KEYS "prod0" CACHE STRING "Choose which pairing keys in slot 0 will be used in this example")
-set_property(CACHE LT_SH0_KEYS PROPERTY STRINGS "eng_sample" "prod0")
-
-# These are internal macros for selecting SH0 keys
-set(LT_USE_SH0_ENG_SAMPLE 0 CACHE INTERNAL "")
-set(LT_USE_SH0_PROD0      0 CACHE INTERNAL "")
-
-# Define SH0 macros based on selected string
-if(LT_SH0_KEYS STREQUAL "eng_sample")
-    message(STATUS "Using Engineering sample keys")
-    set(LT_USE_SH0_ENG_SAMPLE 1)
-    set(LT_USE_SH0_PROD0      0)
-elseif(LT_SH0_KEYS STREQUAL "prod0")
-    message(STATUS "Using Production 0 keys")
-    set(LT_USE_SH0_ENG_SAMPLE 0)
-    set(LT_USE_SH0_PROD0      1)
-else()
-    get_property(lt_sh0_keys_choices CACHE LT_SH0_KEYS PROPERTY STRINGS)
-    message(FATAL_ERROR "Incorrect SH0 keys specified: '${LT_SH0_KEYS}'\nAvailable SH0 keys: ${lt_sh0_keys_choices}")
-endif()
-
 
 ###########################################################################
 #                                                                         #
@@ -124,7 +101,7 @@ target_sources(tropic PRIVATE ${LT_CAL_SRCS})
 target_include_directories(tropic PUBLIC ${LT_CAL_INC_DIRS})
 
 # Add Libtropic STM32 HAL
-add_subdirectory("${PATH_LIBTROPIC}hal/stm32/nucleo_l432kc" "nucleo_l432kc_hal")
+add_subdirectory("${PATH_LIBTROPIC}hal/stm32/stm32l4xx" "stm32l4xx_hal")
 
 # Specify other source files
 set(SOURCES
@@ -174,8 +151,6 @@ set(INCLUDE_DIRS
 # Define executable and configure (pass defines, includes and link dependencies).
 set(EXE_NAME ${CMAKE_PROJECT_NAME}.elf)
 add_executable(${EXE_NAME} ${SOURCES})
-target_compile_definitions(${EXE_NAME} PRIVATE LT_USE_SH0_ENG_SAMPLE=${LT_USE_SH0_ENG_SAMPLE})
-target_compile_definitions(${EXE_NAME} PRIVATE LT_USE_SH0_PROD0=${LT_USE_SH0_PROD0})
 target_compile_definitions(${EXE_NAME} PRIVATE -D${STM32_DEVICE}) # Configure target MCU (used by STM32 HAL)
 target_include_directories(${EXE_NAME} PRIVATE ${INCLUDE_DIRS})
 target_link_libraries(${EXE_NAME} PRIVATE tropic)

@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.21.0)
 include (FetchContent)
 
+if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.24")
+    cmake_policy(SET CMP0135 NEW) # Timestamp extraction policy
+endif()
+
 ###########################################################################
 #                                                                         #
 #   Set up project and paths                                              #
@@ -64,6 +68,10 @@ else()
     message(FATAL_ERROR "Incorrect SH0 keys specified: '${LT_SH0_KEYS}'\nAvailable SH0 keys: ${lt_sh0_keys_choices}")
 endif()
 
+option(LT_DISABLE_MAINTENANCE_MODE "Disable Maintenance Mode in R-Config after successful FW update" ON)
+if (NOT LT_DISABLE_MAINTENANCE_MODE)
+    message(WARNING "Maintenance Mode will not be disabled in R-Config after successful FW update. This can increase the attack surface.")
+endif()
 
 ###########################################################################
 #                                                                         #
@@ -120,7 +128,7 @@ target_sources(tropic PRIVATE ${LT_CAL_SRCS})
 target_include_directories(tropic PUBLIC ${LT_CAL_INC_DIRS})
 
 # Add Libtropic STM32 HAL
-add_subdirectory("${PATH_LIBTROPIC}hal/stm32/nucleo_f439zi" "nucleo_f439zi_hal")
+add_subdirectory("${PATH_LIBTROPIC}hal/stm32/stm32f4xx" "stm32f4xx_hal")
 
 # Specify other source files
 set(SOURCES
@@ -171,6 +179,7 @@ set(EXE_NAME ${CMAKE_PROJECT_NAME}.elf)
 add_executable(${EXE_NAME} ${SOURCES})
 target_compile_definitions(${EXE_NAME} PRIVATE LT_USE_SH0_ENG_SAMPLE=${LT_USE_SH0_ENG_SAMPLE})
 target_compile_definitions(${EXE_NAME} PRIVATE LT_USE_SH0_PROD0=${LT_USE_SH0_PROD0})
+target_compile_definitions(${EXE_NAME} PRIVATE LT_DISABLE_MAINTENANCE_MODE=$<BOOL:${LT_DISABLE_MAINTENANCE_MODE}>)
 target_compile_definitions(${EXE_NAME} PRIVATE -D${STM32_DEVICE}) # Configure target MCU (used by STM32 HAL)
 target_include_directories(${EXE_NAME} PRIVATE ${INCLUDE_DIRS})
 target_link_libraries(${EXE_NAME} PRIVATE tropic)

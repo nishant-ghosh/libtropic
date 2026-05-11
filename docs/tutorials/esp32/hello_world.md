@@ -14,6 +14,10 @@
         ```bash { .copy }
         idf.py build flash monitor
         ```
+        After this, you should see a colored output in your terminal.
+
+        !!! tip "Closing the ESP-IDF serial monitor"
+            To close the ESP-IDF serial monitor, press <kbd>Ctrl</kbd> + <kbd>]</kbd>. Refer to the [ESP-IDF monitor documentation](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-guides/tools/idf-monitor.html) for a full list of available keyboard shortcuts.
 
     === ":fontawesome-brands-apple: macOS"
         TBA
@@ -21,20 +25,20 @@
     === ":fontawesome-brands-windows: Windows"
         TBA
 
-    After this, you should see a colored output in your terminal.
+## Configuration
+In addition to the [Libtropic CMake options](../../reference/integrating_libtropic/how_to_configure/index.md) used to configure Libtropic, this example provides the following CMake option:
 
-If your TROPIC01 has engineering sample pairing keys, you can switch to them using the `LT_SH0_KEYS` CMake option:
-!!! example "Switching to engineering sample pairing keys"
-    === ":fontawesome-brands-linux: Linux"
-        You can pass any CMake option to `idf.py` as follows:
-        ```bash { .copy }
-        idf.py -DLT_SH0_KEYS="eng_sample" build flash monitor
-        ```
+- `LT_SH0_KEYS` (default: `"prod0"`) selects which pairing keys in slot 0 are used. Switch to engineering-sample pairing keys if your TROPIC01 is provisioned with them:
 
-    === ":fontawesome-brands-apple: macOS"
-        TBA
+    ??? example "Switching to engineering sample pairing keys"
+        === ":fontawesome-brands-linux: Linux"
+            ```bash { .copy }
+            idf.py -DLT_SH0_KEYS="eng_sample" build flash monitor
+            ```
 
-    === ":fontawesome-brands-windows: Windows"
-        TBA
+        === ":fontawesome-brands-apple: macOS"
+            TBA
 
-Additionally, see [Default Pairing Keys for a Secure Channel Handshake](../../reference/default_pairing_keys.md) for more information.
+        === ":fontawesome-brands-windows: Windows"
+            TBA
+    Additionally, see [Default Pairing Keys for a Secure Channel Handshake](../../reference/default_pairing_keys.md) for more information.

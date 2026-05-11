@@ -39,14 +39,26 @@ jobs:
           cd build && ninja
 
           cd ../../fw_update
-          cmake ./ -B build -G Ninja
+          cmake ./ -B build -G Ninja -DLT_DISABLE_MAINTENANCE_MODE=OFF
           cd build && ninja
+
+          cd ..
+          cmake ./ -B build_dis_mm -G Ninja -DLT_DISABLE_MAINTENANCE_MODE=ON
+          cd build_dis_mm && ninja
+
+          cd ..
+          cmake ./ -B build_abab -G Ninja -DLT_SILICON_REV=ABAB -DLT_DISABLE_MAINTENANCE_MODE=OFF
+          cd build_abab && ninja
+
+          cd ..
+          cmake ./ -B build_abab_dis_mm -G Ninja -DLT_SILICON_REV=ABAB -DLT_DISABLE_MAINTENANCE_MODE=ON
+          cd build_abab_dis_mm && ninja
 
           cd ../../full_chain_verification
           cmake ./ -B build -G Ninja
           cd build && ninja
 
-      - name: Build USB Devkit examples
+      - name: Build USB DevKit examples
         run: |
           cd examples/linux/usb_devkit/hello_world
           cmake ./ -B build -G Ninja
@@ -57,9 +69,25 @@ jobs:
           cd build && ninja
 
           cd ../../fw_update
+          cmake ./ -B build -G Ninja -DLT_DISABLE_MAINTENANCE_MODE=OFF
+          cd build && ninja
+
+          cd ..
+          cmake ./ -B build_dis_mm -G Ninja -DLT_DISABLE_MAINTENANCE_MODE=ON
+          cd build_dis_mm && ninja
+
+          cd ..
+          cmake ./ -B build_abab -G Ninja -DLT_SILICON_REV=ABAB -DLT_DISABLE_MAINTENANCE_MODE=OFF
+          cd build_abab && ninja
+
+          cd ..
+          cmake ./ -B build_abab_dis_mm -G Ninja -DLT_SILICON_REV=ABAB -DLT_DISABLE_MAINTENANCE_MODE=ON
+          cd build_abab_dis_mm && ninja
+
+          cd ../../full_chain_verification
           cmake ./ -B build -G Ninja
           cd build && ninja
 
-          cd ../../full_chain_verification
+          cd ../../ecc_eddsa
           cmake ./ -B build -G Ninja
           cd build && ninja

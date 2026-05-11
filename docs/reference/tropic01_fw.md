@@ -11,13 +11,13 @@ There are multiple kinds of FW running in TROPIC01:
 3. *ECC engine mutable FW (ECC engine FW or SPECT FW)*. Updatable, located in R-memory, runs on ECC engine from RAM, helps the RISC-V CPU FW with processing ECC commands (ECC_Key_*, ECDSA/EDDSA_Sign).
 
 !!! info "More Information About TROPIC01 Firmware"
-    For more detailed information about each FW, refer to the [FW Update Application Note](https://github.com/tropicsquare/tropic01?tab=readme-ov-file#application-notes).
+    For more detailed information about each FW, refer to the *FW Update Application Note* (ODN_TR01_app_007), available on [GitHub](https://github.com/tropicsquare/tropic01/blob/main/doc/pages/part-numbers.md#datasheet-application-notes-api-and-erratas).
 
 ## TROPIC01 Firmware in Libtropic
 Libtropic provides not only implementation of the FW update L2 commands, but also the necessary files for updating both the RISC-V and SPECT FW. Refer to:
 
 1. [Firmware Update Files](#firmware-update-files) section for more information about the `TROPIC01_fw_update_files/` directory.
-2. [Tutorials](../tutorials/index.md), where we demonstrate the firmware update feature. Have a look at, for example, [Firmware Update on TROPIC01 USB Devkit on Linux](../tutorials/linux/usb_devkit/fw_update.md).
+2. [Tutorials](../tutorials/index.md), where we demonstrate the firmware update feature. Have a look at, for example, [Firmware Update on TROPIC01 USB DevKit on Linux](../tutorials/linux/usb_devkit/fw_update.md).
 
 ### Firmware Update Files
 The `TROPIC01_fw_update_files/` directory provides TROPIC01 FW update files in two formats:
