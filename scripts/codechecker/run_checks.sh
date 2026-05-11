@@ -35,7 +35,17 @@ fi
 if ! command -v make >/dev/null 2>&1; then  
     echo "Missing make! Install and try again."  
     exit 1  
-fi  
+fi
+if ! command -v arm-none-eabi-gcc >/dev/null 2>&1; then
+    echo "Missing arm-none-eabi-gcc (ARM GCC toolchain). Install and try again."
+    exit 1
+fi
+
+# Check for ESP-IDF `idf.py` tool used for ESP32 builds
+if ! command -v idf.py >/dev/null 2>&1; then
+    echo "Missing idf.py (ESP-IDF build tool). Install ESP-IDF and ensure idf.py is on PATH."
+    exit 1
+fi
 
 # Recreating directories
 rm -fr "$LT_ROOT_DIR/.codechecker/"
@@ -50,6 +60,18 @@ CodeChecker log -b "cd \"$LT_ROOT_DIR/examples/linux/usb_devkit/hello_world\" &&
 # Linux SPI + MbedTLSv4
 CodeChecker log -b "cd \"$LT_ROOT_DIR/examples/linux/spi/hello_world\" && rm -rf build && mkdir build && cd build && cmake .. && make -j" \
                 -o "$LT_ROOT_DIR/.codechecker/compile_commands/linux_spi_compile_commands.json"
+
+# STM32 + MbedTLSv4
+CodeChecker log -b "cd \"$LT_ROOT_DIR/examples/stm32/nucleo_f439zi/hello_world\" && rm -rf build && mkdir build && cd build && cmake .. && make -j" \
+                -o "$LT_ROOT_DIR/.codechecker/compile_commands/stm32_f439zi_compile_commands.json"
+CodeChecker log -b "cd \"$LT_ROOT_DIR/examples/stm32/nucleo_l432kc/hello_world\" && rm -rf build && mkdir build && cd build && cmake .. && make -j" \
+                -o "$LT_ROOT_DIR/.codechecker/compile_commands/stm32_l432kc_compile_commands.json"
+CodeChecker log -b "cd \"$LT_ROOT_DIR/examples/stm32/nucleo_u545re_q/hello_world\" && rm -rf build && mkdir build && cd build && cmake .. && make -j" \
+                -o "$LT_ROOT_DIR/.codechecker/compile_commands/stm32_u545re_q_compile_commands.json"
+
+# ESP32 + MbedTLSv4
+CodeChecker log -b "cd \"$LT_ROOT_DIR/examples/esp32/ESP32-DevKitC-V4/hello_world\" && idf.py fullclean build" \
+                -o "$LT_ROOT_DIR/.codechecker/compile_commands/esp32_compile_commands.json"
 
 # Model + all CALs
 CALS=("trezor_crypto" "mbedtls_v4" "openssl" "wolfcrypt")
