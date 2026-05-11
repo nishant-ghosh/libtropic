@@ -1709,7 +1709,7 @@ lt_ret_t lt_print_bytes(const uint8_t *bytes, const size_t bytes_cnt, char *out_
             return LT_HAL_ERROR;
         }
         // Considering one additional byte for null terminator.
-        else if (written >= remaining) {
+        else if ((size_t)written >= remaining) {
             LT_LOG_ERROR("snprintf output was truncated, written=%d, remaining=%zu", written,
                          remaining);
             return LT_HAL_ERROR;

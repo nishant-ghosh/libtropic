@@ -617,7 +617,7 @@ lt_ret_t lt_port_spi_transfer(lt_l2_state_t *s2, uint8_t offset, uint16_t tx_dat
                 return LT_HAL_ERROR;
             }
             // Considering one additional byte for null terminator.
-            else if (written >= remaining) {
+            else if ((size_t)written >= remaining) {
                 LT_LOG_ERROR("snprintf output was truncated, written=%d, remaining=%zu", written,
                              remaining);
                 return LT_HAL_ERROR;
