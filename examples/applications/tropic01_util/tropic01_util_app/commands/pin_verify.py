@@ -52,6 +52,7 @@ def execute(args: argparse.Namespace, app_cmd_sender: AppCommandSender) -> int:
 
 PIN_VERIFY_DESC = "Verifies the PIN using the TROPIC01 MAC-And-Destroy feature."\
                   " Upon success, returns the cryptographic key (guarded by the PIN)."\
+                  " All PIN metadata (non-confidential) is read from and stored in the STM32 Flash memory."\
                   " Note: A successful attempt after aprox. 7 wrong attempts might result in a timeout " \
                   "because the reinitialization of destroyed slots took too long - just increase the timeout " \
                   "with --timeout. For a reference, reinitializing maximum allowed amount of slots (128) takes " \

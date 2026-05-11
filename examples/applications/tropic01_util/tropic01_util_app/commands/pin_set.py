@@ -146,6 +146,7 @@ def execute(args: argparse.Namespace, app_cmd_sender: AppCommandSender) -> int:
 
 PIN_SET_DESC = "Sets up a new PIN using the TROPIC01 MAC-And-Destroy feature."\
                " Upon success, returns a cryptographic key (guarded by the PIN)."\
+               " All PIN metadata (non-confidential) is stored in the STM32 Flash memory."\
                " Note: around 7 attempts, you might get a timeout because the operation took too long - "\
                "just increase the timeout with --timeout. For a reference, setting up maximum allowed "\
                 "attempts (128) takes around 20 seconds."
