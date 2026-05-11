@@ -1703,9 +1703,20 @@ lt_ret_t lt_print_bytes(const uint8_t *bytes, const size_t bytes_cnt, char *out_
     for (size_t i = 0; i < bytes_cnt; i++) {
         size_t remaining = out_buf_size - (i * 2);
         int written = snprintf(&out_buf[i * 2], remaining, "%02" PRIX8, bytes[i]);
-        // '"%02" PRIX8' should always result in 2 characters written.
-        if (written != 2) {
-            return LT_FAIL;
+        if (written < 0) {
+            // Not using errno here, as it is required only by POSIX.
+            LT_LOG_ERROR("snprintf failed, written=%d", written);
+            return LT_HAL_ERROR;
+        }
+        // Considering one additional byte for null terminator.
+        else if (written >= remaining) {
+            LT_LOG_ERROR("snprintf output was truncated, written=%d, remaining=%zu", written,
+                         remaining);
+            return LT_HAL_ERROR;
+        }
+        else if (written != 2) {
+            LT_LOG_ERROR("snprintf wrote incorrect number of chars, expected 2, got %d", written);
+            return LT_HAL_ERROR;
         }
     }
     out_buf[bytes_cnt * 2] = '\0';
