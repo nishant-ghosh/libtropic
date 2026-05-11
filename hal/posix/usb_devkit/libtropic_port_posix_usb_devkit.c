@@ -609,7 +609,15 @@ lt_ret_t lt_port_spi_transfer(lt_l2_state_t *s2, uint8_t offset, uint16_t tx_dat
         // buffered_chars.
         uint8_t buffered_chars[LT_USB_DEVKIT_SPI_TRANSFER_BUFF_SIZE_MAX] = {0};
         for (int i = 0; i < tx_data_length; i++) {
-            sprintf((char *)(buffered_chars + i * 2), "%02" PRIX8, s2->buff[i + offset]);
+            int written = sprintf((char *)(buffered_chars + i * 2), "%02" PRIX8, s2->buff[i + offset]);
+            if (written < 0) {
+                LT_LOG_ERROR("sprintf failed: errno=%d (%s)", errno, strerror(errno));
+                return LT_HAL_ERROR;
+            }
+            else if (written != 2) {
+                LT_LOG_ERROR("sprintf wrote incorrect number of chars, expected 2, got %d", written);
+                return LT_HAL_ERROR;
+            }
         }
 
         // Control characters to keep CS LOW (they are expected by USB DevKit, see the top of this file
@@ -630,7 +638,12 @@ lt_ret_t lt_port_spi_transfer(lt_l2_state_t *s2, uint8_t offset, uint16_t tx_dat
         }
 
         for (size_t count = 0; count < tx_data_length; count++) {
-            sscanf((char *)&buffered_chars[count * 2], "%02" SCNx8, &s2->buff[count + offset]);
+            int ret = sscanf((char *)&buffered_chars[count * 2], "%02" SCNx8,
+                             &s2->buff[count + offset]);
+            if (ret != 1) {
+                LT_LOG_ERROR("sscanf failed to convert hex value at offset %zu, ret=%d", count, ret);
+                return LT_HAL_ERROR;
+            }
         }
     }
     else {

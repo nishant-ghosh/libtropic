@@ -1705,7 +1705,7 @@ lt_ret_t lt_print_bytes(const uint8_t *bytes, const size_t bytes_cnt, char *out_
         int written = snprintf(&out_buf[i * 2], remaining, "%02" PRIX8, bytes[i]);
         // Verify snprintf succeeded and didn't truncate
         // (should never happen given precondition check, but defensive)
-        if (written < 0 || (size_t)written >= remaining) {
+        if (written != 2) {
             return LT_FAIL;
         }
     }
@@ -2217,7 +2217,11 @@ lt_ret_t lt_print_fw_header(lt_handle_t *h, const lt_bank_id_t bank_id,
         // Hash str has 32B
         char hash_str[32 * 2 + 1] = {0};
         for (int i = 0; i < 32; i++) {
-            snprintf(hash_str + i * 2, sizeof(hash_str) - i * 2, "%02" PRIX8, p_h->hash[i]);
+            int written = snprintf(hash_str + i * 2, sizeof(hash_str) - i * 2, "%02" PRIX8,
+                                   p_h->hash[i]);
+            if (written != 2) {
+                return LT_FAIL;
+            }
         }
         print_func("      Hash:          %s\n", hash_str);
         print_func("      Pair version:  %08" PRIX32 "\n", p_h->pair_version);
