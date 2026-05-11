@@ -60,7 +60,7 @@ CodeChecker log -b "cd \"$LT_ROOT_DIR/examples/stm32/nucleo_u545re_q/hello_world
                 -o "$LT_ROOT_DIR/.codechecker/compile_commands/stm32_u545re_q_compile_commands.json"
 
 # ESP32 + MbedTLSv4
-CodeChecker log -b "cd \"$LT_ROOT_DIR/examples/esp32/ESP32-DevKitC-V4/hello_world\" && idf.py build" \
+CodeChecker log -b "cd \"$LT_ROOT_DIR/examples/esp32/ESP32-DevKitC-V4/hello_world\" && idf.py fullclean build" \
                 -o "$LT_ROOT_DIR/.codechecker/compile_commands/esp32_compile_commands.json"
 
 # Model + all CALs
