@@ -51,6 +51,18 @@ CodeChecker log -b "cd \"$LT_ROOT_DIR/examples/linux/usb_devkit/hello_world\" &&
 CodeChecker log -b "cd \"$LT_ROOT_DIR/examples/linux/spi/hello_world\" && rm -rf build && mkdir build && cd build && cmake .. && make -j" \
                 -o "$LT_ROOT_DIR/.codechecker/compile_commands/linux_spi_compile_commands.json"
 
+# STM32 + MbedTLSv4
+CodeChecker log -b "cd \"$LT_ROOT_DIR/examples/stm32/nucleo_f439zi/hello_world\" && rm -rf build && mkdir build && cd build && cmake .. && make -j" \
+                -o "$LT_ROOT_DIR/.codechecker/compile_commands/stm32_f439zi_compile_commands.json"
+CodeChecker log -b "cd \"$LT_ROOT_DIR/examples/stm32/nucleo_l432kc/hello_world\" && rm -rf build && mkdir build && cd build && cmake .. && make -j" \
+                -o "$LT_ROOT_DIR/.codechecker/compile_commands/stm32_l432kc_compile_commands.json"
+CodeChecker log -b "cd \"$LT_ROOT_DIR/examples/stm32/nucleo_u545re_q/hello_world\" && rm -rf build && mkdir build && cd build && cmake .. && make -j" \
+                -o "$LT_ROOT_DIR/.codechecker/compile_commands/stm32_u545re_q_compile_commands.json"
+
+# ESP32 + MbedTLSv4
+CodeChecker log -b "cd \"$LT_ROOT_DIR/examples/esp32/ESP32-DevKitC-V4/hello_world\" && idf.py build" \
+                -o "$LT_ROOT_DIR/.codechecker/compile_commands/esp32_compile_commands.json"
+
 # Model + all CALs
 CALS=("trezor_crypto" "mbedtls_v4" "openssl" "wolfcrypt")
 for CURRENT_CAL in "${CALS[@]}"; do
