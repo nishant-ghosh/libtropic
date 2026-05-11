@@ -16,6 +16,7 @@ set(LT_STRICT_COMPILATION_FLAGS
     "-Wstrict-prototypes"
     "-Wunused-result"
     "-Wmissing-prototypes"
+    "-Wjump-misses-init"
     "-fstack-protector-strong"
     CACHE STRING "Strict compile flags")
 

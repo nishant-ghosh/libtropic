@@ -20,6 +20,7 @@ lt_ret_t lt_X25519(const uint8_t *privkey, const uint8_t *pubkey, uint8_t *secre
     EVP_PKEY_CTX *ctx = NULL;
     EVP_PKEY *priv = NULL;
     EVP_PKEY *pub = NULL;
+    size_t secret_len = TR01_X25519_KEY_LEN;
     lt_ret_t lt_ret = LT_OK;
     unsigned long err_code;
 
@@ -72,7 +73,6 @@ lt_ret_t lt_X25519(const uint8_t *privkey, const uint8_t *pubkey, uint8_t *secre
     }
 
     // Derive the shared secret.
-    size_t secret_len = TR01_X25519_KEY_LEN;
     if (EVP_PKEY_derive(ctx, secret, &secret_len) <= 0) {
         err_code = ERR_get_error();
         LT_LOG_ERROR("Failed to derive X25519 shared secret, err_code=%lu (%s)", err_code,
@@ -98,6 +98,7 @@ lt_X25519_cleanup:
 lt_ret_t lt_X25519_scalarmult(const uint8_t *sk, uint8_t *pk)
 {
     EVP_PKEY *priv = NULL;
+    size_t pk_len = TR01_X25519_KEY_LEN;
     lt_ret_t lt_ret = LT_OK;
     unsigned long err_code;
 
@@ -112,7 +113,6 @@ lt_ret_t lt_X25519_scalarmult(const uint8_t *sk, uint8_t *pk)
     }
 
     // Extract the public key.
-    size_t pk_len = TR01_X25519_KEY_LEN;
     if (!EVP_PKEY_get_raw_public_key(priv, pk, &pk_len)) {
         err_code = ERR_get_error();
         LT_LOG_ERROR("Failed to extract X25519 public key from private key, err_code=%lu (%s)",

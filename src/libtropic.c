@@ -450,6 +450,8 @@ lt_ret_t lt_session_start(lt_handle_t *h, const uint8_t *stpub, const lt_pkey_in
     }
 
     lt_host_eph_keys_t host_eph_keys = {0};
+    // Setup a pointer to a response in the L2 buffer.
+    struct lt_l2_handshake_rsp_t *p_l2_resp = (struct lt_l2_handshake_rsp_t *)h->l2.buff;
 
     lt_ret_t ret = lt_out__session_start(h, pkey_index, &host_eph_keys);
     if (ret != LT_OK) {
@@ -460,9 +462,6 @@ lt_ret_t lt_session_start(lt_handle_t *h, const uint8_t *stpub, const lt_pkey_in
     if (ret != LT_OK) {
         goto cleanup;
     }
-
-    // Setup a pointer to a response in the L2 buffer.
-    struct lt_l2_handshake_rsp_t *p_l2_resp = (struct lt_l2_handshake_rsp_t *)h->l2.buff;
 
     if (TR01_L2_HANDSHAKE_RSP_LEN != (p_l2_resp->rsp_len)) {
         ret = LT_L2_RSP_LEN_ERROR;
