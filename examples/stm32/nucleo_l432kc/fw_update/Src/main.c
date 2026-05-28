@@ -420,7 +420,9 @@ int main(void)
     /* Configure LED3 */
     BSP_LED_Init(LED3);
 
-    if (DBG_UART_Init() != HAL_OK) {
+    HAL_StatusTypeDef hal_ret = DBG_UART_Init();
+    if (hal_ret != HAL_OK) {
+        fprintf(stderr, "DBG_UART_Init() failed, hal_ret=%u\n", hal_ret);
         Error_Handler();
     }
 
@@ -428,7 +430,9 @@ int main(void)
        Do not forget to do this in your application, as the
        Libtropic HAL uses RNG for entropy source! */
     RNGHandle.Instance = RNG;
-    if (HAL_RNG_Init(&RNGHandle) != HAL_OK) {
+    hal_ret = HAL_RNG_Init(&RNGHandle);
+    if (hal_ret != HAL_OK) {
+        fprintf(stderr, "HAL_RNG_Init() failed, hal_ret=%u\n", hal_ret);
         Error_Handler();
     }
 
@@ -451,7 +455,7 @@ int main(void)
     psa_status_t status = psa_crypto_init();
     if (status != PSA_SUCCESS) {
         fprintf(stderr, "PSA Crypto initialization failed, status=%ld (psa_status_t)\n", status);
-        return -1;
+        Error_Handler();
     }
 
     /* Libtropic handle.
@@ -499,7 +503,7 @@ int main(void)
     if (LT_OK != ret) {
         fprintf(stderr, "\nFailed to initialize handle, ret=%s\n", lt_ret_verbose(ret));
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
     printf("OK\n");
 
@@ -512,14 +516,14 @@ int main(void)
         fprintf(stderr, "\nlt_reboot() failed, ret=%s\n", lt_ret_verbose(ret));
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
     printf("OK\n");
 
     if (get_fw_versions(&lt_handle) != LT_OK) {
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
 
     printf("Versions to update to:\n");
@@ -531,7 +535,7 @@ int main(void)
     if (LT_OK != check_and_enable_maintenance_mode(&lt_handle)) {
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
 #endif
 
@@ -550,14 +554,14 @@ int main(void)
 #endif
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
     printf("OK\n");
 
     if (get_fw_versions(&lt_handle) != LT_OK) {
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
 
 #if LT_DISABLE_MAINTENANCE_MODE
@@ -568,7 +572,7 @@ int main(void)
     if (LT_OK != disable_maintenance_mode(&lt_handle)) {
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
 #else
     printf(
@@ -581,7 +585,7 @@ int main(void)
     if (LT_OK != ret) {
         fprintf(stderr, "\nFailed to deinitialize handle, ret=%s\n", lt_ret_verbose(ret));
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
     printf("OK\n");
 
@@ -599,7 +603,9 @@ int main(void)
 
     /* Not strictly necessary, but we deinitialize RNG here to
        demonstrate proper usage. */
-    if (HAL_RNG_DeInit(&RNGHandle) != HAL_OK) {
+    hal_ret = HAL_RNG_DeInit(&RNGHandle);
+    if (hal_ret != HAL_OK) {
+        fprintf(stderr, "HAL_RNG_DeInit() failed, hal_ret=%u\n", hal_ret);
         Error_Handler();
     }
 
@@ -617,6 +623,8 @@ int main(void)
  */
 static void Error_Handler(void)
 {
+    fprintf(stderr, "Error_Handler() was called!\n");
+
     while (1) {
         /* Toggle LED3 for error */
         BSP_LED_Toggle(LED3);
