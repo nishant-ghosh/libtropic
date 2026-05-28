@@ -118,7 +118,7 @@ int main(void)
     psa_status_t status = psa_crypto_init();
     if (status != PSA_SUCCESS) {
         fprintf(stderr, "PSA Crypto initialization failed, status=%ld (psa_status_t)\n", status);
-        return -1;
+        Error_Handler();
     }
 
     /* Libtropic handle.
@@ -158,7 +158,7 @@ int main(void)
     if (LT_OK != ret) {
         fprintf(stderr, "\nFailed to initialize handle, ret=%s\n", lt_ret_verbose(ret));
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
     printf("OK\n");
 
@@ -171,7 +171,7 @@ int main(void)
         fprintf(stderr, "\nlt_reboot() failed, ret=%s\n", lt_ret_verbose(ret));
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
     printf("OK\n");
 
@@ -188,7 +188,7 @@ int main(void)
                 "-DLT_SH0_KEYS=eng_sample\n");
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
-        return -1;
+            Error_Handler();
     }
     printf("OK\n");
 
@@ -201,7 +201,7 @@ int main(void)
         lt_session_abort(&lt_handle);
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
     printf("\t<-- Message received from TROPIC01: '%s'\n", recv_buf);
 
@@ -211,7 +211,7 @@ int main(void)
         fprintf(stderr, "\nFailed to abort Secure Session, ret=%s\n", lt_ret_verbose(ret));
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
     printf("OK\n");
 
@@ -220,7 +220,7 @@ int main(void)
     if (LT_OK != ret) {
         fprintf(stderr, "\nFailed to deinitialize handle, ret=%s\n", lt_ret_verbose(ret));
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
     printf("OK\n");
 
@@ -237,7 +237,9 @@ int main(void)
     /* libtropic related code END */
 
     /* Not strictly necessary, but we deinitialize RNG here to demonstrate proper usage. */
-    if (HAL_RNG_DeInit(&hrng) != HAL_OK) {
+    HAL_StatusTypeDef hal_ret = HAL_RNG_DeInit(&hrng);
+    if (hal_ret != HAL_OK) {
+        fprintf(stderr, "HAL_RNG_DeInit() failed, hal_ret=%u\n", hal_ret);
         Error_Handler();
     }
 
@@ -410,6 +412,7 @@ PUTCHAR_PROTOTYPE
  */
 void Error_Handler(void)
 {
+    fprintf(stderr, "Error_Handler() was called!\n");
     __disable_irq();
     while (1) {
     }
