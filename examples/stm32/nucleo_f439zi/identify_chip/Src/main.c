@@ -150,7 +150,9 @@ int main(void)
     /* Initialize BSP Led for LED2 */
     BSP_LED_Init(LED2);
 
-    if (DBG_UART_Init() != HAL_OK) {
+    HAL_StatusTypeDef hal_ret = DBG_UART_Init();
+    if (hal_ret != HAL_OK) {
+        fprintf(stderr, "DBG_UART_Init() failed, hal_ret=%u\n", hal_ret);
         Error_Handler();
     }
 
@@ -158,7 +160,9 @@ int main(void)
         Do not forget to do this in your application, as the
         Libtropic HAL uses RNG for entropy source! */
     RNGHandle.Instance = RNG;
-    if (HAL_RNG_Init(&RNGHandle) != HAL_OK) {
+    hal_ret = HAL_RNG_Init(&RNGHandle);
+    if (hal_ret != HAL_OK) {
+        fprintf(stderr, "HAL_RNG_Init() failed, hal_ret=%u\n", hal_ret);
         Error_Handler();
     }
 
@@ -181,7 +185,7 @@ int main(void)
     psa_status_t status = psa_crypto_init();
     if (status != PSA_SUCCESS) {
         fprintf(stderr, "PSA Crypto initialization failed, status=%ld (psa_status_t)\n", status);
-        return -1;
+        Error_Handler();
     }
 
     /* Libtropic handle.
@@ -229,7 +233,7 @@ int main(void)
     if (LT_OK != ret) {
         fprintf(stderr, "\nFailed to initialize handle, ret=%s\n", lt_ret_verbose(ret));
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
     printf("OK\n");
 
@@ -242,7 +246,7 @@ int main(void)
         fprintf(stderr, "\nlt_reboot() failed, ret=%s\n", lt_ret_verbose(ret));
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
     printf("OK\n");
 
@@ -254,7 +258,7 @@ int main(void)
         fprintf(stderr, "Failed to get RISC-V FW version, ret=%s\n", lt_ret_verbose(ret));
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
     printf("  RISC-V FW version: %" PRIX8 ".%" PRIX8 ".%" PRIX8 " (.%" PRIX8 ")\n", fw_ver[3],
            fw_ver[2], fw_ver[1], fw_ver[0]);
@@ -264,7 +268,7 @@ int main(void)
         fprintf(stderr, "Failed to get SPECT FW version, ret=%s\n", lt_ret_verbose(ret));
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
     printf("  SPECT FW version: %" PRIX8 ".%" PRIX8 ".%" PRIX8 " (.%" PRIX8 ")\n", fw_ver[3],
            fw_ver[2], fw_ver[1], fw_ver[0]);
@@ -277,7 +281,7 @@ int main(void)
         fprintf(stderr, "\nlt_reboot() failed, ret=%s\n", lt_ret_verbose(ret));
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
     printf("OK\n");
 
@@ -291,7 +295,7 @@ int main(void)
         fprintf(stderr, "Failed to get RISC-V bootloader version, ret=%s\n", lt_ret_verbose(ret));
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
     printf("  RISC-V bootloader version: %" PRIX8 ".%" PRIX8 ".%" PRIX8 " (.%" PRIX8 ")\n",
            fw_ver[3] & 0x7f, fw_ver[2], fw_ver[1], fw_ver[0]);
@@ -302,28 +306,28 @@ int main(void)
         fprintf(stderr, "Failed to print TR01_FW_BANK_FW1 header, ret=%s\n", lt_ret_verbose(ret));
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
     ret = lt_print_fw_header(&lt_handle, TR01_FW_BANK_FW2, printf);
     if (ret != LT_OK) {
         fprintf(stderr, "Failed to print TR01_FW_BANK_FW2 header, ret=%s\n", lt_ret_verbose(ret));
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
     ret = lt_print_fw_header(&lt_handle, TR01_FW_BANK_SPECT1, printf);
     if (ret != LT_OK) {
         fprintf(stderr, "Failed to print TR01_FW_BANK_SPECT1 header, ret=%s\n", lt_ret_verbose(ret));
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
     ret = lt_print_fw_header(&lt_handle, TR01_FW_BANK_SPECT2, printf);
     if (ret != LT_OK) {
         fprintf(stderr, "Failed to print TR01_FW_BANK_SPECT2 header, ret=%s\n", lt_ret_verbose(ret));
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
 
     struct lt_chip_id_t chip_id = {0};
@@ -334,7 +338,7 @@ int main(void)
         fprintf(stderr, "Failed to get chip ID, ret=%s\n", lt_ret_verbose(ret));
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
 
     printf("---------------------------------------------------------\n");
@@ -343,7 +347,7 @@ int main(void)
         fprintf(stderr, "Failed to print chip ID, ret=%s\n", lt_ret_verbose(ret));
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
     printf("---------------------------------------------------------\n");
 
@@ -353,7 +357,7 @@ int main(void)
         fprintf(stderr, "\nlt_reboot() failed, ret=%s\n", lt_ret_verbose(ret));
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
     printf("OK!\n");
 
@@ -362,7 +366,7 @@ int main(void)
     if (LT_OK != ret) {
         fprintf(stderr, "\nFailed to deinitialize handle, ret=%s\n", lt_ret_verbose(ret));
         mbedtls_psa_crypto_free();
-        return -1;
+        Error_Handler();
     }
     printf("OK\n");
 
@@ -380,7 +384,9 @@ int main(void)
 
     /* Not strictly necessary, but we deinitialize RNG here to
         demonstrate proper usage. */
-    if (HAL_RNG_DeInit(&RNGHandle) != HAL_OK) {
+    hal_ret = HAL_RNG_DeInit(&RNGHandle);
+    if (hal_ret != HAL_OK) {
+        fprintf(stderr, "HAL_RNG_DeInit() failed, hal_ret=%u\n", hal_ret);
         Error_Handler();
     }
 
@@ -465,6 +471,8 @@ static void SystemClock_Config(void)
  */
 static void Error_Handler(void)
 {
+    fprintf(stderr, "Error_Handler() was called!\n");
+
     /* Turn LED2 on */
     BSP_LED_On(LED2);
     while (1) {
