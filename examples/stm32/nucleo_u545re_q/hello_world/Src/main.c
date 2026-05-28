@@ -413,6 +413,7 @@ PUTCHAR_PROTOTYPE
 void Error_Handler(void)
 {
     fprintf(stderr, "Error_Handler() was called!\n");
+
     __disable_irq();
     while (1) {
     }
