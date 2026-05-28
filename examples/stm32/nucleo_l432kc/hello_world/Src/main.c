@@ -314,7 +314,7 @@ int main(void)
                 "-DLT_SH0_KEYS=eng_sample\n");
         lt_deinit(&lt_handle);
         mbedtls_psa_crypto_free();
-            Error_Handler();
+        Error_Handler();
     }
     printf("OK\n");
 

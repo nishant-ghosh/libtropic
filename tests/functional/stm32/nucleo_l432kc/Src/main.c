@@ -220,7 +220,7 @@ int main(void)
         LT_LOG_ERROR("HAL_RNG_Init() failed, hal_ret=%u", hal_ret);
         Error_Handler();
     }
-    
+
     /* libtropic related code BEGIN */
     /* libtropic related code BEGIN */
     /* libtropic related code BEGIN */
