@@ -109,13 +109,13 @@ int main(void)
     psa_status_t status = psa_crypto_init();
     if (status != PSA_SUCCESS) {
         LT_LOG_ERROR("PSA Crypto initialization failed, status=%d (psa_status_t)", status);
-        return -1;
+        Error_Handler();
     }
 #elif LT_USE_WOLFCRYPT
     int ret = wolfCrypt_Init();
     if (ret != 0) {
         LT_LOG_ERROR("WolfCrypt initialization failed, ret=%d (%s)", ret, wc_GetErrorString(ret));
-        return ret;
+        Error_Handler();
     }
 #endif
 
@@ -154,7 +154,7 @@ int main(void)
     ret = wolfCrypt_Cleanup();
     if (ret != 0) {
         LT_LOG_ERROR("WolfCrypt cleanup failed, ret=%d (%s)", ret, wc_GetErrorString(ret));
-        return ret;
+        Error_Handler();
     }
 #endif
 
@@ -168,7 +168,9 @@ int main(void)
     /* libtropic related code END */
 
     /* Not strictly necessary, but we deinitialize RNG here to demonstrate proper usage. */
-    if (HAL_RNG_DeInit(&hrng) != HAL_OK) {
+    HAL_StatusTypeDef hal_ret = HAL_RNG_DeInit(&hrng);
+    if (hal_ret != HAL_OK) {
+        LT_LOG_ERROR("HAL_RNG_DeInit failed, hal_ret=%u", hal_ret);
         Error_Handler();
     }
 
@@ -341,6 +343,8 @@ PUTCHAR_PROTOTYPE
  */
 void Error_Handler(void)
 {
+    LT_LOG_ERROR("Error_Handler() was called!");
+
     __disable_irq();
     while (1) {
     }
