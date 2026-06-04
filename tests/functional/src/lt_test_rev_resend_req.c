@@ -18,7 +18,7 @@
 #include "lt_l2_frame_check.h"
 #include "lt_test_common.h"
 
-lt_handle_t *g_h;
+static lt_handle_t *g_h;
 
 static void lt_test_rev_resend_req_body(void)
 {

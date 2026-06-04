@@ -15,8 +15,8 @@
 #include "lt_test_common.h"
 
 // Shared with cleanup function.
-struct lt_config_t r_config_backup;
-lt_handle_t *g_h;
+static struct lt_config_t r_config_backup;
+static lt_handle_t *g_h;
 
 static lt_ret_t lt_test_rev_erase_r_config_cleanup(void)
 {

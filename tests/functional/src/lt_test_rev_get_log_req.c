@@ -17,7 +17,7 @@
 
 #define RANDOM_VALUE_GET_LOOPS 300
 
-lt_handle_t *g_h;
+static lt_handle_t *g_h;
 
 static void lt_test_rev_get_log_req_body(uint32_t i_config_cfg_debug, uint32_t r_config_cfg_debug)
 {

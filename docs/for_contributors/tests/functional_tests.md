@@ -133,7 +133,7 @@ Change the lines marked with `TODO`.
 
 // Shared with cleanup function.
 // TODO: CAN BE REMOVED IF CLEANUP IS NOT USED.
-lt_handle_t *g_h;
+static lt_handle_t *g_h;
 
 // TODO: REMOVE OR EDIT
 static lt_ret_t lt_new_test_cleanup(void)

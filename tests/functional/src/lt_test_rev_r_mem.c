@@ -20,7 +20,7 @@
 #define R_MEM_DATA_SIZE_MAX 475
 
 // Shared with cleanup function
-lt_handle_t *g_h;
+static lt_handle_t *g_h;
 
 static lt_ret_t lt_test_rev_r_mem_cleanup(void)
 {

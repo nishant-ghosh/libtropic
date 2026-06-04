@@ -20,7 +20,7 @@
 /** @brief Size of the buffer for printing the 32B hash from lt_header_boot_v2_t. */
 #define BOOTLOADER_V2_0_1_HASH_PRINT_BUFF_SIZE (32 * 2 + 1)
 
-lt_handle_t *g_h;
+static lt_handle_t *g_h;
 
 static void print_fw_header_bootloader_v1_0_1(uint8_t *header, uint16_t header_size)
 {
