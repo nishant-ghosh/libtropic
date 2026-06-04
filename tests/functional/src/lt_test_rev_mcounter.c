@@ -17,7 +17,7 @@
 #include "string.h"
 
 // Shared with cleanup function.
-lt_handle_t *g_h;
+static lt_handle_t *g_h;
 
 // The monotonic counter does not have any default value defined in the datasheet.
 // Here we have chosen to initialize them to zero.

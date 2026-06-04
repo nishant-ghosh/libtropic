@@ -16,7 +16,7 @@
 #include "string.h"
 
 // Shared with cleanup function
-lt_handle_t *g_h;
+static lt_handle_t *g_h;
 
 static lt_ret_t erase_ecc_slots_and_verify(void)
 {

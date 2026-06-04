@@ -19,7 +19,7 @@
 
 #define PIN_LEN_MAX 2048
 
-static uint8_t kdf_key_zeros[32] = {0};
+static const uint8_t kdf_key_zeros[32] = {0};
 
 static int pin_check(lt_handle_t *h, uint8_t *pin, uint16_t pin_len, lt_mac_and_destroy_slot_t slot,
                      uint8_t ciphertexts[TR01_MACANDD_ROUNDS_MAX][TR01_MAC_AND_DESTROY_DATA_SIZE],
