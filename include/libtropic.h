@@ -664,7 +664,7 @@ lt_ret_t lt_mac_and_destroy(lt_handle_t *h, const lt_mac_and_destroy_slot_t slot
 #define LT_CHIP_ID_FIELD_MAX_SIZE 35
 
 /** @brief Helper structure, holding string name and address for each configuration object. */
-extern struct lt_config_obj_desc_t cfg_desc_table[LT_CONFIG_OBJ_CNT];
+extern const struct lt_config_obj_desc_t cfg_desc_table[LT_CONFIG_OBJ_CNT];
 
 /**
  * @brief Prints out a name of the returned value.

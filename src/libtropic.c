@@ -1516,7 +1516,7 @@ const char *lt_ret_verbose(lt_ret_t ret)
 //--------------------------------------------------------------------------------------------------------//
 #ifdef LT_HELPERS
 
-struct lt_config_obj_desc_t cfg_desc_table[LT_CONFIG_OBJ_CNT] = {
+const struct lt_config_obj_desc_t cfg_desc_table[LT_CONFIG_OBJ_CNT] = {
     {"TR01_CFG_START_UP                   ", TR01_CFG_START_UP_ADDR},
     {"TR01_CFG_SENSORS                    ", TR01_CFG_SENSORS_ADDR},
     {"TR01_CFG_DEBUG                      ", TR01_CFG_DEBUG_ADDR},
