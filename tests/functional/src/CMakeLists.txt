@@ -85,7 +85,7 @@ add_subdirectory(${PATH_LIBTROPIC} "libtropic")
 target_compile_options(tropic PRIVATE -ffunction-sections -fdata-sections)
 
 if(LT_STRICT_COMPILATION)
-    message(STATUS "Enabling strict compilation flags.")
+    message(STATUS "Enabling strict compilation flags for libtropic.")
     # Enable strict compile flags for Libtropic library
     target_link_libraries(tropic PRIVATE libtropic::strict_comp_flags)
 endif()
@@ -375,6 +375,12 @@ set(TEST_DIRS
 )
 
 add_library(libtropic_functional_tests ${TEST_SRCS})
+
+if(LT_STRICT_COMPILATION)
+    message(STATUS "Enabling strict compilation flags for functional tests.")
+    # Enable strict compile flags for Libtropic library
+    target_link_libraries(libtropic_functional_tests PRIVATE libtropic::strict_comp_flags)
+endif()
 
 # Include Libtropic library
 target_link_libraries(libtropic_functional_tests PUBLIC tropic)
