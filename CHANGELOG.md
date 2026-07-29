@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- `scripts/tropic01_model/install_linux.sh`: bump ts-tvl to version 2.5.
 
 ### Added
 - Application FW 2.1.0 and SPECT FW 1.3.0 update files for ABAB and ACAB silicon revisions.
