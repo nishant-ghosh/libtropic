@@ -130,7 +130,8 @@ static lt_ret_t communicate(lt_dev_posix_tcp_t *dev, int *tx_payload_length_ptr,
 
         for (int i = 0; i < LT_TCP_RX_ATTEMPTS; i++) {
             LT_LOG_DEBUG("Attempting to receive remaining bytes: attempt #%d.", i);
-            nb_bytes_received = recv(dev->socket_fd, dev->rx_buffer.buff, LT_TCP_MAX_RECV_SIZE, 0);
+            nb_bytes_received = recv(dev->socket_fd, rx_ptr,
+                                     nb_bytes_to_receive - nb_bytes_received_total, 0);
 
             if (nb_bytes_received < 0) {
                 LT_LOG_ERROR("Receive failed, errno=%d (%s)", errno, strerror(errno));
