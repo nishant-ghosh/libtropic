@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - STM32 examples and tests: replace `return` in the `main()` function with `Error_Handler()`, enhanced error logging.
 - Added `const` to `struct lt_config_obj_desc_t cfg_desc_table` to save RAM space (it is never modified).
 - Marked `lt_ret_strs` pointer with `const`.
+- TCP HAL: correctly receive fragmented responses and reject response payload lengths that exceed the receive buffer.
 
 ### Removed
 
