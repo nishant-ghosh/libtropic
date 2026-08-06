@@ -119,6 +119,12 @@ static lt_ret_t communicate(lt_dev_posix_tcp_t *dev, int *tx_payload_length_ptr,
         return LT_HAL_ERROR;
     }
 
+    if (dev->rx_buffer.len > LT_TCP_MAX_PAYLOAD_LEN) {
+        LT_LOG_ERROR("Received payload length %" PRIu16 " exceeds maximum %u.", dev->rx_buffer.len,
+                     LT_TCP_MAX_PAYLOAD_LEN);
+        return LT_HAL_ERROR;
+    }
+
     LT_LOG_DEBUG("Length field: %" PRIu16 ".", dev->rx_buffer.len);
     nb_bytes_to_receive += dev->rx_buffer.len;
     nb_bytes_received_total += nb_bytes_received;
