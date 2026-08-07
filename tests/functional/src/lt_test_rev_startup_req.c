@@ -19,7 +19,7 @@
 
 #define REBOOT_WAIT_ATTEMPTS 10
 
-lt_handle_t *g_h;
+static lt_handle_t *g_h;
 enum lt_current_chip_state { MAINTENANCE_MODE, APPLICATION_MODE, CHIP_BUSY };
 
 static enum lt_current_chip_state check_current_state(void)

@@ -164,7 +164,11 @@ int main(void)
     /* Initialize BSP Led for LED2 */
     BSP_LED_Init(LED2);
 
-    if (DBG_UART_Init() != HAL_OK) {
+    HAL_StatusTypeDef hal_ret;
+
+    hal_ret = DBG_UART_Init();
+    if (hal_ret != HAL_OK) {
+        LT_LOG_ERROR("DBG_UART_Init() failed, hal_ret=%u", hal_ret);
         Error_Handler();
     }
 
@@ -172,7 +176,10 @@ int main(void)
         Do not forget to do this in your application, as the
         Libtropic HAL uses RNG for entropy source! */
     RNGHandle.Instance = RNG;
-    if (HAL_RNG_Init(&RNGHandle) != HAL_OK) {
+
+    hal_ret = HAL_RNG_Init(&RNGHandle);
+    if (hal_ret != HAL_OK) {
+        LT_LOG_ERROR("HAL_RNG_Init() failed, hal_ret=%u", hal_ret);
         Error_Handler();
     }
 
@@ -186,14 +193,14 @@ int main(void)
 #if LT_USE_MBEDTLS_V4
     psa_status_t status = psa_crypto_init();
     if (status != PSA_SUCCESS) {
-        LT_LOG_ERROR("PSA Crypto initialization failed, status=%d (psa_status_t)", status);
-        return -1;
+        LT_LOG_ERROR("PSA Crypto initialization failed, status=%" PRId32 " (psa_status_t)", status);
+        Error_Handler();
     }
 #elif LT_USE_WOLFCRYPT
     int ret = wolfCrypt_Init();
     if (ret != 0) {
         LT_LOG_ERROR("WolfCrypt initialization failed, ret=%d (%s)", ret, wc_GetErrorString(ret));
-        return ret;
+        Error_Handler();
     }
 #endif
 
@@ -235,7 +242,7 @@ int main(void)
     ret = wolfCrypt_Cleanup();
     if (ret != 0) {
         LT_LOG_ERROR("WolfCrypt cleanup failed, ret=%d (%s)", ret, wc_GetErrorString(ret));
-        return ret;
+        Error_Handler();
     }
 #endif
 
@@ -250,7 +257,9 @@ int main(void)
 
     /* Not strictly necessary, but we deinitialize RNG here to
         demonstrate proper usage. */
-    if (HAL_RNG_DeInit(&RNGHandle) != HAL_OK) {
+    hal_ret = HAL_RNG_DeInit(&RNGHandle);
+    if (hal_ret != HAL_OK) {
+        LT_LOG_ERROR("HAL_RNG_DeInit failed, hal_ret=%u", hal_ret);
         Error_Handler();
     }
 
@@ -335,6 +344,8 @@ static void SystemClock_Config(void)
  */
 static void Error_Handler(void)
 {
+    LT_LOG_ERROR("Error_Handler() was called!");
+
     /* Turn LED2 on */
     BSP_LED_On(LED2);
     while (1) {
