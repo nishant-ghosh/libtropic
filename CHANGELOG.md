@@ -19,8 +19,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marked `lt_ret_strs` pointer with `const`.
 - TCP HAL: correctly receive fragmented responses and reject response payload lengths that exceed the receive buffer.
 
-### Removed
-
 ## [4.0.0]
 
 ### Changed
